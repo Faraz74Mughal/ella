@@ -4,6 +4,8 @@ import { sendError } from "../utils/response";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import { User } from "../models/user.model";
+import { logger } from "../utils/logger";
+import { StatusCodes } from "http-status-codes";
 
 export const authenticate = async (
   req: AuthenticatedRequest,
@@ -12,17 +14,16 @@ export const authenticate = async (
 ): Promise<void> => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-
     if (!token) {
-      sendError(res, 401, "Access denied. No token provided.");
+      sendError(res, StatusCodes.UNAUTHORIZED, "Access denied. No token provided.");
       return;
     }
 
     const decoded = jwt.verify(token, config.jwtSecret) as UserPayload;
     const user = await User.findById(decoded._id).select("+password");
 
-    if (!user || !user.isActive) {
-      sendError(res, 401, "Invalid token or user not found.");
+    if (!user ) {
+      sendError(res, StatusCodes.UNAUTHORIZED, "Invalid token or user not found.");
       return;
     }
 
@@ -34,7 +35,7 @@ export const authenticate = async (
 
     next();
   } catch (error) {
-    sendError(res, 401, "Invalid token");
+    sendError(res, StatusCodes.UNAUTHORIZED, "Invalid token");
   }
 };
 
@@ -45,7 +46,7 @@ export const authorize = (...roles: string[]) => {
     next: NextFunction
   ): void => {
     if (!req.user || !roles.includes(req.user.role)) {
-      sendError(res, 403, "Access denied. Insufficient permissions.");
+      sendError(res, StatusCodes.FORBIDDEN, "Access denied. Insufficient permissions.");
       return;
     }
     next();

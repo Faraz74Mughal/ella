@@ -16,6 +16,9 @@ export interface IUser extends Document {
   lastLogin?:Date;
   createdAt:Date;
   updatedAt:Date;
+  verificationToken:string,
+  verificationTokenExpiry:Date
+
   comparePassword(candidatePassword:string):Promise<boolean>
 }
 
@@ -78,6 +81,13 @@ const schema = new Schema<IUser>({
     type: Boolean,
     default: false,
     required: [true, "User status is required."]
+  },
+  verificationToken:{
+    type:String,
+  },
+  verificationTokenExpiry:{
+    type:Date,
+    default: null
   },
   lastLogin: {
     type: Date,

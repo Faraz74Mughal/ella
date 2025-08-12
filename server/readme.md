@@ -1,0 +1,1 @@
+Verify token after email button click
