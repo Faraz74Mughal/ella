@@ -12,7 +12,7 @@ export interface IUser extends Document {
   password:string;
   role:UserRole;
   profilePicture:string;
-  isActive:boolean;
+  isVerified:boolean;
   lastLogin?:Date;
   createdAt:Date;
   updatedAt:Date;
@@ -77,7 +77,7 @@ const schema = new Schema<IUser>({
     default:UserRole.STUDENT
 
   },
-  isActive: {
+  isVerified: {
     type: Boolean,
     default: false,
     required: [true, "User status is required."]
@@ -98,6 +98,8 @@ const schema = new Schema<IUser>({
   toJSON:{
     transform:(doc,ret)=>{
       delete (ret as {password?:string}).password;
+      delete (ret as {verificationTokenExpiry?:Date}).verificationTokenExpiry;
+      delete (ret as {verificationToken?:string}).verificationToken;
       return ret
 
     }

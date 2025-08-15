@@ -32,7 +32,7 @@ export class AuthServer {
     await User.findByIdAndUpdate(userId, { lastLogin: new Date() });
   }
 
-  static async createVerifyToken(userId:string,email: string):Promise<string> {
+  static async createVerifyToken(userId: string, email: string): Promise<string> {
     const token = jwt.sign(
       {
         email,
@@ -43,9 +43,25 @@ export class AuthServer {
       }
     );
     // verificationToken;
-    const  verificationTokenExpiry =addTimeFromString(config.verifyTokenExpire);
-    await User.findByIdAndUpdate(userId, { verificationToken:token,verificationTokenExpiry });
+    const verificationTokenExpiry = addTimeFromString(config.verifyTokenExpire);
+    await User.findByIdAndUpdate(userId, { verificationToken: token, verificationTokenExpiry });
 
-    return token
+    return token;
+  }
+
+  static decryptToken(token: string): any {
+    let obj = null;
+    const verify = jwt.verify(token, config.verifyTokenSecret);
+    if (verify) {
+      const decoded = jwt.decode(token);
+      if (decoded) {
+        obj = decoded;
+      }
+    }
+    return obj;
+  }
+
+  static verifyToken(token: string): boolean {
+    return jwt.verify(token, config.verifyTokenSecret)?true:false;
   }
 }

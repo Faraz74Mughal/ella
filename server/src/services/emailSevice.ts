@@ -2,6 +2,7 @@ import { Resend } from 'resend';
 import config from '../config/config';
 import { userVerifyTemplate } from '../templates/mailTemplates/userVerifyTemplate';
 import { logger } from '../utils/logger';
+import { userForgotPasswordTemplate } from '../templates/mailTemplates/userForgotPasswordTemplate';
 
 class EmailService {
   private resend: Resend;
@@ -23,6 +24,26 @@ class EmailService {
         to: [userEmail],
         subject: 'Verify User',
         html: userVerifyTemplate(userName, this.companyName, link, this.supportEmail),
+      });
+
+      if (data) {
+        logger.info('Mail Data: ', data);
+      }
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      logger.error('Sending mail error: ',error);
+    }
+  }
+
+  async sendForgotPasswordEmail(userName: string, userEmail: string, link: string) {
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: this.companyEmail,
+        to: [userEmail],
+        subject: 'Forgot Password',
+        html: userForgotPasswordTemplate(userName, this.companyName, link, this.supportEmail),
       });
 
       if (data) {
