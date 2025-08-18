@@ -16,6 +16,7 @@ interface Config {
   companyPhone: string;
   verifyTokenSecret: string;
   verifyTokenExpire: string;
+  refreshTokenSecret:string;
 }
 
 const config: Config = {
@@ -32,6 +33,7 @@ const config: Config = {
   companyPhone: process.env.COMPANY_PHONE || '',
   verifyTokenSecret: process.env.VERIFY_TOKEN_SECRET || '',
   verifyTokenExpire: process.env.VERIFY_TOKEN_EXPIRE || '',
+  refreshTokenSecret: process.env.RE_JWT_SECRET || '',
 };
 
 export default config;

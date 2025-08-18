@@ -18,6 +18,7 @@ export interface IUser extends Document {
   updatedAt:Date;
   verificationToken:string,
   verificationTokenExpiry:Date
+  refreshToken:string
 
   comparePassword(candidatePassword:string):Promise<boolean>
 }
@@ -92,14 +93,19 @@ const schema = new Schema<IUser>({
   lastLogin: {
     type: Date,
     default: null
+  },
+  refreshToken: { 
+    type: String, 
+    select: false 
   }
 },{
   timestamps:true,
   toJSON:{
-    transform:(doc,ret)=>{
+    transform:(_:unknown,ret)=>{
       delete (ret as {password?:string}).password;
       delete (ret as {verificationTokenExpiry?:Date}).verificationTokenExpiry;
       delete (ret as {verificationToken?:string}).verificationToken;
+      delete (ret as {refreshToken?:string}).refreshToken;
       return ret
 
     }

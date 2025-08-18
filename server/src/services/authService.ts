@@ -18,6 +18,21 @@ export class AuthServer {
     );
   }
 
+  static async generateRefreshToken(user: IUser): Promise<void> {
+    const reJwt = jwt.sign(
+      {
+        _id: user._id,
+      },
+      config.refreshTokenSecret,
+      {
+        expiresIn: '7d',
+      }
+    );
+
+    user.refreshToken = reJwt;
+    await user.save({ validateBeforeSave: false });
+  }
+
   static async createUser(userData: Partial<IUser>): Promise<IUser> {
     const user = new User(userData);
     return await user.save();
@@ -62,6 +77,6 @@ export class AuthServer {
   }
 
   static verifyToken(token: string): boolean {
-    return jwt.verify(token, config.verifyTokenSecret)?true:false;
+    return jwt.verify(token, config.verifyTokenSecret) ? true : false;
   }
 }

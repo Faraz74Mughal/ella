@@ -24,8 +24,9 @@ export class AuthController {
       });
 
       const token = AuthServer.generateToken(user);
+      await AuthServer.generateRefreshToken(user);
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-      emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, verificationToken);
+      // emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, verificationToken);
 
       logger.info(`New user registered: ${email}`);
 
@@ -40,7 +41,6 @@ export class AuthController {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            password: user.password,
           },
           token,
         }
@@ -72,7 +72,7 @@ export class AuthController {
 
       await AuthServer.updateLastLogin(user._id);
       const token = AuthServer.generateToken(user);
-
+      await AuthServer.generateRefreshToken(user);
       logger.info(`User logged in: ${email}`);
 
       sendResponse(res, 200, true, 'User Login successfully', {
@@ -81,7 +81,6 @@ export class AuthController {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          password: user.password,
         },
         token,
       });
