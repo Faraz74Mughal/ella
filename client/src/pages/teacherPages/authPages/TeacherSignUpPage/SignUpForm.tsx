@@ -10,7 +10,6 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useSignUp } from "@/services/queries/teacherQueries/auth.queries";
 import { TSignUp } from "@/types/userType";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link } from "react-router";
 
 const initialValue: TSignUp = {
   firstName: "",
@@ -26,7 +25,9 @@ const SignUpForm = () => {
   console.log("signUpData", signUpData);
 
   const loginFormHandler = (values: TSignUp) => {
-    signUpMutate(values);
+    // signUpMutate(values,{onSuccess:(response)=>{
+    //   if(response?.s)
+    // }});
   };
 
   return (
@@ -86,11 +87,6 @@ const SignUpForm = () => {
             </FormItem>
           )}
         />
-        <p>
-          <Link to="/teacher/forget-password" className="text-">
-            Forget Password
-          </Link>
-        </p>
 
         <Button type="submit">Sign Up</Button>
       </form>

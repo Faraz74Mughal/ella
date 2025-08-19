@@ -1,23 +1,24 @@
-import { TSignIn } from "@/types/userType";
+import { TSignIn, TToken } from "@/types/userType";
 import Service from "../handler";
 
 class AuthService extends Service {
+  constructor(name: string) {
+    super(name);
+  }
 
-    constructor(name:string){
-        super(name)
-    }
+  async signIn(data: TSignIn) {
+    return await this.post("/sign-in", data, {}, true);
+  }
 
-    async signIn(data:TSignIn){
-        return await this.post("/sign-in",data)
-    }
+  async signUp(data: TSignIn) {
+    return await this.post("/sign-up", data, {}, true);
+  }
 
-
-    async signUp(data:TSignIn){
-        return await this.post("/sign-up",data)
-    }
-
+  async verifyUser(data: TToken) {
+    return await this.post("/verify-email", data, {}, true);
+  }
 }
 
-const authService = new AuthService("/auth")
+const authService = new AuthService("/auth");
 
-export default authService
+export default authService;

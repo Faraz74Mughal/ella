@@ -5,6 +5,7 @@ import HomePage from "../pages/studentPages/HomePage";
 import SignInPage from "../pages/adminPages/SignInPage";
 import TeacherSignInPage from "../pages/teacherPages/authPages/TeacherSignInPage";
 import TeacherSignUpPage from "../pages/teacherPages/authPages/TeacherSignUpPage";
+import TeacherVerifyUserPage from "@/pages/teacherPages/authPages/TeacherVerifyUserPage";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
           {
             path: "sign-up",
             Component: TeacherSignUpPage
+          },
+          {
+            path: "verify-user",
+            Component: TeacherVerifyUserPage
           }
         ]
       }

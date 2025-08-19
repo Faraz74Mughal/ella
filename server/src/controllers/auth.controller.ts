@@ -26,7 +26,8 @@ export class AuthController {
       const token = AuthServer.generateToken(user);
       await AuthServer.generateRefreshToken(user);
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-      // emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, verificationToken);
+      const hrf = `http://localhost:5173/teacher/verify-user?token=${verificationToken}`;
+      emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, hrf);
 
       logger.info(`New user registered: ${email}`);
 
@@ -102,8 +103,8 @@ export class AuthController {
         return;
       }
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-
-      emailService.sendVerifyEmail(`${user.firstName} ${user.lastName}`, email, verificationToken);
+      const hrf = `http://localhost:5173/teacher/verify-user?token=${verificationToken}`;
+      emailService.sendVerifyEmail(`${user.firstName} ${user.lastName}`, email, hrf);
 
       logger.info(`Email re send to user: ${email}`);
 
@@ -122,7 +123,11 @@ export class AuthController {
         sendError(res, 401, 'Invalid token or token expire');
         return;
       }
+
+      console.log("CHECK ",obj);
+      
       const find = await AuthServer.findUserEmail(obj.email);
+      console.log("find ",find);
       if (!find) {
         sendError(res, 401, 'Invalid credentials');
         return;
