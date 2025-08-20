@@ -6,7 +6,7 @@ import { emailService } from '../services/emailSevice';
 import { User } from '../models/user.model';
 
 export class AuthController {
-  static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { firstName, lastName, email, password } = req.body;
 
@@ -51,7 +51,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction) {
+  static async signIn(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
       const user = await AuthServer.findUserEmail(email);
@@ -276,4 +276,7 @@ export class AuthController {
       next(error);
     }
   }
+
+  
+
 }
