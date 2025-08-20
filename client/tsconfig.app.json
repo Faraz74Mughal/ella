@@ -17,7 +17,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "allowJs": false,
-    "noEmit": true,
+    "noEmit": false,
     "emitDeclarationOnly": false,
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,

@@ -15,8 +15,8 @@ import { Link } from "react-router";
 const LoginForm = () => {
   const form = useForm({ defaultValues: { email: "", password: "" } });
   
-  const {mutate:signInMutate,data:signData} = useSignIn()
-  console.log("signData",signData);
+  const {mutate:signInMutate,isPending:isSignInMutate} = useSignIn()
+  
   
 
   const loginFormHandler = (values:TSignIn) => {
@@ -56,7 +56,7 @@ const LoginForm = () => {
           <Link to="/teacher/forget-password" className="text-">Forget Password</Link>
         </p>
 
-        <Button type="submit">Login</Button>
+        <Button disabled={isSignInMutate} type="submit">Login</Button>
       </form>
     </FormProvider>
   );

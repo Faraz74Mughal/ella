@@ -8,5 +8,6 @@ const router =  express.Router()
 
 router.get('/profile',authenticate,UserController.fetchProfile)
 router.get('/admin',authenticate,authorize(UserRole.ADMIN),UserController.fetchAdmin)
+router.post('/sign-out',authenticate,authorize(UserRole.TEACHER),UserController.signOut)
 
 export default router

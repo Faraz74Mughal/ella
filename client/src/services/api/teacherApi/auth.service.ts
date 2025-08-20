@@ -1,5 +1,5 @@
 import { TSignIn, TToken } from "@/types/userType";
-import Service from "../handler";
+import {ServiceAuth as Service} from "../handler";
 
 class AuthService extends Service {
   constructor(name: string) {

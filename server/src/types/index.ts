@@ -30,3 +30,18 @@ export enum UserRole {
   TEACHER = 'teacher',
   STUDENT = 'student',
 }
+
+
+
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        _id: string| mongoose.Schema.Types.ObjectId;
+        email: string;
+        role: string;
+      };
+    }
+  }
+}
