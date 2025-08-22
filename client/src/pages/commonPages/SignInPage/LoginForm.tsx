@@ -17,7 +17,6 @@ const LoginForm = () => {
   
   const {mutate:signInMutate,isPending:isSignInMutate} = useSignIn()
   
-  
 
   const loginFormHandler = (values:TSignIn) => {
       signInMutate(values)
@@ -53,7 +52,7 @@ const LoginForm = () => {
           )}
         />
         <p>
-          <Link to="/teacher/forget-password" className="text-">Forget Password</Link>
+          <Link to="/forget-password" className="text-">Forget Password</Link>
         </p>
 
         <Button disabled={isSignInMutate} type="submit">Login</Button>

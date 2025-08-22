@@ -4,6 +4,8 @@ import { sendError, sendResponse } from '../utils/response';
 import { logger } from '../utils/logger';
 import { emailService } from '../services/emailSevice';
 import { User } from '../models/user.model';
+import { IExtendedUser } from '../types';
+import CustomStatusCodes from '../utils/custom-status-code';
 
 export class AuthController {
   static async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -12,7 +14,7 @@ export class AuthController {
 
       const existingUser = await AuthServer.findUserEmail(email);
       if (existingUser) {
-        sendError(res, 400, 'User already exists with this email.');
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'User already exists with this email.');
         return;
       }
 
@@ -23,8 +25,6 @@ export class AuthController {
         password,
       });
 
-      const token = AuthServer.generateToken(user);
-      await AuthServer.generateRefreshToken(user);
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
       const hrf = `http://localhost:5173/teacher/verify-user?token=${verificationToken}`;
       emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, hrf);
@@ -33,7 +33,7 @@ export class AuthController {
 
       sendResponse(
         res,
-        200,
+        CustomStatusCodes.CREATED,
         true,
         'User register successfully and email send to your email for verify.',
         {
@@ -43,7 +43,6 @@ export class AuthController {
             lastName: user.lastName,
             email: user.email,
           },
-          token,
         }
       );
     } catch (error) {
@@ -56,27 +55,27 @@ export class AuthController {
       const { email, password } = req.body;
       const user = await AuthServer.findUserEmail(email);
       if (!user) {
-        sendError(res, 401, 'Invalid credentials');
+        sendError(res, CustomStatusCodes.NOT_FOUND, 'Invalid credentials');
         return;
       }
 
       const comparePassword = user.comparePassword(password);
       if (!comparePassword) {
-        sendError(res, 401, 'Invalid password');
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Invalid password');
         return;
       }
 
       if (!user.isVerified) {
-        sendError(res, 401, 'User is not verified.');
+        sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, 'User is not verified.');
         return;
       }
 
       await AuthServer.updateLastLogin(user._id);
-      const token = AuthServer.generateToken(user);
-      await AuthServer.generateRefreshToken(user);
+      const token = await AuthServer.generateToken(user as IExtendedUser);
+      await AuthServer.generateRefreshToken(user as IExtendedUser);
       logger.info(`User logged in: ${email}`);
 
-      sendResponse(res, 200, true, 'User Login successfully', {
+      sendResponse(res, CustomStatusCodes.OK, true, 'User Login successfully', {
         user: {
           _id: user._id,
           firstName: user.firstName,
@@ -95,11 +94,11 @@ export class AuthController {
       const { email } = req.body;
       const user = await AuthServer.findUserEmail(email);
       if (!user) {
-        sendError(res, 404, 'User not found with this email.');
+        sendError(res, CustomStatusCodes.NOT_FOUND, 'User not found with this email.');
         return;
       }
       if (user.isVerified) {
-        sendError(res, 404, 'User already verified.');
+        sendError(res, CustomStatusCodes.ACCOUNT_ALREADY_VERIFIED, 'User already verified.');
         return;
       }
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
@@ -108,7 +107,7 @@ export class AuthController {
 
       logger.info(`Email re send to user: ${email}`);
 
-      sendResponse(res, 200, true, 'Email resend to your email for verify.', null);
+      sendResponse(res, CustomStatusCodes.OK, true, 'Email resend to your email for verify.', null);
     } catch (error) {
       next(error);
     }
@@ -120,20 +119,17 @@ export class AuthController {
 
       const obj = await AuthServer.decryptToken(token);
       if (!obj?.email) {
-        sendError(res, 401, 'Invalid token or token expire');
+        sendError(res, CustomStatusCodes.INVALID_TOKEN, 'Invalid token or token expire');
         return;
       }
 
-      console.log("CHECK ",obj);
-      
       const find = await AuthServer.findUserEmail(obj.email);
-      console.log("find ",find);
       if (!find) {
-        sendError(res, 401, 'Invalid credentials');
+        sendError(res, CustomStatusCodes.NOT_FOUND, 'Invalid credentials');
         return;
       }
       if (find.isVerified) {
-        sendError(res, 404, 'User already verified.');
+        sendError(res, CustomStatusCodes.ACCOUNT_ALREADY_VERIFIED, 'User already verified.');
         return;
       }
       const user = await User.findOneAndUpdate(
@@ -150,7 +146,7 @@ export class AuthController {
 
       logger.info(`Use verify successfully.: ${obj.email}`);
 
-      sendResponse(res, 200, true, 'Use verify successfully.', user);
+      sendResponse(res, CustomStatusCodes.OK, true, 'Use verify successfully.', user);
     } catch (error) {
       next(error);
     }
@@ -167,12 +163,12 @@ export class AuthController {
       const user = await AuthServer.findUserEmail(email);
 
       if (!user) {
-        sendError(res, 404, `User not found by ${email} email.`);
+        sendError(res, CustomStatusCodes.NOT_FOUND, `User not found by ${email} email.`);
         return;
       }
 
       if (!user.isVerified) {
-        sendError(res, 401, `User is not verified.`);
+        sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, `User is not verified.`);
         return;
       }
 
@@ -188,7 +184,7 @@ export class AuthController {
 
       sendResponse(
         res,
-        200,
+        CustomStatusCodes.OK,
         true,
         'An email has been send to your email. Please check your email.'
       );
@@ -207,16 +203,16 @@ export class AuthController {
 
       const obj = await AuthServer.decryptToken(token);
       if (!obj?.email) {
-        sendError(res, 401, 'Invalid token or token expire');
+        sendError(res, CustomStatusCodes.INVALID_TOKEN, 'Invalid token or token expire');
         return;
       }
       const find = await AuthServer.findUserEmail(obj.email);
       if (!find) {
-        sendError(res, 401, 'Invalid credentials');
+        sendError(res, CustomStatusCodes.NOT_FOUND, 'Invalid credentials');
         return;
       }
       if (!find.isVerified) {
-        sendError(res, 404, 'User not verified.');
+        sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, 'User not verified.');
         return;
       }
       const user = await User.findOneAndUpdate(
@@ -231,7 +227,7 @@ export class AuthController {
 
       logger.info(`Use verify successfully.: ${obj.email}`);
 
-      sendResponse(res, 200, true, 'Forgot password link successfully verified.', {
+      sendResponse(res, CustomStatusCodes.OK, true, 'Forgot password link successfully verified.', {
         email: find.email,
       });
     } catch (error) {
@@ -245,23 +241,22 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      //// verificationTokenExpiry: null,
       const { oldPassword, newPassword, email } = req.body;
       const token = req.header('Authorization')?.replace('Bearer ', '');
-      if (!token) {
-        sendError(res, 400, 'Some thing went wrong.');
+      if (!token || token?.trim() == 'null') {
+        sendError(res, CustomStatusCodes.NO_TOKEN, 'Some thing went wrong.');
         return;
       }
       const isVerified = AuthServer.verifyToken(token);
       if (!isVerified) {
-        sendError(res, 400, 'Link is expired.');
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');
         return;
       }
 
       const find = await User.findOne({ email: email, verificationToken: token });
 
       if (!find) {
-        sendError(res, 401, 'Link is expired.');
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');
         return;
       }
       find.password = newPassword;
@@ -269,14 +264,11 @@ export class AuthController {
 
       logger.info(`User password update successfully.: ${email}`);
 
-      sendResponse(res, 200, true, 'Forgot password link successfully verified.', {
+      sendResponse(res, CustomStatusCodes.OK, true, 'Forgot password link successfully verified.', {
         find,
       });
     } catch (error) {
       next(error);
     }
   }
-
-  
-
 }

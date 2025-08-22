@@ -1,30 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { UserRole } from '../types';
+import { IExtendedUser, UserRole } from '../types';
 import bcrypt from 'bcryptjs';
 
 const collectionName = 'User';
 
-export interface IUser extends Document {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  profilePicture: string;
-  isApprove: boolean;
-  isVerified: boolean;
-  lastLogin?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  verificationToken: string;
-  verificationTokenExpiry: Date;
-  refreshToken: string;
 
-  comparePassword(candidatePassword: string): Promise<boolean>;
-}
 
-const schema = new Schema<IUser>(
+const schema = new Schema<IExtendedUser>(
   {
     firstName: {
       type: String,
@@ -96,6 +78,10 @@ const schema = new Schema<IUser>(
       type: Date,
       default: null,
     },
+    token: {
+      type: String,
+      select: false,
+    },
     refreshToken: {
       type: String,
       select: false,
@@ -128,4 +114,4 @@ schema.methods.comparePassword = async function (candidatePassword: string): Pro
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export const User = mongoose.model<IUser>(collectionName, schema);
+export const User = mongoose.model<IExtendedUser>(collectionName, schema);

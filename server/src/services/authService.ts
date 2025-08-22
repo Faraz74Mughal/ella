@@ -1,11 +1,12 @@
 import config from '../config/config';
-import { IUser, User } from '../models/user.model';
+import {  User } from '../models/user.model';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { addTimeFromString } from '../utils/helper';
+import { IExtendedUser, IUser } from '../types';
 
 export class AuthServer {
-  static generateToken(user: IUser): string {
-    return jwt.sign(
+  static async generateToken(user: IExtendedUser): Promise<string> {
+    const reJwt = jwt.sign(
       {
         _id: user._id,
         email: user.email,
@@ -16,9 +17,12 @@ export class AuthServer {
         expiresIn: config.jwtExpire as SignOptions['expiresIn'],
       }
     );
+    user.token = reJwt;
+    await user.save({ validateBeforeSave: false });
+    return reJwt;
   }
 
-  static async generateRefreshToken(user: IUser): Promise<void> {
+  static async generateRefreshToken(user: IExtendedUser): Promise<void> {
     const reJwt = jwt.sign(
       {
         _id: user._id,
@@ -33,7 +37,7 @@ export class AuthServer {
     await user.save({ validateBeforeSave: false });
   }
 
-  static async createUser(userData: Partial<IUser>): Promise<IUser> {
+  static async createUser(userData: Partial<IExtendedUser>): Promise<IUser> {
     const user = new User(userData);
     return await user.save();
   }

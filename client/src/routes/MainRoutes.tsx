@@ -1,58 +1,85 @@
 import { createBrowserRouter, redirect } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-import HomePage from "../pages/studentPages/HomePage";
-import SignInPage from "../pages/adminPages/SignInPage";
-import TeacherSignInPage from "../pages/teacherPages/authPages/TeacherSignInPage";
-import TeacherSignUpPage from "../pages/teacherPages/authPages/TeacherSignUpPage";
-import TeacherVerifyUserPage from "@/pages/teacherPages/authPages/TeacherVerifyUserPage";
 import TeacherHomePage from "@/pages/teacherPages/protectedPages/TeacherHomePage";
 import { STORAGE_KEY } from "@/config";
 import {jwtDecode} from "jwt-decode"
+import { EUserRole } from "@/types/userType";
+import AdminHomePage from "@/pages/adminPages/AdminHomePage";
+import SignInPage from "@/pages/commonPages/SignInPage";
+import SignUpForm from "@/pages/commonPages/SignUpPage/SignUpForm";
+import VerifyUserPage from "@/pages/commonPages/VerifyUserPage";
 
-const nonProtectLoader = ( redirectPath: string) => {
-  return () => {
-    const user = localStorage.getItem(STORAGE_KEY);
-    if (user) {
-        return redirect(redirectPath);
-    }
-   
-    return null;
-  };
-};
-
-const protectLoader =(role:string,redirectPath:string)=>()=>{
-  const user = localStorage.getItem(STORAGE_KEY);
-  
-  if (!user )    return redirect(redirectPath);
+const checkAuth =()=>{
+  const user = localStorage.getItem(STORAGE_KEY)
+  if(!user)    return null
   try {
-    
-    if(user){
-      const decodeUser = jwtDecode(user);
-      if((decodeUser as {role:string}).role !== role)return redirect(redirectPath);
-    }
+    return jwtDecode(user) as {role:string}
   } catch (error) {
-    return redirect(redirectPath);
+    return null
   }
-return null   
+  
 }
 
-const teacherLoader = protectLoader("teacher", "/teacher/sign-in");
-const notProtectLoader = nonProtectLoader( "/teacher");
+const nonProtectLoader = () =>()=>{
+  // console.log("nonProtectLoader called with redirectPath:", redirectPath);
+const user = checkAuth();
+  if(user){
+    switch(user.role){
+      case EUserRole.ADMIN:
+        return redirect("/admin")
+        case EUserRole.TEACHER:
+          return redirect("/teacher")
+        case EUserRole.STUDENT:
+          return redirect("/student")
+        default:  
+          return redirect("/")
+    }
+  }
+    return null
+  }
+   
+
+
+const protectLoader =(role:string,redirectPath:string)=>()=>{
+  console.log("protectLoader called with role:", role, "and redirectPath:", redirectPath)
+
+  const user = checkAuth()
+  if(!user||user.role !==role) return redirect(redirectPath)
+  return null  
+}
+
+const teacherLoader = protectLoader("teacher", "/sign-in");
+const notProtectLoader = nonProtectLoader();
 
 const router = createBrowserRouter([
   {
     path: "/",
     children: [
-      {
-        path: "",
-        Component: HomePage,
-       
-      },
+       {
+            path: "sign-in",
+            Component: SignInPage,
+            loader:notProtectLoader
+          },
+          {
+            path: "sign-up",
+            Component: SignUpForm,
+            loader:notProtectLoader
+          },
+          {
+            path: "verify-user",
+            Component: VerifyUserPage,
+            loader:notProtectLoader
+          },
+      
 
       {
         path: "admin",
         children: [
+          {
+            path: "",
+            Component: AdminHomePage,
+          },
           {
             path: "sign-in",
             Component: SignInPage
@@ -67,21 +94,7 @@ const router = createBrowserRouter([
             Component: TeacherHomePage,
             loader:teacherLoader
           },
-          {
-            path: "sign-in",
-            Component: TeacherSignInPage,
-            loader:notProtectLoader
-          },
-          {
-            path: "sign-up",
-            Component: TeacherSignUpPage,
-            loader:notProtectLoader
-          },
-          {
-            path: "verify-user",
-            Component: TeacherVerifyUserPage,
-            loader:notProtectLoader
-          }
+         
         ]
       }
     ]

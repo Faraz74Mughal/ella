@@ -3,7 +3,8 @@ import LoginForm from "./LoginForm";
 import { Link } from "react-router";
 import { FaFacebook, FaGoogle, FaTwitter } from "react-icons/fa6";
 
-const TeacherSignInPage = () => {
+const SignInPage = () => {
+  console.log("LoginForm rendered");
   return (
     <div className="grid grid-cols-5 min-h-screen">
       <section className="hidden lg:block col-span-3">Preview HEre</section>
@@ -14,7 +15,7 @@ const TeacherSignInPage = () => {
           <LoginForm />
           <OrDivider />
           <p>
-            Don't have an account? <Link to="/teacher/sign-up">Sign Up</Link>
+            Don't have an account? <Link to="/sign-up">Sign Up</Link>
           </p>
           <OrDivider />
           <div className="flex gap-4 justify-center">
@@ -28,4 +29,4 @@ const TeacherSignInPage = () => {
   );
 };
 
-export default TeacherSignInPage;
+export default SignInPage;

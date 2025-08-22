@@ -1,13 +1,35 @@
 import { Request } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+
+
+
+export interface IUser extends Document {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  profilePicture: string;
+  isApprove: boolean;
+  isVerified: boolean;
+  lastLogin?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+export interface IExtendedUser extends IUser {
+  password: string;
+  verificationToken: string;
+  verificationTokenExpiry: Date;
+  token: string;
+  refreshToken: string;
+}
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    _id: string | mongoose.Schema.Types.ObjectId;
-    email: string;
-    role: string;
-  };
+  extendedUser?: IExtendedUser;
+  user?: IUser;
 }
 
 export interface ApiResponse<T = any> {
@@ -32,16 +54,11 @@ export enum UserRole {
 }
 
 
-
-
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        _id: string| mongoose.Schema.Types.ObjectId;
-        email: string;
-        role: string;
-      };
+      user?: IUser;
+      extendedUser?: IExtendedUser;
     }
   }
 }

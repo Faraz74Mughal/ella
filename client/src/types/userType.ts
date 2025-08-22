@@ -10,3 +10,9 @@ export type TSignUp = TSignIn & {
 export type TToken = {
   token: string;
 };
+
+export enum EUserRole {
+  ADMIN = 'admin',
+  TEACHER = 'teacher',
+  STUDENT = 'student',
+}
