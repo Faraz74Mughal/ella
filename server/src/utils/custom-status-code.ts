@@ -34,6 +34,16 @@ export const CustomReasonPhrases = {
   613: 'Invalid Refresh Token',
 };
 
+export const CustomStatusCodesReverse: { [key: number]: string } = {};
+Object.entries(CustomStatusCodes).forEach(([key, value]) => {
+  CustomStatusCodesReverse[value] = key;
+});
+
+export const getStatusCodeKey = (code: number): string => {
+  return CustomStatusCodesReverse[code] || 'UNKNOWN_CODE';
+};
+
+
 // Type definitions
 export type CustomStatusCode = keyof typeof CustomStatusCodes;
 export type StatusCodeValue = (typeof CustomStatusCodes)[CustomStatusCode];

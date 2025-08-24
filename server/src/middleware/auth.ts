@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import config from '../config/config';
 import { User } from '../models/user.model';
 import { logger } from '../utils/logger';
-import { StatusCodes } from 'http-status-codes';
+
 import CustomStatusCodes from '../utils/custom-status-code';
 
 export const authenticate = async (
@@ -41,16 +41,21 @@ export const authenticate = async (
     next();
   } catch (error) {
     console.log('Authentication error:', error);
-    sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, 'AUTH ERROR', (error as Error).message);
+    if ((error as Error).message === 'jwt expired') {
+      sendError(res, CustomStatusCodes.TOKEN_EXPIRED, 'AUTH ERROR', (error as Error).message);
+      return
+    }
+    sendError(res, CustomStatusCodes.INTERNAL_SERVER_ERROR, 'AUTH ERROR', (error as Error).message);
   }
 };
 
 export const authorize = (...roles: string[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user || !roles.includes(req.user.role)) {
-      sendError(res, StatusCodes.FORBIDDEN, 'Access denied. Insufficient permissions.');
+      sendError(res, CustomStatusCodes.FORBIDDEN, 'Access denied. Insufficient permissions.');
       return;
     }
     next();
   };
 };
+

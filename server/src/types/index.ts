@@ -7,7 +7,7 @@ import mongoose, { Document } from 'mongoose';
 export interface IUser extends Document {
   _id: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   role: UserRole;
   profilePicture: string;
@@ -20,10 +20,9 @@ export interface IUser extends Document {
 }
 
 export interface IExtendedUser extends IUser {
-  password: string;
+  password?: string;
   verificationToken: string;
   verificationTokenExpiry: Date;
-  token: string;
   refreshToken: string;
 }
 

@@ -1,5 +1,5 @@
-import { TSignIn, TToken } from "@/types/userType";
-import {ServiceAuth as Service} from "../handler";
+import { FacebookJwtPayload, GoogleJwtPayload, TSignIn, TToken } from "@/types/userType";
+import { ServiceAuth as Service } from "../handler";
 
 class AuthService extends Service {
   constructor(name: string) {
@@ -9,6 +9,14 @@ class AuthService extends Service {
   async signIn(data: TSignIn) {
     return await this.post("/sign-in", data, {}, true);
   }
+  
+  async googleSignIn(data: GoogleJwtPayload) {
+    return await this.post("/google-sign-in", data, {}, true);
+  }
+
+   async facebookSignIn(data: FacebookJwtPayload) {
+    return await this.post("/facebook-sign-in", data, {}, true);
+  }
 
   async signUp(data: TSignIn) {
     return await this.post("/sign-up", data, {}, true);
@@ -17,6 +25,13 @@ class AuthService extends Service {
   async verifyUser(data: TToken) {
     return await this.post("/verify-email", data, {}, true);
   }
+
+
+  //  async googleSingInUser(data: TToken) {
+  //   return await this.post("/google-sing-in", data, {}, true);
+  // }
+
+  
 }
 
 const authService = new AuthService("/auth");

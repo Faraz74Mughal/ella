@@ -12,9 +12,13 @@ const authLimiter =  rateLimit({
     message:'Too many authentication attempts, please try again later'
 })
 
-router.post('/sign-up',authLimiter,AuthController.signUp)
-router.post('/sign-in',authLimiter,AuthController.signIn)
+router.post('/sign-up',AuthController.signUp)
+router.post('/sign-in',AuthController.signIn)
 router.post('/resend-verify-email',authLimiter,AuthController.resendVerifyEmail)
 router.post('/verify-email',AuthController.verifyEmail)
+router.post('/refresh-token',AuthController.refreshToken)
+router.post('/google-sign-in',AuthController.googleSignIn)
+router.post('/facebook-sign-in',AuthController.facebookSignIn)
+
 
 export default router

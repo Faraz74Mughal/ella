@@ -1,8 +1,9 @@
 import config from '../config/config';
-import {  User } from '../models/user.model';
+import { User } from '../models/user.model';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { addTimeFromString } from '../utils/helper';
 import { IExtendedUser, IUser } from '../types';
+import { rejects } from 'assert';
 
 export class AuthServer {
   static async generateToken(user: IExtendedUser): Promise<string> {
@@ -17,12 +18,11 @@ export class AuthServer {
         expiresIn: config.jwtExpire as SignOptions['expiresIn'],
       }
     );
-    user.token = reJwt;
-    await user.save({ validateBeforeSave: false });
+
     return reJwt;
   }
 
-  static async generateRefreshToken(user: IExtendedUser): Promise<void> {
+  static async generateRefreshToken(user: IExtendedUser): Promise<string> {
     const reJwt = jwt.sign(
       {
         _id: user._id,
@@ -35,6 +35,7 @@ export class AuthServer {
 
     user.refreshToken = reJwt;
     await user.save({ validateBeforeSave: false });
+    return reJwt;
   }
 
   static async createUser(userData: Partial<IExtendedUser>): Promise<IUser> {
@@ -80,7 +81,12 @@ export class AuthServer {
     return obj;
   }
 
-  static verifyToken(token: string): boolean {
-    return jwt.verify(token, config.verifyTokenSecret) ? true : false;
+  static verifyToken(token: string,key:string): boolean {
+    try {
+      jwt.verify(token, key);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

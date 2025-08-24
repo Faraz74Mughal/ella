@@ -10,7 +10,7 @@ class Service {
 
   async get(url: string, headers?: object, isToasterShow: boolean = false) {
     try {
-      const response = await api.get(`${this.name}/${url}`, {
+      const response = await api.get(`${this.name}${url}`, {
         headers: {
           ...headers
         }
@@ -52,12 +52,12 @@ class Service {
   ) {
     try {
       try {
-        const response = await api.post(`${this.name}/${url}`, data, {
+        const response = await api.post(`${this.name}${url}`, data, {
           headers: {
             ...headers
           }
         });
-        console.log("wresponse", response, url, data, headers, isToasterShow);
+        
 
         if (isToasterShow) {
           this.toastMessage(
@@ -102,7 +102,7 @@ class Service {
     isToasterShow: boolean = false
   ) {
     try {
-      const response = await api.patch(`${this.name}/${url}`, data, {
+      const response = await api.patch(`${this.name}${url}`, data, {
         headers: {
           ...headers
         }
@@ -139,7 +139,7 @@ class Service {
 
   async delete(url: string, headers?: object, isToasterShow: boolean = false) {
     try {
-      const response = await api.delete(`${this.name}/${url}`, {
+      const response = await api.delete(`${this.name}${url}`, {
         headers: {
           ...headers
         }
@@ -192,7 +192,7 @@ class ServiceAuth {
 
   async get(url: string, headers?: object, isToasterShow: boolean = false) {
     try {
-      const response = await apiAuth.get(`${this.name}/${url}`, {
+      const response = await apiAuth.get(`${this.name}${url}`, {
         headers: {
           ...headers
         }
@@ -233,7 +233,7 @@ class ServiceAuth {
     isToasterShow: boolean = false
   ) {
     try {
-      const response = await apiAuth.post(`${this.name}/${url}`, data, {
+      const response = await apiAuth.post(`${this.name}${url}`, data, {
         headers: {
           ...headers
         }
@@ -275,7 +275,7 @@ class ServiceAuth {
     isToasterShow: boolean = false
   ) {
     try {
-      const response = await apiAuth.patch(`${this.name}/${url}`, data, {
+      const response = await apiAuth.patch(`${this.name}${url}`, data, {
         headers: {
           ...headers
         }

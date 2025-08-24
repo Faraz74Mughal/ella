@@ -4,8 +4,6 @@ import bcrypt from 'bcryptjs';
 
 const collectionName = 'User';
 
-
-
 const schema = new Schema<IExtendedUser>(
   {
     firstName: {
@@ -16,7 +14,6 @@ const schema = new Schema<IExtendedUser>(
     },
     lastName: {
       type: String,
-      required: [true, 'Last name is required'],
       trim: true,
       minlength: [3, 'Last name must be at least 3 characters long'],
     },
@@ -37,7 +34,6 @@ const schema = new Schema<IExtendedUser>(
 
     password: {
       type: String,
-      required: [true, 'Password is required.'],
       minlength: [8, 'Password must be at least 8 characters long.'],
       validate: {
         validator: function (value: string) {
@@ -78,10 +74,6 @@ const schema = new Schema<IExtendedUser>(
       type: Date,
       default: null,
     },
-    token: {
-      type: String,
-      select: false,
-    },
     refreshToken: {
       type: String,
       select: false,
@@ -105,12 +97,13 @@ const schema = new Schema<IExtendedUser>(
 schema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(this.password!, 12);
   next();
 });
 
 // Compare password method
 schema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+  if (!candidatePassword || !this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
 };
 

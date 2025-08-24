@@ -10,6 +10,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useSignUp } from "@/services/queries/teacherQueries/auth.queries";
 import { TSignUp } from "@/types/userType";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 const initialValue: TSignUp = {
   firstName: "",
@@ -23,11 +24,14 @@ const SignUpForm = () => {
 
   const { mutate: signUpMutate, data: signUpData } = useSignUp();
   console.log("signUpData", signUpData);
+  const navigate = useNavigate()
 
   const loginFormHandler = (values: TSignUp) => {
-    // signUpMutate(values,{onSuccess:(response)=>{
-    //   if(response?.s)
-    // }});
+    signUpMutate(values,{onSuccess:(response)=>{
+      if(response?.success){
+        navigate("/sign-in")
+      }
+    }});
   };
 
   return (

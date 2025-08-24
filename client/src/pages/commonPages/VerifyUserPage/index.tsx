@@ -13,7 +13,7 @@ const VerifyUserPage = () => {
       { token: token },
       {
         onSuccess: () => {
-            navigate("/teacher/sign-in");
+            navigate("/sign-in");
         },
       }
     );

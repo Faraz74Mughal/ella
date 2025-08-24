@@ -6,6 +6,7 @@ import { emailService } from '../services/emailSevice';
 import { User } from '../models/user.model';
 import { IExtendedUser } from '../types';
 import CustomStatusCodes from '../utils/custom-status-code';
+import config from '../config/config';
 
 export class AuthController {
   static async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -26,7 +27,7 @@ export class AuthController {
       });
 
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-      const hrf = `http://localhost:5173/teacher/verify-user?token=${verificationToken}`;
+      const hrf = `http://localhost:5173/verify-user?token=${verificationToken}`;
       emailService.sendVerifyEmail(`${firstName} ${lastName}`, email, hrf);
 
       logger.info(`New user registered: ${email}`);
@@ -53,13 +54,19 @@ export class AuthController {
   static async signIn(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
-      const user = await AuthServer.findUserEmail(email);
+      const user: IExtendedUser = (await AuthServer.findUserEmail(email)) as IExtendedUser;
       if (!user) {
         sendError(res, CustomStatusCodes.NOT_FOUND, 'Invalid credentials');
         return;
       }
 
+      if (!user.password) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Invalid password');
+        return;
+      }
       const comparePassword = user.comparePassword(password);
+      console.log('CHEC', comparePassword);
+
       if (!comparePassword) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Invalid password');
         return;
@@ -72,7 +79,7 @@ export class AuthController {
 
       await AuthServer.updateLastLogin(user._id);
       const token = await AuthServer.generateToken(user as IExtendedUser);
-      await AuthServer.generateRefreshToken(user as IExtendedUser);
+      const refreshToken = await AuthServer.generateRefreshToken(user as IExtendedUser);
       logger.info(`User logged in: ${email}`);
 
       sendResponse(res, CustomStatusCodes.OK, true, 'User Login successfully', {
@@ -83,8 +90,123 @@ export class AuthController {
           email: user.email,
         },
         token,
+        refreshToken,
       });
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static async googleSignIn(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { given_name, family_name, picture, email, role } = req.body;
+      let user = await AuthServer.findUserEmail(email);
+      if (!user) {
+        user = await AuthServer.createUser({
+          firstName: given_name,
+          lastName: family_name,
+          email,
+          profilePicture: picture,
+          isVerified: true,
+          role: role || 'student',
+        });
+      }
+
+      if (!user) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
+        return;
+      }
+      await AuthServer.updateLastLogin(user?._id);
+
+      const token = await AuthServer.generateToken(user as IExtendedUser);
+      const refreshToken = await AuthServer.generateRefreshToken(user as IExtendedUser);
+      logger.info(`User logged in: ${email}`);
+
+      sendResponse(res, CustomStatusCodes.OK, true, 'User Login successfully', {
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          isVerified: true,
+        },
+        token,
+        refreshToken,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async facebookSignIn(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = req.body;
+
+      let user = await AuthServer.findUserEmail(body.email);
+      if (!user) {
+        user = await AuthServer.createUser({
+          ...body,
+        });
+      }
+
+      if (!user) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
+        return;
+      }
+      await AuthServer.updateLastLogin(user?._id);
+
+      const token = await AuthServer.generateToken(user as IExtendedUser);
+      const refreshToken = await AuthServer.generateRefreshToken(user as IExtendedUser);
+      logger.info(`User logged in: ${body.email}`);
+
+      sendResponse(res, CustomStatusCodes.OK, true, 'User Login successfully', {
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        },
+        token,
+        refreshToken,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async refreshToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      logger.error('REF', refreshToken);
+
+      const verify = AuthServer.verifyToken(refreshToken, config.refreshTokenSecret);
+      if (!verify) {
+        sendError(res, CustomStatusCodes.REFRESH_TOKEN_EXPIRED, 'Token Expired.');
+        return;
+      }
+
+      logger.warn(`verify token: ${verify}`);
+      const user = await User.findOne({ refreshToken: refreshToken });
+      if (!user) {
+        sendError(res, CustomStatusCodes.NO_REFRESH_TOKEN, 'User not found with this token.');
+        return;
+      }
+
+      const accessToken = await AuthServer.generateToken(user as IExtendedUser);
+      const newRefreshToken = await AuthServer.generateRefreshToken(user as IExtendedUser);
+
+      user.refreshToken = newRefreshToken;
+      await user.save({ validateBeforeSave: false });
+
+      logger.info(`User logged in: ${user.email}`);
+
+      sendResponse(res, CustomStatusCodes.OK, true, 'User Login successfully', {
+        token: accessToken,
+        refreshToken: newRefreshToken,
+      });
+    } catch (error) {
+      console.log('ERRs', error);
+
       next(error);
     }
   }
@@ -102,7 +224,7 @@ export class AuthController {
         return;
       }
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-      const hrf = `http://localhost:5173/teacher/verify-user?token=${verificationToken}`;
+      const hrf = `http://localhost:5173/verify-user?token=${verificationToken}`;
       emailService.sendVerifyEmail(`${user.firstName} ${user.lastName}`, email, hrf);
 
       logger.info(`Email re send to user: ${email}`);
@@ -247,7 +369,7 @@ export class AuthController {
         sendError(res, CustomStatusCodes.NO_TOKEN, 'Some thing went wrong.');
         return;
       }
-      const isVerified = AuthServer.verifyToken(token);
+      const isVerified = AuthServer.verifyToken(token, config.verifyTokenSecret);
       if (!isVerified) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');
         return;

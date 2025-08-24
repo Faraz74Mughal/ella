@@ -11,19 +11,48 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((req) => {
-  req.headers.Authorization = `Bearer ${localStorage.getItem(STORAGE_KEY)}`;
+  req.headers.Authorization = `Bearer ${
+    JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"token":null}').token
+  }`;
   return req;
 });
 
 api.interceptors.response.use(
   (res) => res,
-  (error) => {
+  async (error) => {
     try {
-      console.log("Request Interceptor error", error);
       const errorResponse = (error as AxiosError).response?.data as {
         code: number;
       };
-      console.log(".status", errorResponse?.code);
+      const getToken = localStorage.getItem(STORAGE_KEY);
+      const refreshToken = getToken ? JSON.parse(getToken).refreshToken : null;
+      const original = error.config;
+
+      if (errorResponse?.code === CustomStatusCodes.TOKEN_EXPIRED) {
+        await axios
+          .post(`${SERVER_PATH_API}/auth/refresh-token`, { refreshToken })
+          .then((res) => {
+            if (res.data.success) {
+              localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                  token: res.data.data?.token,
+                  refreshToken: res.data.data?.refreshToken
+                })
+              );
+              original.headers.Authorization = `Bearer ${res.data.data?.token}`;
+              return api.request(original);
+            }
+
+            if (!res.data.success) {
+              localStorage.removeItem(STORAGE_KEY);
+              window.location.href = "/sign-in";
+              return Promise.reject(new Error("Token refresh failed"));
+            }
+            return Promise.reject(new Error("Token refresh failed"));
+          });
+      }
+
       if (
         errorResponse?.code === CustomStatusCodes.NO_TOKEN ||
         errorResponse?.code === CustomStatusCodes.INVALID_TOKEN
@@ -32,12 +61,17 @@ api.interceptors.response.use(
         window.location.href = "/sign-in";
       }
     } catch (error) {
-      console.log("THERE", error);
-
-      // if(errorResponse?.code === 417) {
-      //   localStorage.removeItem(STORAGE_KEY);
-      //   window.location.href = "/teacher/sign-in";
-      // }
+    
+      if (
+        ((error as AxiosError).response?.data as { code: number })?.code ===
+          CustomStatusCodes.REFRESH_TOKEN_EXPIRED ||
+        ((error as AxiosError).response?.data as { code: number })?.code ===
+          CustomStatusCodes.NO_REFRESH_TOKEN
+      ) {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.href = "/sign-in";
+      }
+     
     }
 
     return Promise.reject(error);

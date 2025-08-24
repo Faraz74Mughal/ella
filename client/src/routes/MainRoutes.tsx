@@ -9,12 +9,14 @@ import AdminHomePage from "@/pages/adminPages/AdminHomePage";
 import SignInPage from "@/pages/commonPages/SignInPage";
 import SignUpForm from "@/pages/commonPages/SignUpPage/SignUpForm";
 import VerifyUserPage from "@/pages/commonPages/VerifyUserPage";
+import StudentHomePage from "@/pages/studentPages/StudentHomePage";
 
 const checkAuth =()=>{
-  const user = localStorage.getItem(STORAGE_KEY)
-  if(!user)    return null
+  const getUser = localStorage.getItem(STORAGE_KEY)
+  const token = getUser? JSON.parse(getUser).token : null
+  if(!token)    return null
   try {
-    return jwtDecode(user) as {role:string}
+    return jwtDecode(token) as {role:string}
   } catch (error) {
     return null
   }
@@ -50,6 +52,7 @@ const protectLoader =(role:string,redirectPath:string)=>()=>{
 }
 
 const teacherLoader = protectLoader("teacher", "/sign-in");
+const studentLoader = protectLoader("student", "/sign-in");
 const notProtectLoader = nonProtectLoader();
 
 const router = createBrowserRouter([
@@ -93,6 +96,16 @@ const router = createBrowserRouter([
             path: "",
             Component: TeacherHomePage,
             loader:teacherLoader
+          },
+         
+        ]
+      },{
+        path: "student",
+        children: [
+          {
+            path: "",
+            Component: StudentHomePage,
+            loader:studentLoader
           },
          
         ]
