@@ -12,3 +12,7 @@ export const GOOGLE_AUTH_USER_INFO_LINK =
   "https://www.googleapis.com/oauth2/v3/userinfo";
 
 export const FACEBOOK_AUTH_ID = import.meta.env.VITE_FACEBOOK_AUTH_ID;
+export const GITHUB_AUTH_ID = import.meta.env.VITE_GITHUB_AUTH_ID
+export const GITHUB_AUTH_CLIENT_SECRET = import.meta.env.VITE_GITHUB_AUTH_CLIENT_SECRET
+
+

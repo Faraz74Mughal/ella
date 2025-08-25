@@ -1,9 +1,9 @@
 import OrDivider from "@/components/common/OrDivider";
 import LoginForm from "./LoginForm";
 import { Link } from "react-router";
-import {  FaGoogle, FaTwitter } from "react-icons/fa6";
 import GoogleAuth from "@/components/auth/GoogleAuth";
 import FacebookAuth from "@/components/auth/FacebookAuth";
+import GithubAuth from "@/components/auth/GithubAuth";
 const SignInPage = () => {
   console.log("LoginForm rendered");
   return (
@@ -22,8 +22,7 @@ const SignInPage = () => {
           <div className="flex gap-4 justify-center">
             <GoogleAuth/>
             <FacebookAuth/>
-            <FaTwitter/>
-            <FaGoogle/>
+            <GithubAuth/>
           </div>
         </div>
       </section>
