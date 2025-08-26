@@ -1,6 +1,11 @@
 import { STORAGE_KEY } from "@/config";
 import authService from "@/services/api/teacherApi/auth.service";
-import { FacebookJwtPayload, GoogleJwtPayload, TSignIn, TToken } from "@/types/userType";
+import {
+  FacebookJwtPayload,
+  GoogleJwtPayload,
+  TSignIn,
+  TToken
+} from "@/types/userType";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
@@ -25,7 +30,8 @@ export const useSignIn = () => {
 export const useGoogleSignIn = () => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: async (data: GoogleJwtPayload) => await authService.googleSignIn(data),
+    mutationFn: async (data: GoogleJwtPayload) =>
+      await authService.googleSignIn(data),
     onSuccess: (response) => {
       if (response.success) {
         const data = JSON.stringify({
@@ -40,11 +46,21 @@ export const useGoogleSignIn = () => {
   });
 };
 
+// export const useGithubTokenExchange = () => {
+//   return useMutation({
+//     mutationFn: async (data: { code: string }) =>
+//       await authService.githubTokenExchange(data),
+//     onSuccess: (response) => {
+//       return response;
+//     }
+//   });
+// };
 
 export const useFacebookSignIn = () => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: async (data: FacebookJwtPayload) => await authService.facebookSignIn(data),
+    mutationFn: async (data: FacebookJwtPayload) =>
+      await authService.facebookSignIn(data),
     onSuccess: (response) => {
       if (response.success) {
         const data = JSON.stringify({
@@ -58,7 +74,6 @@ export const useFacebookSignIn = () => {
     }
   });
 };
-
 
 export const useSignUp = () => {
   return useMutation({

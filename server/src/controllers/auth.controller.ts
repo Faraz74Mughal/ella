@@ -7,6 +7,7 @@ import { User } from '../models/user.model';
 import { IExtendedUser } from '../types';
 import CustomStatusCodes from '../utils/custom-status-code';
 import config from '../config/config';
+import axios from 'axios';
 
 export class AuthController {
   static async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -172,6 +173,50 @@ export class AuthController {
     } catch (error) {
       next(error);
     }
+  }
+
+  static async githubTokenExchange(req: Request, res: Response, next: NextFunction) {
+    const { code } = req.body;
+    if (!code) {
+      sendError(res, CustomStatusCodes.BAD_REQUEST, 'Authorization code is required');
+      return;
+    }
+
+    try {
+      const tokenResponse = await axios.post(
+        'https://github.com/login/oauth/access_token',
+        {
+          client_id: config.githubAuthId,
+          client_secret: config.githubAuthClientSecret,
+          code: code,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+          },
+        }
+      );
+
+      const { access_token, error } = tokenResponse.data;
+      if (error) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, tokenResponse.data.error_description);
+        return;
+      }
+
+      const userResponse = await axios.get('https://api.github.com/user', {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      });
+
+      sendResponse(
+        res,
+        CustomStatusCodes.OK,
+        true,
+        'Github data fetch successfully',
+        userResponse.data
+      );
+    } catch (error) {}
   }
 
   static async refreshToken(req: Request, res: Response, next: NextFunction) {

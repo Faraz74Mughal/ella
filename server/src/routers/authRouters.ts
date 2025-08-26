@@ -19,6 +19,7 @@ router.post('/verify-email',AuthController.verifyEmail)
 router.post('/refresh-token',AuthController.refreshToken)
 router.post('/google-sign-in',AuthController.googleSignIn)
 router.post('/facebook-sign-in',AuthController.facebookSignIn)
+router.post('/github-token-exchange',AuthController.githubTokenExchange)
 
 
 export default router

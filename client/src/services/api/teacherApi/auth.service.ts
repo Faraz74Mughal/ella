@@ -22,6 +22,10 @@ class AuthService extends Service {
     return await this.post("/sign-up", data, {}, true);
   }
 
+  // async githubTokenExchange(data:{code:string}){
+  //   return await this.post('/github-token-exchange',{...data})
+  // }
+
   async verifyUser(data: TToken) {
     return await this.post("/verify-email", data, {}, true);
   }

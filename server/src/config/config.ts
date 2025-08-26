@@ -16,7 +16,9 @@ interface Config {
   companyPhone: string;
   verifyTokenSecret: string;
   verifyTokenExpire: string;
-  refreshTokenSecret:string;
+  refreshTokenSecret: string;
+  githubAuthId: string;
+  githubAuthClientSecret: String;
 }
 
 const config: Config = {
@@ -34,6 +36,8 @@ const config: Config = {
   verifyTokenSecret: process.env.VERIFY_TOKEN_SECRET || '',
   verifyTokenExpire: process.env.VERIFY_TOKEN_EXPIRE || '',
   refreshTokenSecret: process.env.RE_JWT_SECRET || '',
+  githubAuthId: process.env.GITHUB_AUTH_ID || '',
+  githubAuthClientSecret: process.env.GITHUB_AUTH_CLIENT_SECRET || '',
 };
 
 export default config;
