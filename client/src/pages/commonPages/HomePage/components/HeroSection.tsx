@@ -12,13 +12,13 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <a
-              href="#"
+              href="/sign-in"
               className="bg-white text-primary px-6 py-3 rounded-lg font-semibold text-center hover:bg-gray-100 transition"
             >
               Start Learning Free
             </a>
             <a
-              href="#"
+              href="/sign-in"
               className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-white hover:bg-opacity-10 transition"
             >
               Explore Features

@@ -1,7 +1,6 @@
-
 const CommonFooter = () => {
   return (
-    <footer className="bg-dark text-white py-12">
+    <footer className="bg-dark bg-card border-t border-t-border  ">
       <div className="container mx-auto px-4">
         {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
@@ -141,7 +140,7 @@ const CommonFooter = () => {
                 </div>
               </div>
             </div> */}
-        <div className="border-t border-gray-800 mt-0 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="mt-0 py-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400">
             © 2023 LinguaLearn. All rights reserved.
           </p>

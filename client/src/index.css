@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 .text {
-  color: oklch(84.416% 0.17209 84.936);
+  color: oklch(97.015% 0.00011 271.152);
 }
 @theme {
   --color-primary-deep: #2c5c9c;
@@ -64,7 +64,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background:oklch(97.015% 0.00011 271.152);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
