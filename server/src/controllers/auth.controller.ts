@@ -117,6 +117,11 @@ export class AuthController {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
         return;
       }
+
+      if (user?.role !== role) {
+        sendError(res, CustomStatusCodes.UNAUTHORIZED, 'User is unauthorized.');
+        return;
+      }
       await AuthServer.updateLastLogin(user?._id);
 
       const token = await AuthServer.generateToken(user as IExtendedUser);
@@ -152,6 +157,12 @@ export class AuthController {
 
       if (!user) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
+        return;
+      }
+console.log('user?.role !== body.role',user?.role , body.role);
+
+      if (user?.role !== body.role) {
+        sendError(res, CustomStatusCodes.UNAUTHORIZED, 'User is unauthorized.');
         return;
       }
       await AuthServer.updateLastLogin(user?._id);

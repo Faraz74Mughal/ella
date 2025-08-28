@@ -7,12 +7,12 @@ import { jwtDecode } from "jwt-decode";
 import { EUserRole } from "@/types/userType";
 import AdminHomePage from "@/pages/adminPages/AdminHomePage";
 import SignInPage from "@/pages/commonPages/SignInPage";
-import SignUpForm from "@/pages/commonPages/SignUpPage/SignUpForm";
 import VerifyUserPage from "@/pages/commonPages/VerifyUserPage";
 import StudentHomePage from "@/pages/studentPages/StudentHomePage";
 import GithubCodePage from "@/pages/commonPages/GithubCodePage/GithubCodePage";
 import HomePage from "@/pages/commonPages/HomePage";
 import CommonLayer from "@/components/layers/CommonLayer";
+import SignUpPage from "@/pages/commonPages/SignUpPage";
 
 const checkAuth = () => {
   const getUser = localStorage.getItem(STORAGE_KEY);
@@ -90,8 +90,13 @@ const router = createBrowserRouter([
       },
       {
         path: "sign-up",
-        Component: SignUpForm,
-        loader: notProtectLoader
+        // Component: SignUpPage,
+        loader: notProtectLoader,
+         element: (
+          <CommonLayer>
+            <SignUpPage />
+          </CommonLayer>
+        )
       },
       {
         path: "verify-user",
