@@ -12,8 +12,10 @@ import compression from "compression";
 import morgan from "morgan"
 
 
-import authRoutes from './routers/authRouters'
-import userRoutes from './routers/userRouters'
+import authRoutes from './routers/auth.routes'
+import userRoutes from './routers/user.routes'
+import lessonRoutes from './routers/lesson.routes'
+
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import { connectionDatabase } from "./config/database";
 import { logger } from "./utils/logger";
@@ -76,6 +78,7 @@ class Server{
 
     this.app.use('/api/auth',authRoutes)
     this.app.use('/api/users',userRoutes)
+    this.app.use('/api/lessons',lessonRoutes)
 
     this.app.use('/.*/',notFound)
 

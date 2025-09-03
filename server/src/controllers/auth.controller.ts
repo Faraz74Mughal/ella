@@ -3,8 +3,8 @@ import { AuthServer } from '../services/authService';
 import { sendError, sendResponse } from '../utils/response';
 import { logger } from '../utils/logger';
 import { emailService } from '../services/emailSevice';
-import { User } from '../models/user.model';
-import { IExtendedUser } from '../types';
+import { UserModel } from '../models/user.model';
+import { IExtendedUser } from '../interface/userInterface';
 import CustomStatusCodes from '../utils/custom-status-code';
 import config from '../config/config';
 import axios from 'axios';
@@ -159,7 +159,6 @@ export class AuthController {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
         return;
       }
-console.log('user?.role !== body.role',user?.role , body.role);
 
       if (user?.role !== body.role) {
         sendError(res, CustomStatusCodes.UNAUTHORIZED, 'User is unauthorized.');
@@ -242,7 +241,7 @@ console.log('user?.role !== body.role',user?.role , body.role);
       }
 
       logger.warn(`verify token: ${verify}`);
-      const user = await User.findOne({ refreshToken: refreshToken });
+      const user = await UserModel.findOne({ refreshToken: refreshToken });
       if (!user) {
         sendError(res, CustomStatusCodes.NO_REFRESH_TOKEN, 'User not found with this token.');
         return;
@@ -310,7 +309,7 @@ console.log('user?.role !== body.role',user?.role , body.role);
         sendError(res, CustomStatusCodes.ACCOUNT_ALREADY_VERIFIED, 'User already verified.');
         return;
       }
-      const user = await User.findOneAndUpdate(
+      const user = await UserModel.findOneAndUpdate(
         { email: obj.email },
         {
           $set: {
@@ -393,7 +392,7 @@ console.log('user?.role !== body.role',user?.role , body.role);
         sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, 'User not verified.');
         return;
       }
-      const user = await User.findOneAndUpdate(
+      const user = await UserModel.findOneAndUpdate(
         { email: obj.email },
         {
           $set: {
@@ -431,7 +430,7 @@ console.log('user?.role !== body.role',user?.role , body.role);
         return;
       }
 
-      const find = await User.findOne({ email: email, verificationToken: token });
+      const find = await UserModel.findOne({ email: email, verificationToken: token });
 
       if (!find) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');

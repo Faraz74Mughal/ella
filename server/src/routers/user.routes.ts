@@ -1,7 +1,7 @@
 import express from "express"
 import {  authenticate, authorize } from "../middleware/auth"
 import { UserController } from "../controllers/user.controller"
-import { UserRole } from "../types"
+import { UserRole } from "../interface/userInterface"
 
 const router =  express.Router()
 

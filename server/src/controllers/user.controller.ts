@@ -1,8 +1,8 @@
 import { NextFunction, Response, Request } from 'express';
 import { sendError, sendResponse } from '../utils/response';
 import { logger } from '../utils/logger';
-import { User } from '../models/user.model';
-import { IUser } from '../types';
+import { UserModel } from '../models/user.model';
+import { IUser } from '../interface/userInterface';
 import CustomStatusCodes from '../utils/custom-status-code';
 
 export class UserController {
@@ -30,7 +30,7 @@ export class UserController {
         return;
       }
 
-      await User.findByIdAndUpdate(user._id, { refreshToken: null });
+      await UserModel.findByIdAndUpdate(user._id, { refreshToken: null });
       logger.info(`User sign out successfully: ${user.email}`);
       sendResponse(res, CustomStatusCodes.OK, true, 'User sign out successfully.', null);
     } catch (error) {

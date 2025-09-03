@@ -1,8 +1,8 @@
 import config from '../config/config';
-import { User } from '../models/user.model';
+import { UserModel } from '../models/user.model';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { addTimeFromString } from '../utils/helper';
-import { IExtendedUser, IUser } from '../types';
+import { IExtendedUser, IUser } from '../interface/userInterface';
 import { rejects } from 'assert';
 
 export class AuthServer {
@@ -39,17 +39,17 @@ export class AuthServer {
   }
 
   static async createUser(userData: Partial<IExtendedUser>): Promise<IUser> {
-    const user = new User(userData);
+    const user = new UserModel(userData);
     return await user.save();
   }
 
   static async findUserEmail(email: string): Promise<IUser | null> {
     // return await User.findOne({email,isActive:true}).select('+password');
-    return await User.findOne({ email }).select('+password');
+    return await UserModel.findOne({ email }).select('+password');
   }
 
   static async updateLastLogin(userId: string): Promise<void> {
-    await User.findByIdAndUpdate(userId, { lastLogin: new Date() });
+    await UserModel.findByIdAndUpdate(userId, { lastLogin: new Date() });
   }
 
   static async createVerifyToken(userId: string, email: string): Promise<string> {
@@ -64,7 +64,7 @@ export class AuthServer {
     );
     // verificationToken;
     const verificationTokenExpiry = addTimeFromString(config.verifyTokenExpire);
-    await User.findByIdAndUpdate(userId, { verificationToken: token, verificationTokenExpiry });
+    await UserModel.findByIdAndUpdate(userId, { verificationToken: token, verificationTokenExpiry });
 
     return token;
   }

@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { IExtendedUser, UserRole } from '../types';
+import { IExtendedUser, UserRole } from '../interface/userInterface';
 import bcrypt from 'bcryptjs';
 
 const collectionName = 'User';
@@ -107,4 +107,4 @@ schema.methods.comparePassword = async function (candidatePassword: string): Pro
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export const User = mongoose.model<IExtendedUser>(collectionName, schema);
+export const UserModel = mongoose.model<IExtendedUser>(collectionName, schema);

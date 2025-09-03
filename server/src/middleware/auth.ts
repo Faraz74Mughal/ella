@@ -1,9 +1,9 @@
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest, IExtendedUser, IUser, UserPayload } from '../types';
+import { AuthenticatedRequest, IExtendedUser, IUser, UserPayload } from '../interface/userInterface';
 import { sendError } from '../utils/response';
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
-import { User } from '../models/user.model';
+import { UserModel } from '../models/user.model';
 import { logger } from '../utils/logger';
 
 import CustomStatusCodes from '../utils/custom-status-code';
@@ -28,7 +28,7 @@ export const authenticate = async (
       return;
     }
 
-    const user = await User.findById(decoded._id).select('+password');
+    const user = await UserModel.findById(decoded._id).select('+password');
 
     if (!user) {
       sendError(res, CustomStatusCodes.INVALID_TOKEN, 'User not found.');

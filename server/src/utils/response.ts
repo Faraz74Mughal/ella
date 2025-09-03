@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { ApiResponse } from '../types';
+import { ApiResponse } from '../interface/userInterface';
 // import { StatusCodes } from 'http-status-codes';
 import  CustomStatusCodes, { getStatusCodeKey, getStatusText } from './custom-status-code';
 
