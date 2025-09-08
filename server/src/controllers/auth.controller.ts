@@ -4,15 +4,15 @@ import { sendError, sendResponse } from '../utils/response';
 import { logger } from '../utils/logger';
 import { emailService } from '../services/emailSevice';
 import { UserModel } from '../models/user.model';
-import { IExtendedUser } from '../interface/userInterface';
 import CustomStatusCodes from '../utils/custom-status-code';
 import config from '../config/config';
 import axios from 'axios';
+import { IExtendedUser } from '../interface/userInterface';
 
 export class AuthController {
   static async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { firstName, lastName, email, password } = req.body;
+      const { firstName, lastName, email, password, role } = req.body;
 
       const existingUser = await AuthServer.findUserEmail(email);
       if (existingUser) {
@@ -25,6 +25,8 @@ export class AuthController {
         lastName,
         email,
         password,
+        isApprove: role === 'teacher' ? false : true,
+        role: role,
       });
 
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
@@ -65,8 +67,7 @@ export class AuthController {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Invalid password');
         return;
       }
-      const comparePassword = user.comparePassword(password);
-      console.log('CHEC', comparePassword);
+      const comparePassword = await user.comparePassword(password);
 
       if (!comparePassword) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Invalid password');
@@ -78,6 +79,10 @@ export class AuthController {
         return;
       }
 
+      if (!user.isApprove) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Your account is pending admin approval.');
+        return;
+      }
       await AuthServer.updateLastLogin(user._id);
       const token = await AuthServer.generateToken(user as IExtendedUser);
       const refreshToken = await AuthServer.generateRefreshToken(user as IExtendedUser);
@@ -109,12 +114,32 @@ export class AuthController {
           email,
           profilePicture: picture,
           isVerified: true,
+          isApprove: role === 'teacher' ? false : true,
           role: role || 'student',
         });
+        if (role === 'teacher') {
+          sendResponse(
+            res,
+            CustomStatusCodes.OK,
+            true,
+            'You are sign in as teacher. Your teacher account is pending admin approval.'
+          );
+          return;
+        }
       }
 
       if (!user) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
+        return;
+      }
+
+      if (!user.isVerified) {
+        sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, 'User is not verified.');
+        return;
+      }
+
+      if (!user.isApprove) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Your account is pending admin approval.');
         return;
       }
 
@@ -152,11 +177,31 @@ export class AuthController {
       if (!user) {
         user = await AuthServer.createUser({
           ...body,
+          isApprove: body.role === 'teacher' ? false : true,
         });
+        if (body.role === 'teacher') {
+          sendResponse(
+            res,
+            CustomStatusCodes.OK,
+            true,
+            'You are sign in as teacher. Your teacher account is pending admin approval.'
+          );
+          return;
+        }
       }
 
       if (!user) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Singing in with google is failed.');
+        return;
+      }
+
+      if (!user.isVerified) {
+        sendError(res, CustomStatusCodes.ACCOUNT_NOT_VERIFIED, 'User is not verified.');
+        return;
+      }
+
+      if (!user.isApprove) {
+        sendError(res, CustomStatusCodes.BAD_REQUEST, 'Your account is pending admin approval.');
         return;
       }
 
@@ -234,7 +279,7 @@ export class AuthController {
       const { refreshToken } = req.body;
       logger.error('REF', refreshToken);
 
-      const verify = AuthServer.verifyToken(refreshToken, config.refreshTokenSecret);
+      const verify =await AuthServer.verifyToken(refreshToken, config.refreshTokenSecret);
       if (!verify) {
         sendError(res, CustomStatusCodes.REFRESH_TOKEN_EXPIRED, 'Token Expired.');
         return;
@@ -350,12 +395,8 @@ export class AuthController {
       }
 
       const verificationToken = await AuthServer.createVerifyToken(user._id, email);
-
-      emailService.sendForgotPasswordEmail(
-        `${user.firstName} ${user.lastName}`,
-        email,
-        verificationToken
-      );
+      const hrf = `http://localhost:5173/create-new-password?token=${verificationToken}`;
+      emailService.sendForgotPasswordEmail(`${user.firstName} ${user.lastName}`, email, hrf);
 
       logger.info(`Email re send to user: ${email}`);
 
@@ -418,30 +459,39 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { oldPassword, newPassword, email } = req.body;
-      const token = req.header('Authorization')?.replace('Bearer ', '');
+      const { confirmPassword, newPassword, token } = req.body;
+      // const token = req.header('Authorization')?.replace('Bearer ', '');
+      if (confirmPassword !== newPassword) {
+        sendError(
+          res,
+          CustomStatusCodes.BAD_REQUEST,
+          'New password and confirm password do not match.'
+        );
+        return;
+      }
       if (!token || token?.trim() == 'null') {
         sendError(res, CustomStatusCodes.NO_TOKEN, 'Some thing went wrong.');
         return;
       }
-      const isVerified = AuthServer.verifyToken(token, config.verifyTokenSecret);
+      const isVerified =await AuthServer.verifyToken(token, config.verifyTokenSecret);
       if (!isVerified) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');
         return;
       }
-
-      const find = await UserModel.findOne({ email: email, verificationToken: token });
+      const decryptToken =await AuthServer.decryptToken(token);
+      const find = await UserModel.findOne({ email: decryptToken.email, verificationToken: token });
 
       if (!find) {
         sendError(res, CustomStatusCodes.BAD_REQUEST, 'Link is expired.');
         return;
       }
+      find.verificationToken = '';
       find.password = newPassword;
-      find.save();
+      await find.save();
 
-      logger.info(`User password update successfully.: ${email}`);
+      logger.info(`User password update successfully.: ${decryptToken.email}`);
 
-      sendResponse(res, CustomStatusCodes.OK, true, 'Forgot password link successfully verified.', {
+      sendResponse(res, CustomStatusCodes.OK, true, 'Forgot password link successfully update.', {
         find,
       });
     } catch (error) {

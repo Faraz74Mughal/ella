@@ -30,7 +30,14 @@ class AuthService extends Service {
     return await this.post("/verify-email", data, {}, true);
   }
 
+ async forgotPasswordEmail(data: {email:string}) {
+    return await this.post("/forgot-password-email", data, {}, true);
+  }
 
+   async createNewPasswordEmail(data: {newPassword:string,confirmPassword:string,token:string}) {
+    return await this.post("/update-forgot-password", data, {}, true);
+  }
+  
   //  async googleSingInUser(data: TToken) {
   //   return await this.post("/google-sing-in", data, {}, true);
   // }

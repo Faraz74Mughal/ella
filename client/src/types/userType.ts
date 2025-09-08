@@ -37,3 +37,19 @@ export enum EUserRole {
   TEACHER = 'teacher',
   STUDENT = 'student',
 }
+
+
+
+export interface IUser {
+  _id: string;
+  firstName: string;
+  lastName?: string;
+  email: string;
+  role: EUserRole;
+  profilePicture: string;
+  isApprove: boolean;
+  isVerified: boolean;
+  lastLogin?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}

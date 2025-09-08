@@ -86,3 +86,17 @@ export const useVerifyUser = () => {
     mutationFn: async (data: TToken) => await authService.verifyUser(data)
   });
 };
+
+
+export const useForgotPasswordEmail = () => {
+  return useMutation({
+    mutationFn: async (data: {email:string}) => await authService.forgotPasswordEmail(data)
+  });
+};
+
+
+export const useCreateNewPasswordEmail = () => {
+  return useMutation({
+    mutationFn: async (data: {newPassword:string,confirmPassword:string,token:string}) => await authService.createNewPasswordEmail(data)
+  });
+};

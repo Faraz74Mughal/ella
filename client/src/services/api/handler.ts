@@ -23,7 +23,7 @@ class Service {
         );
       }
 
-      return response;
+      return {data:response.data?.data,isSuccess:true};
     } catch (error) {
       console.error("GET ERROR: ", (error as Error).message);
       if (isToasterShow) {
@@ -40,7 +40,7 @@ class Service {
           )?.message?.type || "warn"
         );
       }
-      return null;
+      return {data:null,isSuccess:false};
     }
   }
 

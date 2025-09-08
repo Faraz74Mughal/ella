@@ -13,6 +13,10 @@ import GithubCodePage from "@/pages/commonPages/GithubCodePage/GithubCodePage";
 import HomePage from "@/pages/commonPages/HomePage";
 import CommonLayer from "@/components/layers/CommonLayer";
 import SignUpPage from "@/pages/commonPages/SignUpPage";
+import TeacherLayer from "@/components/layers/TeacherLayer";
+import PageNotFoundPage from "@/pages/commonPages/PageNotFoundPage/PageNotFoundPage";
+import TeacherLessonListPage from "@/pages/teacherPages/protectedPages/TeacherLessonPages/TeacherLessonListPage";
+import TeacherLessonAddPage from "@/pages/teacherPages/protectedPages/TeacherLessonPages/TeacherLessonAddPage";
 
 const checkAuth = () => {
   const getUser = localStorage.getItem(STORAGE_KEY);
@@ -92,7 +96,7 @@ const router = createBrowserRouter([
         path: "sign-up",
         // Component: SignUpPage,
         loader: notProtectLoader,
-         element: (
+        element: (
           <CommonLayer>
             <SignUpPage />
           </CommonLayer>
@@ -122,8 +126,45 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            Component: TeacherHomePage,
-            loader: teacherLoader
+            loader: teacherLoader,
+            element: (
+              <TeacherLayer breadCrumb={[{title:"Dashboard",link:""}]} title="Dashboard" >
+                <TeacherHomePage />
+              </TeacherLayer>
+            )
+          },
+          {
+            path: "/teacher/lessons",
+            loader: teacherLoader,
+            element: (
+              <TeacherLayer title="Lesson Management" breadCrumb={[
+                {title:"Dashboard",link:"/teacher"},
+                {title:"All Lessons"},
+                ]}>
+                <TeacherLessonListPage />
+              </TeacherLayer>
+            )
+          },
+           {
+            path: "/teacher/lessons/add",
+            loader: teacherLoader,
+            element: (
+              <TeacherLayer title="Lesson Management" breadCrumb={[
+                {title:"Dashboard",link:"/teacher"},
+                {title:"All Lessons",link:"/teacher/lessons"},
+                {title:"Create New Lesson"},
+                ]}>
+                <TeacherLessonAddPage />
+              </TeacherLayer>
+            )
+          },
+          {
+            path: "/teacher/*",
+            element: (
+              <TeacherLayer title="Page Not Found">
+                <PageNotFoundPage />
+              </TeacherLayer>
+            )
           }
         ]
       },
@@ -136,6 +177,14 @@ const router = createBrowserRouter([
             loader: studentLoader
           }
         ]
+      },
+      {
+        path: "*",
+        element: (
+          <CommonLayer>
+            <PageNotFoundPage />
+          </CommonLayer>
+        )
       }
     ]
   }

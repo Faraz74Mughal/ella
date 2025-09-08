@@ -9,7 +9,7 @@ export interface IUser extends Document {
   firstName: string;
   lastName?: string;
   email: string;
-  role: UserRole;
+  role: EUserRole;
   profilePicture: string;
   isApprove: boolean;
   isVerified: boolean;
@@ -46,7 +46,7 @@ export interface UserPayload extends JwtPayload {
   role: string;
 }
 
-export enum UserRole {
+export enum EUserRole {
   ADMIN = 'admin',
   TEACHER = 'teacher',
   STUDENT = 'student',

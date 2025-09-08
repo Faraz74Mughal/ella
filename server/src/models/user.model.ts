@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { IExtendedUser, UserRole } from '../interface/userInterface';
+import { IExtendedUser, EUserRole } from '../interface/userInterface';
 import bcrypt from 'bcryptjs';
 
 const collectionName = 'User';
@@ -49,9 +49,9 @@ const schema = new Schema<IExtendedUser>(
     },
     role: {
       type: String,
-      enum: Object.values(UserRole),
+      enum: Object.values(EUserRole),
       required: [true, 'Role is required.'],
-      default: UserRole.STUDENT,
+      default: EUserRole.STUDENT,
     },
     isApprove: {
       type: Boolean,
