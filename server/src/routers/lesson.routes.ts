@@ -6,7 +6,6 @@ import { LessonModel } from "../models/lesson.model"
 
 const router =  express.Router()
 
-
 router.get('/',paginate(LessonModel,"title",[{path:"createdBy",select:"firstName lastName email",model:"User" }]),LessonController.fetchLessons)
 router.post('/',LessonController.createLesson)
 

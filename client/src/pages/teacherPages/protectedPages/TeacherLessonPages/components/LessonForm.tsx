@@ -8,6 +8,7 @@ import {
   FormLabel
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 import { ECategory, ELevel } from "@/types/lessonInterface";
 import { useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -75,11 +76,12 @@ const LessonForm = () => {
 
             <FiledSelect form={form} name="level" title="Level" options={levelOptions} />
             <FiledSelect form={form} name="category" title="Category" options={categoryOptions} />
+            <RichTextEditor form={form} />
           </div>
 
           <div>
             <Button type="submit" className="w-full">
-              Update Password
+             Create
             </Button>
           </div>
         </form>
