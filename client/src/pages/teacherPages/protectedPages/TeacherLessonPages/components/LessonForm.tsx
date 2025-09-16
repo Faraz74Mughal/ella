@@ -20,12 +20,13 @@ const defaultValue: IFormLesson = {
   category: "",
   content: "",
   description: "",
+  multimedia: [],
   level: "",
 };
 
 const LessonForm = () => {
   const { mutate: createLessonMutate } = useCreateLesson();
-  const {currentUser} = useUserStore()
+  const { currentUser } = useUserStore();
   const levelOptions = useMemo(
     () =>
       Object.entries(ELevel).map(([key, value]) => ({
@@ -46,7 +47,9 @@ const LessonForm = () => {
 
   const form = useForm({ defaultValues: defaultValue });
   const formHandler = async (values: IFormLesson) => {
-    createLessonMutate({ ...values,createdBy:currentUser!._id!,order:1 });
+    console.log("VALUES",values);
+    
+    // createLessonMutate({ ...values, createdBy: currentUser!._id!, order: 1 });
   };
   return (
     <FormProvider {...form}>

@@ -102,16 +102,22 @@ function FormLabel({
   )
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+type FormControlProps = {
+  asChild?: boolean
+} & React.HTMLAttributes<HTMLDivElement>
+
+function FormControl({ asChild = false, ...props }: FormControlProps) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
+  const Comp = asChild ? Slot : "div"
+
   return (
-    <Slot
+    <Comp
       data-slot="form-control"
       id={formItemId}
       aria-describedby={
         !error
-          ? `${formDescriptionId}`
+          ? formDescriptionId
           : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={!!error}
@@ -119,6 +125,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
     />
   )
 }
+
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField()

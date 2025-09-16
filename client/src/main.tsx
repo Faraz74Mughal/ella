@@ -11,7 +11,7 @@ import { GOOGLE_CLIENT_ID } from "./config";
 const client = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  <>
     {/* <Browser */}
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <QueryClientProvider client={client}>
@@ -27,5 +27,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       />
     </QueryClientProvider>
     </GoogleOAuthProvider>
-  </React.StrictMode>
+  </>
 );

@@ -29,7 +29,7 @@ const TeacherBreadCrumb = ({
           ) : (
              <React.Fragment  key={bc.title}>
               <BreadcrumbItem>
-                <BreadcrumbPage    umbPage>{bc.title}</BreadcrumbPage>
+                <BreadcrumbPage>{bc.title}</BreadcrumbPage>
               </BreadcrumbItem>
               {index < breadCrumb.length - 1 && breadCrumb.length > 1 && (
                 <BreadcrumbSeparator />

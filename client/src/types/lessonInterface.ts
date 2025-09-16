@@ -15,12 +15,22 @@ export interface ILesson {
   exercises?: IExercise[];
 }
 
+export interface MediaFile {
+  id:string;
+  type:'image'|'video';
+  url:string;
+  publicId:string;
+  originalName:string;
+  size:number
+}
+
 export interface IFormLesson {
   title: string;
   description: string;
   content: string;
   level: ELevel|"";
   category: ECategory|"";
+  multimedia:MediaFile[]
 }
 
 export enum ELevel {

@@ -14,5 +14,7 @@ export const GOOGLE_AUTH_USER_INFO_LINK =
 export const FACEBOOK_AUTH_ID = import.meta.env.VITE_FACEBOOK_AUTH_ID;
 export const GITHUB_AUTH_ID = import.meta.env.VITE_GITHUB_AUTH_ID
 export const GITHUB_AUTH_CLIENT_SECRET = import.meta.env.VITE_GITHUB_AUTH_CLIENT_SECRET
+export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+export const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 
 
