@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import {  useState } from "react";
 import { useForm } from "react-hook-form";
+import McqForm from "./mcq-form";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -155,7 +156,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             />
           </div>
 
-
+<McqForm/>
           
 
           {/* <div className="mt-6">
