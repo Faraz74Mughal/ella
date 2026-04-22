@@ -6,21 +6,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import UserRow from "./lesson-row";
-import type { ILesson } from "@/types/lesson";
+import UserRow from "./exercise-row";
+import type { IExercise } from "@/types/exercise";
 import { useNavigate } from "react-router-dom";
-import { useDeleteLessonByAdmin } from "@/hooks/use-lesson";
+import { useDeleteExerciseByAdmin } from "@/hooks/use-exercise";
 
-const LessonList = ({ lessons }: { lessons: ILesson[] }) => {
+const ExerciseList = ({ exercises }: { exercises: IExercise[] }) => {
   const navigate = useNavigate();
 
   const editNavigateHandler = (id: string) => {
-    navigate(`/admin/lessons/edit/${id}`);
+    navigate(`/admin/exercises/edit/${id}`);
   };
-  const { mutate: deleteLesson } = useDeleteLessonByAdmin();
+  const { mutate: deleteExercise } = useDeleteExerciseByAdmin();
 
   const handleDelete = (id: string) => {
-    deleteLesson(id);
+    deleteExercise(id);
   };
 
   return (
@@ -28,17 +28,19 @@ const LessonList = ({ lessons }: { lessons: ILesson[] }) => {
       <TableHeader>
         <TableRow>
           <TableHead>Title</TableHead>
-          <TableHead>Level</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Is Publish</TableHead>
+          <TableHead>Created By</TableHead>
+          <TableHead>Visibility</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Points</TableHead>
+          <TableHead>Passing %</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {((lessons as ILesson[]) || []).map((user: ILesson) => (
+        {((exercises as IExercise[]) || []).map((user: IExercise) => (
           <UserRow
             key={user._id}
-            lesson={user}
+            exercise={user}
             onEdit={() => editNavigateHandler(user?._id)}
             onDelete={() => handleDelete(user._id)}
           />
@@ -48,4 +50,4 @@ const LessonList = ({ lessons }: { lessons: ILesson[] }) => {
   );
 };
 
-export default LessonList;
+export default ExerciseList;

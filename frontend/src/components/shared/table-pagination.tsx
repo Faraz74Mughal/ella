@@ -56,6 +56,7 @@ const TablePagination = ({
         <AppSelect
           value={perPage}
           onChange={(val: any) => onPerPageSelect?.(Number(val))}
+          className="max-w-24"
           options={[
             { label: "10", value: 10 },
             { label: "20", value: 20 },

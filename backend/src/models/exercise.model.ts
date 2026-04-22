@@ -13,7 +13,6 @@ const exerciseSchema = new Schema<IExercise>(
     lesson_id: {
       type: Schema.Types.ObjectId,
       ref: "Lesson",
-      required: true,
       index: true,
     },
     title: {

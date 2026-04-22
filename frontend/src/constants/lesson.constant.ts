@@ -6,7 +6,7 @@ export const LEVEL = {
 
 export const CATEGORY = {
   GRAMMAR: "grammar",
-  VOCABULARY: "vocabulary",
+  // VOCABULARY: "vocabulary",
   LISTENING: "listening",
   SPEAKING: "speaking",
   WRITING: "writing",
@@ -33,4 +33,11 @@ export const QUIZ_TYPES = {
   ESSAY: "essay",
   FOLLOW_UP_QUESTIONS: "follow_up_questions",
   VIDEO_BASED: "video_based",
+};
+
+export const CATEGORY_QUIZ_MAP = {
+  [CATEGORY.GRAMMAR]: ["MCQ", "FILL_IN_THE_BLANK", "MATCHING"],
+  [CATEGORY.SPEAKING]: ["SPEECH_RECOGNITION", "DIALOGUE_SIMULATION"],
+  [CATEGORY.WRITING]: ["ESSAY"],
+  [CATEGORY.LISTENING]: ["FOLLOW_UP_QUESTIONS", "VIDEO_BASED"],
 };

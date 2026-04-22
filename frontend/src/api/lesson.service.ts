@@ -1,7 +1,7 @@
 import type { ApiResponse } from "@/types/auth";
 import api from "./client";
 import type { IPagination } from "@/types/pagination";
-import type { ILesson } from "@/types/lesson";
+import type { IFilteredLessonOptions, ILesson } from "@/types/lesson";
 
 export const lessonService = {
   fetchLessonsByAdmin: async (
@@ -47,5 +47,26 @@ export const lessonService = {
     );
 
     return response?.data.data.lesson;
+  },
+
+  deleteLessonsByAdmin: async (id: string): Promise<ILesson> => {
+    const response = await api.delete<ApiResponse<{ lesson: ILesson }>>(
+      `/lessons/${id}`,
+    );
+
+    return response?.data.data.lesson;
+  },
+
+  fetchFilteredLessonsByAdmin: async (
+    filteredValue: IFilteredLessonOptions,
+  ): Promise<ILesson[]> => {
+    const response = await api.get<ApiResponse<{ lessons: ILesson[] }>>(
+      "/lessons/filtered?level=" +
+        filteredValue.level +
+        "&category=" +
+        filteredValue.category,
+    );
+
+    return response?.data.data.lessons;
   },
 };

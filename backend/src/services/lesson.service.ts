@@ -1,5 +1,6 @@
 import { Exercise } from "../models/exercise.model";
 import { Lesson } from "../models/lesson.model";
+import { IFilteredLessonOptions } from "../types/lesson.type";
 import { ApiError } from "../utils/ApiError";
 import { applyQueryFeatures } from "../utils/queryFeatures";
 
@@ -111,5 +112,38 @@ export class LessonsService {
     }
 
     return lesson;
+  }
+
+  static async deleteLesson(lessonId: string) {
+    const lesson = await Lesson.findById(lessonId);
+
+    if (!lesson) {
+      throw new ApiError(404, "Lesson not found.");
+    }
+    const toBeDeleted = lesson.toObject();
+
+    const exerciseCount = await Exercise.countDocuments({
+      lesson_id: lessonId,
+    });
+    if (exerciseCount > 0) {
+      throw new ApiError(
+        400,
+        "Cannot delete lesson with linked exercises. Delete exercises first.",
+      );
+    }
+
+    await lesson.deleteOne();
+
+    return toBeDeleted;
+  }
+
+  static async getFilteredLessons(data: IFilteredLessonOptions) {
+    console.log("IFilteredLessonOptions",data);
+    
+    const lessons = await Lesson.find({
+      level: data.level,
+      category: data.category,
+    });
+    return lessons;
   }
 }

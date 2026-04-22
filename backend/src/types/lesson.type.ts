@@ -15,3 +15,9 @@ export interface ILesson extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+export interface IFilteredLessonOptions {
+  category: (typeof CATEGORY)[keyof typeof CATEGORY] | "";
+  level: (typeof LEVEL)[keyof typeof LEVEL] | "";
+}

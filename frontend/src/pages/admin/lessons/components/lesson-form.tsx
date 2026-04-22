@@ -10,20 +10,23 @@ import {
   LEVEL,
   STUDY_MATERIAL_TYPE,
 } from "@/constants/lesson.constant";
+import { lessonSchema, type LessonInput } from "@/lib/validations/admin/lesson.validation";
 import type { ILesson } from "@/types/lesson";
 import { optionsOfObject } from "@/utils/options";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 interface LessonFormProps {
-  onSubmit: (values: ILesson) => Promise<void>;
+  onSubmit: (values: LessonInput) => Promise<void>;
   isLoading: boolean;
   lesson?: ILesson | null | undefined;
 }
 
 const LessonForm = ({ onSubmit, isLoading, lesson }: LessonFormProps) => {
-  const form = useForm<ILesson>({
+  const form = useForm<LessonInput>({
+    resolver: zodResolver(lessonSchema),
     defaultValues: {
       title: "",
       level: "",

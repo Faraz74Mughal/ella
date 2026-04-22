@@ -34,7 +34,7 @@ export const getLessonById = asyncHandler(
 
     return res
       .status(200)
-      .json(new ApiResponse(200, "Lesson fetched successfully.", {lesson}));
+      .json(new ApiResponse(200, "Lesson fetched successfully.", { lesson }));
   },
 );
 
@@ -48,14 +48,41 @@ export const createLesson = asyncHandler(
   },
 );
 
+export const updateLesson = asyncHandler(
+  async (req: Request, res: Response) => {
+    const lesson = await LessonsService.updateLesson(
+      req.params.lessonId as string,
+      req.body,
+    );
 
-export const updateLesson = asyncHandler(async (req: Request, res: Response) => {
-  const lesson = await LessonsService.updateLesson(
-    req.params.lessonId as string,
-    req.body,
-  );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Lesson updated successfully.", { lesson }));
+  },
+);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Lesson updated successfully.", {lesson}));
-});
+export const deleteLesson = asyncHandler(
+  async (req: Request, res: Response) => {
+    const lesson = await LessonsService.deleteLesson(
+      req.params.lessonId as string,
+    );
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Lesson deleted successfully.", { lesson }));
+  },
+);
+
+export const getFilteredLessons = asyncHandler(
+  async (req: Request, res: Response) => {
+
+    const lessons = await LessonsService.getFilteredLessons({
+      level: req.query.level as string,
+      category: req.query.category as string,
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Lesson fetched successfully.", { lessons }));
+  },
+);

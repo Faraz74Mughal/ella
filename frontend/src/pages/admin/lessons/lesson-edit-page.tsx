@@ -8,6 +8,7 @@ import {
   useUpdateLessonByAdmin,
 } from "@/hooks/use-lesson";
 import { useNavigate, useParams } from "react-router-dom";
+import type { LessonInput } from "@/lib/validations/admin/lesson.validation";
 
 const AdminLessonsEditPage = () => {
   const { id } = useParams();
@@ -16,14 +17,14 @@ const AdminLessonsEditPage = () => {
   const { data: lesson, isPending: isPendingSingle } =
     useGetSingleLessonByAdmin(id!);
   const { mutate: updateLesson, isPending } = useUpdateLessonByAdmin();
-  const lessonAddHandler = async (values: ILesson) => {
+  const lessonAddHandler = async (values: LessonInput) => {
     if (!values.study_material?.content) {
       delete values.study_material;
     }
-    updateLesson({ id: id!, data: values });
+    updateLesson({ id: id!, data: values as ILesson });
   };
-  console.log("lesson1",lesson);
-  
+  console.log("lesson1", lesson);
+
   return (
     <section className="space-y-8">
       <PageHeading title="Create New Lesson" isBack />

@@ -16,3 +16,8 @@ export interface ILesson {
   sequence_order: number;
   is_published: boolean;
 }
+
+export interface IFilteredLessonOptions {
+  category: (typeof CATEGORY)[keyof typeof CATEGORY] | "";
+  level: (typeof LEVEL)[keyof typeof LEVEL] | "";
+}

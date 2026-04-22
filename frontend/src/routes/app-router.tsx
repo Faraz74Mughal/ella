@@ -28,8 +28,11 @@ import AdminApprovalsPage from "@/pages/admin/approvals";
 import AdminSettingsPage from "@/pages/admin/settings";
 import ServerNotRunningPage from "@/pages/server-not-running";
 import AdminLessonsPage from "@/pages/admin/lessons/lessons-page";
-import AdminLessonsAddPage from "@/pages/admin/lessons/lesson-add-page"
+import AdminLessonsAddPage from "@/pages/admin/lessons/lesson-add-page";
 import AdminLessonsEditPage from "@/pages/admin/lessons/lesson-edit-page";
+import AdminExercisesPage from "@/pages/admin/exercises/exercises-page";
+import AdminExercisesEditPage from "@/pages/admin/exercises/exercise-edit-page";
+import AdminExercisesAddPage from "@/pages/admin/exercises/exercise-add-page";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
 
@@ -63,11 +66,23 @@ const router = createBrowserRouter([
                   {
                     element: <AdminPortalLayout />,
                     children: [
-                      { index: true, element: <Navigate to="dashboard" replace /> },
+                      {
+                        index: true,
+                        element: <Navigate to="dashboard" replace />,
+                      },
                       { path: "dashboard", element: <AdminDashboardPage /> },
                       { path: "lessons", element: <AdminLessonsPage /> },
                       { path: "lessons/add", element: <AdminLessonsAddPage /> },
-                      { path: "lessons/edit/:id", element: <AdminLessonsEditPage /> },
+                      {
+                        path: "lessons/edit/:id",
+                        element: <AdminLessonsEditPage />,
+                      },
+                      { path: "exercises", element: <AdminExercisesPage /> },
+                      { path: "exercises/add", element: <AdminExercisesAddPage /> },
+                      {
+                        path: "exercises/edit/:id",
+                        element: <AdminExercisesEditPage />,
+                      },
                       { path: "users", element: <AdminUsersPage /> },
                       { path: "approvals", element: <AdminApprovalsPage /> },
                       { path: "settings", element: <AdminSettingsPage /> },
@@ -87,11 +102,23 @@ const router = createBrowserRouter([
                       {
                         element: <TeacherPortalLayout />,
                         children: [
-                          { path: "dashboard", element: <TeacherDashboardPage /> },
+                          {
+                            path: "dashboard",
+                            element: <TeacherDashboardPage />,
+                          },
                           { path: "courses", element: <TeacherCoursesPage /> },
-                          { path: "progress", element: <TeacherProgressPage /> },
-                          { path: "settings", element: <TeacherSettingsPage /> },
-                          { path: "", element: <Navigate to="dashboard" replace /> },
+                          {
+                            path: "progress",
+                            element: <TeacherProgressPage />,
+                          },
+                          {
+                            path: "settings",
+                            element: <TeacherSettingsPage />,
+                          },
+                          {
+                            path: "",
+                            element: <Navigate to="dashboard" replace />,
+                          },
                         ],
                       },
                     ],

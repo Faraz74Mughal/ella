@@ -7,6 +7,7 @@ import adminRoutes from './routes/admin.routes';
 import userRoutes from './routes/user.routes';
 import teacherRoutes from './routes/teacher.routes';
 import lessonRoutes from './routes/lesson.routes';
+import exerciseRoutes from './routes/exercise.routes';
 
 const app: Application = express();
 
@@ -27,6 +28,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/teachers", teacherRoutes);
 app.use("/api/v1/lessons", lessonRoutes);
+app.use("/api/v1/exercises", exerciseRoutes);
 
 // --- Global Error Handler (Must be last) ---
 app.use(globalErrorHandler);

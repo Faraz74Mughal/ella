@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FormLabel } from "./form";
 
 interface Option {
   label: string;
@@ -18,6 +19,7 @@ interface AppSelectProps {
   options: Option[];
   placeholder?: string;
   className?: string;
+  label?: string;
 }
 
 const AppSelect = ({
@@ -26,26 +28,30 @@ const AppSelect = ({
   options,
   placeholder = "Select",
   className,
+  label
 }: AppSelectProps) => {
   return (
-    <Select
-      value={value ? String(value) : undefined}
-      onValueChange={(val) => onChange?.(val)}
-    >
-      <SelectTrigger className={`w-full max-w-48 ${className || ""}`}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
+    <div>
+      {label&&<FormLabel className="mb-2">{label}</FormLabel>}
+      <Select
+        value={value ? String(value) : undefined}
+        onValueChange={(val) => onChange?.(val)}
+      >
+        <SelectTrigger className={`w-full ${className || ""}`}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
 
-      <SelectContent>
-        <SelectGroup>
-          {options.map((opt) => (
-            <SelectItem key={opt.value} value={String(opt.value)}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+        <SelectContent>
+          <SelectGroup>
+            {options.map((opt) => (
+              <SelectItem key={opt.value} value={String(opt.value)}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 

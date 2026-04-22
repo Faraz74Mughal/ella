@@ -4,14 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ILesson } from "@/types/lesson";
 import LessonForm from "./components/lesson-form";
 import { useAddLessonByAdmin } from "@/hooks/use-lesson";
+import type { LessonInput } from "@/lib/validations/admin/lesson.validation";
 
 const AdminLessonsAddPage = () => {
   const { mutate: addLesson,isPending } = useAddLessonByAdmin();
-  const lessonAddHandler = async (values: ILesson) => {
+  const lessonAddHandler = async (values: LessonInput) => {
     if(!values.study_material?.content){
         delete values.study_material
     }
-    addLesson(values);
+    addLesson(values as ILesson);
   };
   return (
     <section className="space-y-8">
