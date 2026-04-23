@@ -16,7 +16,7 @@ export interface IExercise extends Document {
   creator_role: (typeof USER_ROLES)[keyof typeof USER_ROLES];
   visibility: (typeof VISIBILITY)[keyof typeof VISIBILITY];
   assigned_to_students?: Types.ObjectId[];
-  type: (typeof QUIZ_TYPES)[keyof typeof QUIZ_TYPES];
+  // type: (typeof QUIZ_TYPES)[keyof typeof QUIZ_TYPES];
   content: any; // Flexible content structure based on quiz type
   points: number;
   passing_percentage: number;

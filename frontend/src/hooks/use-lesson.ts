@@ -73,7 +73,6 @@ export const useExerciseTypeOptions = (
 ) => {
   return useMemo(() => {
     const keys = CATEGORY_QUIZ_MAP[category]||[];
-    console.log("cat2egory",category);
     
     const result: any = {};
     keys.forEach((key) => {

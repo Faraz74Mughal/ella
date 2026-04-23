@@ -1,14 +1,10 @@
-import AppSelect from "@/components/ui/app-select";
+// import AppSelect from "@/components/ui/app-select";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
-import {
-  CATEGORY,
-  LEVEL,
-  VISIBILITY,
-} from "@/constants/lesson.constant";
+import { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
 import {
   useExerciseTypeOptions,
   useGetFilteredLessons,
@@ -18,13 +14,18 @@ import {
   type ExerciseInput,
 } from "@/lib/validations/admin/exercise.validation";
 import type { IExercise } from "@/types/exercise";
-import type { IFilteredLessonOptions } from "@/types/lesson";
 import { options, optionsOfObject } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import McqForm from "./mcq-form";
+import McqForm from "./quiz-from/mcq-form/mcq-form";
+import FillBlankForm from "./quiz-from/fill-in-the-blank-form/fill-in-the-blank-form";
+import MatchingForm from "./quiz-from/matching-form/matching-form";
+import UnifiedQuestionBank from "./result";
+import ExerciseTypeTabs from "./exercise-type-selector";
+import SpeechRecognitionForm from "./quiz-from/speech-recognition-form/speech-recognition-form";
+import DialogueForm from "./quiz-from/dialogue-form/dialogue-form";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -33,31 +34,43 @@ interface ExerciseFormProps {
 }
 
 const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
-  const [selectedValue, setSelectedValue] = useState<IFilteredLessonOptions>({
-    category: "",
-    level: "",
-  });
-  const { data: filteredLessons } = useGetFilteredLessons(selectedValue);
-  const exerciseTypeOptions = useExerciseTypeOptions(selectedValue.category);
+  // Form
   const form = useForm<ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
     defaultValues: {
       lesson_id: "",
       title: "",
       visibility: VISIBILITY.PRIVATE,
-      type: "",
+      // type: "",
       content: null,
       points: 0,
       passing_percentage: 0,
     },
   });
 
-  const handleSelect = (
-    value: string,
-    name: keyof IFilteredLessonOptions,
-  ): void => {
-    setSelectedValue((prev) => ({ ...prev, [name]: value }));
-  };
+  // const [selectedValue, setSelectedValue] = useState<IFilteredLessonOptions>({
+  //   category: "",
+  //   level: "",
+  // });
+  const [selectedExerciseType, setSelectedExerciseType] = useState<string>(""); // For exercise type selection
+  const { data: filteredLessons } = useGetFilteredLessons({
+    category: form.watch("category"),
+    level: form.watch("level"),
+  });
+  const exerciseTypeOptions = useExerciseTypeOptions(form.watch("category"));
+  const [content, setContent] = useState<any[]>([]);
+  useEffect(() => {
+    if (exerciseTypeOptions.length > 0) {
+      setSelectedExerciseType(exerciseTypeOptions[0].value);
+    }
+  }, [exerciseTypeOptions]);
+
+  // const handleSelect = (
+  //   value: string,
+  //   name: keyof IFilteredLessonOptions,
+  // ): void => {
+  //   setSelectedValue((prev) => ({ ...prev, [name]: value }));
+  // };
 
   // useEffect(() => {
   //   if (exercise) {
@@ -92,7 +105,25 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
               placeholder="Enter exercise title..."
             />
 
-            <AppSelect
+            <FormSelect
+              control={form.control}
+              label="Category"
+              name="category"
+              disabled={isLoading}
+              placeholder="Select category"
+              options={optionsOfObject(CATEGORY)}
+            />
+
+            <FormSelect
+              control={form.control}
+              label="Level"
+              name="level"
+              disabled={isLoading}
+              placeholder="Select level"
+              options={optionsOfObject(LEVEL)}
+            />
+
+            {/* <AppSelect
               label="Category"
               className="w-full h-10!"
               options={optionsOfObject(CATEGORY)}
@@ -108,7 +139,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
               onChange={(value) => handleSelect(value as string, "level")}
               placeholder="Select level"
               value={selectedValue.level}
-            />
+            /> */}
 
             <FormSelect
               control={form.control}
@@ -145,7 +176,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             Exercise Setup
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormSelect
               control={form.control}
               label="Exercise Type"
@@ -154,29 +185,46 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
               placeholder="Select type"
               options={exerciseTypeOptions || []}
             />
-          </div>
-
-<McqForm/>
-          
-
-          {/* <div className="mt-6">
-            {materialType === "audio" || materialType === "video" ? (
-              <FormMedia
-                control={form.control}
-                label="Media Content"
-                name="study_material.content"
-                type={(materialType as MediaType) || "image"}
-              />
-            ) : (
-              <FormTextarea
-                control={form.control}
-                label="Content"
-                name="study_material.content"
-                disabled={isLoading}
-                rows={12}
-              />
-            )}
           </div> */}
+          {/* <ExerciseFormT
+            onSubmit={onSubmit}
+            isLoading={isLoading}
+            exercise={exercise}
+          /> */}
+          {console.log("form.watch('category')===CATEGORY.GRAMMAR",form.watch("category"),CATEGORY.GRAMMAR)}
+          
+          {console.log("exerciseTypeOptions", exerciseTypeOptions)}
+          <ExerciseTypeTabs
+            exerciseTypeOptions={exerciseTypeOptions || []}
+            value={selectedExerciseType}
+            onValueChange={setSelectedExerciseType}
+          />
+          {/* {console.log("selectedExerciseType", selectedExerciseType)} */}
+          <div className="my-4 border rounded-lg">
+            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[0]?.value && (
+              <McqForm setContent={setContent} />
+            )}
+            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[1]?.value && (
+              <FillBlankForm  setContent={setContent}/>
+            )}
+            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[2]?.value && (
+              <MatchingForm setContent={setContent} />
+            )}
+            {form.watch("category")===CATEGORY.SPEAKING&&selectedExerciseType === exerciseTypeOptions[0]?.value && (
+              <SpeechRecognitionForm />
+            )}
+            {form.watch("category")===CATEGORY.SPEAKING&&selectedExerciseType === exerciseTypeOptions[1]?.value && (
+              <DialogueForm />
+            )}
+          </div>
+          {/* <McqForm />
+
+          <FillBlankForm />
+          <MatchingForm />*/}
+          <UnifiedQuestionBank
+            content={content || []}
+            setContent={setContent}
+          />
         </div>
 
         {/* PUBLISH SECTION */}
