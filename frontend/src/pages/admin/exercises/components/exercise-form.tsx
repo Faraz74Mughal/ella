@@ -26,6 +26,9 @@ import UnifiedQuestionBank from "./result";
 import ExerciseTypeTabs from "./exercise-type-selector";
 import SpeechRecognitionForm from "./quiz-from/speech-recognition-form/speech-recognition-form";
 import DialogueForm from "./quiz-from/dialogue-form/dialogue-form";
+import WritingPracticeForm from "./quiz-from/eassy-form/eassy-form";
+import FollowUpForm from "./quiz-from/follow-up-form/follow-up-form";
+import VideoScenariosForm from "./quiz-from/video-scenarios-form/video-scenarios-form";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -191,8 +194,12 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             isLoading={isLoading}
             exercise={exercise}
           /> */}
-          {console.log("form.watch('category')===CATEGORY.GRAMMAR",form.watch("category"),CATEGORY.GRAMMAR)}
-          
+          {console.log(
+            "form.watch('category')===CATEGORY.GRAMMAR",
+            form.watch("category"),
+            CATEGORY.GRAMMAR,
+          )}
+
           {console.log("exerciseTypeOptions", exerciseTypeOptions)}
           <ExerciseTypeTabs
             exerciseTypeOptions={exerciseTypeOptions || []}
@@ -201,21 +208,34 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
           />
           {/* {console.log("selectedExerciseType", selectedExerciseType)} */}
           <div className="my-4 border rounded-lg">
-            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[0]?.value && (
-              <McqForm setContent={setContent} />
-            )}
-            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[1]?.value && (
-              <FillBlankForm  setContent={setContent}/>
-            )}
-            {form.watch("category")===CATEGORY.GRAMMAR&& selectedExerciseType === exerciseTypeOptions[2]?.value && (
-              <MatchingForm setContent={setContent} />
-            )}
-            {form.watch("category")===CATEGORY.SPEAKING&&selectedExerciseType === exerciseTypeOptions[0]?.value && (
-              <SpeechRecognitionForm />
-            )}
-            {form.watch("category")===CATEGORY.SPEAKING&&selectedExerciseType === exerciseTypeOptions[1]?.value && (
-              <DialogueForm />
-            )}
+            {form.watch("category") === CATEGORY.GRAMMAR &&
+              selectedExerciseType === exerciseTypeOptions[0]?.value && (
+                <McqForm setContent={setContent} />
+              )}
+            {form.watch("category") === CATEGORY.GRAMMAR &&
+              selectedExerciseType === exerciseTypeOptions[1]?.value && (
+                <FillBlankForm setContent={setContent} />
+              )}
+            {form.watch("category") === CATEGORY.GRAMMAR &&
+              selectedExerciseType === exerciseTypeOptions[2]?.value && (
+                <MatchingForm setContent={setContent} />
+              )}
+            {form.watch("category") === CATEGORY.SPEAKING &&
+              selectedExerciseType === exerciseTypeOptions[0]?.value && (
+                <SpeechRecognitionForm />
+              )}
+            {form.watch("category") === CATEGORY.SPEAKING &&
+              selectedExerciseType === exerciseTypeOptions[1]?.value && (
+                <DialogueForm />
+              )}
+            {selectedExerciseType === exerciseTypeOptions[0]?.value &&
+              form.watch("category") === CATEGORY.WRITING && (
+                <WritingPracticeForm />
+              )}
+            {selectedExerciseType === exerciseTypeOptions[0]?.value &&
+              form.watch("category") === CATEGORY.LISTENING && <FollowUpForm />}
+            {selectedExerciseType === exerciseTypeOptions[1]?.value &&
+              form.watch("category") === CATEGORY.LISTENING &&<VideoScenariosForm />}
           </div>
           {/* <McqForm />
 
