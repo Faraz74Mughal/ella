@@ -8,8 +8,10 @@ import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation"
 
 const AdminExercisesAddPage = () => {
   const { mutate: addExercise,isPending } = useAddExerciseByAdmin();
-  const exerciseAddHandler = async (values: ExerciseInput) => {
-    addExercise(values as IExercise);
+  const exerciseAddHandler = async (values: any) => {
+    console.log("VALUES Submited:",values);
+    
+    // addExercise(values as IExercise);
   };
   return (
     <section className="space-y-8">

@@ -1,5 +1,4 @@
 export const options = (values: any, label: string, value: string) => {
-  console.log("values1",values);
   if (!(Array.isArray(values) && values.length > 0)) return [];
 
   return values.map((val) => ({ label: val?.[label], value: val?.[value] }));

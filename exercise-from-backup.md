@@ -5,7 +5,10 @@ import { FormCheckbox } from "@/components/ui/form-checkbox";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
-import { useGetFilteredLessons } from "@/hooks/use-lesson";
+import {
+  useExerciseTypeOptions,
+  useGetFilteredLessons,
+} from "@/hooks/use-lesson";
 import {
   exerciseSchema,
   type ExerciseInput,
@@ -14,9 +17,19 @@ import type { IExercise } from "@/types/exercise";
 import { options, optionsOfObject } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import McqForm from "./quiz-from/mcq-form/mcq-form";
+import FillBlankForm from "./quiz-from/fill-in-the-blank-form/fill-in-the-blank-form";
+import MatchingForm from "./quiz-from/matching-form/matching-form";
+import UnifiedQuestionBank from "./result";
+import ExerciseTypeTabs from "./exercise-type-selector";
+import SpeechRecognitionForm from "./quiz-from/speech-recognition-form/speech-recognition-form";
+import DialogueForm from "./quiz-from/dialogue-form/dialogue-form";
+import WritingPracticeForm from "./quiz-from/eassy-form/eassy-form";
+import FollowUpForm from "./quiz-from/follow-up-form/follow-up-form";
+import VideoScenariosForm from "./quiz-from/video-scenarios-form/video-scenarios-form";
 import GrammarForm from "./quiz-from/grammer-form/grammer-form";
-import { FormTextarea } from "@/components/ui/form-textarea";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -24,7 +37,7 @@ interface ExerciseFormProps {
   exercise?: IExercise | null | undefined;
 }
 
-const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
+const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
   // Form
   const form = useForm<ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
@@ -43,12 +56,18 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
   //   category: "",
   //   level: "",
   // });
-  console.log("form",form.formState.errors);
-  
+  const [selectedExerciseType, setSelectedExerciseType] = useState<string>(""); // For exercise type selection
   const { data: filteredLessons } = useGetFilteredLessons({
     category: form.watch("category"),
     level: form.watch("level"),
   });
+  const exerciseTypeOptions = useExerciseTypeOptions(form.watch("category"));
+  const [content, setContent] = useState<any[]>([]);
+  useEffect(() => {
+    if (exerciseTypeOptions.length > 0) {
+      setSelectedExerciseType(exerciseTypeOptions[0].value);
+    }
+  }, [exerciseTypeOptions]);
 
   // const handleSelect = (
   //   value: string,
@@ -115,9 +134,9 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
               onChange={(value) => handleSelect(value as string, "category")}
               placeholder="Select category"
               value={selectedValue.category}
-              />
-              
-              <AppSelect
+            />
+
+            <AppSelect
               label="Level"
               options={optionsOfObject(LEVEL)}
               className="w-full! h-10!"
@@ -143,43 +162,95 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
               disabled={isLoading}
               placeholder="Enter exercise points..."
             /> */}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="order-2 md:order-1">
-            <FormInput
-              control={form.control}
-              label="Title"
-              name="title"
-              disabled={isLoading}
-              placeholder="Enter exercise title..."
-            />
-          </div>
-          <div className="order-1 md:order-2">
-            <FormInput
+
+            {/* <FormInput
               control={form.control}
               label="Passing Percentage"
               name="passing_percentage"
               type="number"
               disabled={isLoading}
               placeholder="Enter passing percentage..."
-            />
+            /> */}
           </div>
         </div>
-        <FormTextarea
-          control={form.control}
-          label="Description"
-          name="description"
-          disabled={isLoading}
-          placeholder="Enter exercise description..."
-        />
+        <div>
+          <h2 className="text-sm font-semibold text-muted-foreground mb-4 capitalize">
+            {form.watch("category")} Quiz
+          </h2>
+          <GrammarForm />
+        </div>
         {/* CONTENT SECTION */}
         {form.watch("category") && (
           <div>
             <h2 className="text-sm font-semibold text-muted-foreground mb-4 capitalize">
               {form.watch("category")} Quiz
             </h2>
-            <GrammarForm />
+
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormSelect
+              control={form.control}
+              label="Exercise Type"
+              name="type"
+              disabled={isLoading}
+              placeholder="Select type"
+              options={exerciseTypeOptions || []}
+            />
+          </div> */}
+            {/* <ExerciseFormT
+            onSubmit={onSubmit}
+            isLoading={isLoading}
+            exercise={exercise}
+          /> */}
+
+            <ExerciseTypeTabs
+              exerciseTypeOptions={exerciseTypeOptions || []}
+              value={selectedExerciseType}
+              onValueChange={setSelectedExerciseType}
+            />
+            {/* {console.log("selectedExerciseType", selectedExerciseType)} */}
+            <div className="my-4 border rounded-lg">
+              {form.watch("category") === CATEGORY.GRAMMAR &&
+                selectedExerciseType === exerciseTypeOptions[0]?.value && (
+                  <McqForm setContent={setContent} />
+                )}
+              {form.watch("category") === CATEGORY.GRAMMAR &&
+                selectedExerciseType === exerciseTypeOptions[1]?.value && (
+                  <FillBlankForm setContent={setContent} />
+                )}
+              {form.watch("category") === CATEGORY.GRAMMAR &&
+                selectedExerciseType === exerciseTypeOptions[2]?.value && (
+                  <MatchingForm setContent={setContent} />
+                )}
+              {form.watch("category") === CATEGORY.SPEAKING &&
+                selectedExerciseType === exerciseTypeOptions[0]?.value && (
+                  <SpeechRecognitionForm />
+                )}
+              {form.watch("category") === CATEGORY.SPEAKING &&
+                selectedExerciseType === exerciseTypeOptions[1]?.value && (
+                  <DialogueForm />
+                )}
+              {selectedExerciseType === exerciseTypeOptions[0]?.value &&
+                form.watch("category") === CATEGORY.WRITING && (
+                  <WritingPracticeForm />
+                )}
+              {selectedExerciseType === exerciseTypeOptions[0]?.value &&
+                form.watch("category") === CATEGORY.LISTENING && (
+                  <FollowUpForm />
+                )}
+              {selectedExerciseType === exerciseTypeOptions[1]?.value &&
+                form.watch("category") === CATEGORY.LISTENING && (
+                  <VideoScenariosForm />
+                )}
+              <FollowUpForm />
+            </div>
+            {/* <McqForm />
+
+          <FillBlankForm />
+          <MatchingForm />*/}
+            <UnifiedQuestionBank
+              content={content || []}
+              setContent={setContent}
+            />
           </div>
         )}
         {/* PUBLISH SECTION */}
