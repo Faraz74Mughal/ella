@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import type { SubQuestion } from "../types/grammar-question";
-
-const generateId = () =>
-  `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+import { useMemo } from "react";
+import type {
+  FillBlankQuestion,
+  MatchingQuestion,
+  MCQQuestion,
+  SubQuestion,
+} from "../types/grammar-question";
+import { generateId } from "../utils/helpers";
 
 const createDefaultQuestion = (): SubQuestion => ({
   id: generateId(),
@@ -10,7 +13,7 @@ const createDefaultQuestion = (): SubQuestion => ({
   question: "",
   options: ["", "", "", ""],
   correctAnswer: "",
-  points: 10,
+  points: 1,
 });
 
 export const useQuestionBuilder = ({
@@ -44,61 +47,66 @@ export const useQuestionBuilder = ({
   // ------------------------
 
   const addQuestion = () => {
-    updateState((prev) => [
-      ...prev,
-      {
-        id: generateId(),
-        type: "mcq",
-        question: "",
-        options: ["", "", "", ""],
-        correctAnswer: "",
-        points: 10,
-      },
-    ]);
+    updateState((prev) => [...prev, createDefaultQuestion()]);
   };
 
-  const updateQuestion = (id: string, field: keyof SubQuestion, value: any) => {
+  const updateQuestion = (id: string, field: string, value: any) => {
     updateState((prev) =>
       prev.map((q) => {
         if (q.id !== id) return q;
 
-       if (field === "type") {
-  if (value === "matching") {
-    return {
-      id: q.id,
-      type: "matching",
-      question: "",
-      pairs: [{ id: generateId(), left: "", right: "" }],
-      shuffleOptions: true,
-      correctAnswer: [],
-      points: q.points,
-    };
-  }
+        // 🔥 Type switching (RESET shape properly)
+        if (field === "type") {
+          if (value === "matching") {
+            const newQ: MatchingQuestion = {
+              id: q.id,
+              type: "matching",
+              pairs: [{ id: generateId(), left: "", right: "" }],
+              shuffleOptions: true,
+              points: q.points,
+            };
+            return newQ;
+          }
 
-  if (value === "mcq") {
-    return {
-      id: q.id,
-      type: "mcq",
-      question: "",
-      options: ["", "", "", ""],
-      correctAnswer: "",
-      points: q.points,
-    };
-  }
+          if (value === "mcq") {
+            const newQ: MCQQuestion = {
+              id: q.id,
+              type: "mcq",
+              question: "",
+              options: ["", "", "", ""],
+              correctAnswer: "",
+              points: q.points,
+            };
+            return newQ;
+          }
 
-  if (value === "fill_blank") {
-    return {
-      id: q.id,
-      type: "fill_blank",
-      question: "",
-      correctAnswer: "",
-      alternatives: [],
-      points: q.points,
-    };
-  }
-}
-        console.log("LOAS", id, field, value);
-        return { ...q, [field]: value };
+          if (value === "fill_blank") {
+            const newQ: FillBlankQuestion = {
+              id: q.id,
+              type: "fill_blank",
+              question: "",
+              correctAnswer: "",
+              alternatives: [],
+              points: q.points,
+            };
+            return newQ;
+          }
+        }
+
+        // then cast the result back to the specific Type.
+        if (q.type === "mcq") {
+          return { ...q, [field]: value } as any as MCQQuestion;
+        }
+
+        if (q.type === "fill_blank") {
+          return { ...q, [field]: value } as any as FillBlankQuestion;
+        }
+
+        if (q.type === "matching") {
+          return { ...q, [field]: value } as any as MatchingQuestion;
+        }
+
+        return q;
       }),
     );
   };
@@ -116,7 +124,7 @@ export const useQuestionBuilder = ({
   const updateOption = (qId: string, index: number, value: string) => {
     updateState((prev) =>
       prev.map((q) => {
-        if (q.id === qId && q.options) {
+        if (q.id === qId && q.type === "mcq") {
           const options = [...q.options];
           options[index] = value;
           return { ...q, options };
@@ -129,7 +137,9 @@ export const useQuestionBuilder = ({
   const addOption = (qId: string) => {
     updateState((prev) =>
       prev.map((q) =>
-        q.id === qId && q.options ? { ...q, options: [...q.options, ""] } : q,
+        q.id === qId && q.type === "mcq"
+          ? { ...q, options: [...q.options, ""] }
+          : q,
       ),
     );
   };
@@ -137,7 +147,7 @@ export const useQuestionBuilder = ({
   const removeOption = (qId: string, index: number) => {
     updateState((prev) =>
       prev.map((q) => {
-        if (q.id === qId && q.options && q.options.length > 2) {
+        if (q.id === qId && q.type === "mcq" && q.options.length > 2) {
           return {
             ...q,
             options: q.options.filter((_, i) => i !== index),
@@ -147,7 +157,6 @@ export const useQuestionBuilder = ({
       }),
     );
   };
-
   // ------------------------
   // MATCHING
   // ------------------------
@@ -155,7 +164,7 @@ export const useQuestionBuilder = ({
   const addPair = (qId: string) => {
     updateState((prev) =>
       prev.map((q) =>
-        q.id === qId && q.pairs
+        q.id === qId && q.type === "matching"
           ? {
               ...q,
               pairs: [...q.pairs, { id: generateId(), left: "", right: "" }],
@@ -173,7 +182,7 @@ export const useQuestionBuilder = ({
   ) => {
     updateState((prev) =>
       prev.map((q) =>
-        q.id === qId && q.pairs
+        q.id === qId && q.type === "matching"
           ? {
               ...q,
               pairs: q.pairs.map((p) =>
@@ -188,24 +197,18 @@ export const useQuestionBuilder = ({
   const removePair = (qId: string, pairId: string) => {
     updateState((prev) =>
       prev.map((q) =>
-        q.id === qId && q.pairs && q.pairs.length > 1
-          ? { ...q, pairs: q.pairs.filter((p) => p.id !== pairId) }
+        q.id === qId && q.type === "matching" && q.pairs.length > 1
+          ? {
+              ...q,
+              pairs: q.pairs.filter((p) => p.id !== pairId),
+            }
           : q,
       ),
     );
   };
 
   const clearQuestions = () => {
-    updateState([
-      {
-        id: generateId(),
-        type: "mcq",
-        question: "",
-        options: ["", "", "", ""],
-        correctAnswer: "",
-        points: 10,
-      },
-    ]);
+    updateState([createDefaultQuestion()]);
   };
 
   return {

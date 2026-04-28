@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError';
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    
     // req.user was populated by verifyJWT middleware
     const user = (req as any).user;
 

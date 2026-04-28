@@ -11,3 +11,6 @@ export const pageHeadingManagement = (linkName: string): string => {
   const find = adminSidebarData.find((d) => d.to === linkName)?.label;
   return find?find:"";
 };
+
+export const generateId = () =>
+  `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

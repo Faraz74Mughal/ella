@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Table,
   TableBody,
@@ -41,8 +40,8 @@ const ExerciseList = ({ exercises }: { exercises: IExercise[] }) => {
           <UserRow
             key={user._id}
             exercise={user}
-            onEdit={() => editNavigateHandler(user?._id)}
-            onDelete={() => handleDelete(user._id)}
+            onEdit={() => editNavigateHandler(user._id!)}
+            onDelete={() => handleDelete(user._id!)}
           />
         ))}
       </TableBody>

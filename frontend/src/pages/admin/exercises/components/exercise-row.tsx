@@ -15,8 +15,11 @@ const ExerciseRow = ({
   return (
     <TableRow>
       <TableCell>{exercise.title}</TableCell>
-      <TableCell>{exercise.category}</TableCell>
-      <TableCell>{exercise?.level}</TableCell>
+      <TableCell>{exercise?.created_by.name}</TableCell>
+      <TableCell>{exercise?.visibility}</TableCell>
+      <TableCell>{exercise?.category}</TableCell>
+      <TableCell>{exercise?.points}</TableCell>
+      <TableCell>{exercise?.passing_percentage}%</TableCell>
       <TableCell>
         
       </TableCell>

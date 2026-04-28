@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import { imageFallback } from "@/utils/heplers";
+import { imageFallback } from "@/utils/helpers";
 
 interface AvatarCircleProps{
     src?:string,

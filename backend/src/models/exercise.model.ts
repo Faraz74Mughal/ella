@@ -36,12 +36,7 @@ const exerciseSchema = new Schema<IExercise>(
       required: true,
       index: true,
     },
-    creator_role: {
-      type: String,
-      enum: Object.values(USER_ROLES),
-      required: true,
-      default: USER_ROLES.ADMIN,
-    },
+  
     visibility: {
       type: String,
       enum: Object.values(VISIBILITY),

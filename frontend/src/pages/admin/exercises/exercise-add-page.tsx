@@ -7,11 +7,16 @@ import { useAddExerciseByAdmin } from "@/hooks/use-exercise";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 
 const AdminExercisesAddPage = () => {
-  const { mutate: addExercise,isPending } = useAddExerciseByAdmin();
-  const exerciseAddHandler = async (values: any) => {
-    console.log("VALUES Submited:",values);
-    
-    // addExercise(values as IExercise);
+  const { mutate: addExercise, isPending } = useAddExerciseByAdmin();
+  const exerciseAddHandler = async (values: ExerciseInput) => {
+    console.log("EXERCISE_INPUT", values);
+
+    return;
+    values.points = values.content.reduce((acc, item) => {
+      acc += item.points;
+      return acc;
+    }, 0);
+    addExercise(values as IExercise);
   };
   return (
     <section className="space-y-8">

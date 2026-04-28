@@ -7,10 +7,12 @@ import {
   updateExercise,
   deleteExercise,
 } from "../controllers/exercises.controller";
+import { authorizeRoles } from "../middlewares/role.middleware";
+import { verifyJWT } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post("/", createExercise);
+router.post("/",verifyJWT,authorizeRoles('admin'), createExercise);
 router.get("/", getExercises);
 router.get("/:exerciseId",  getExerciseById);
 router.patch("/:exerciseId",  updateExercise);

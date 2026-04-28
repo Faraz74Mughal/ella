@@ -12,16 +12,22 @@ import FillInTheBlankRenderer from "./fill-in-the-blank-renderer";
 import TypesSelect from "./types-select";
 import { useFormContext } from "react-hook-form";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
+import { useEffect } from "react";
 
 const GrammarForm = () => {
-  const { setValue, watch } = useFormContext<ExerciseInput>();
+  const { setValue, watch, formState } = useFormContext<ExerciseInput>();
   const qb = useQuestionBuilder({
     value: watch("content"),
     onChange: (val) => setValue("content", val),
   });
+  useEffect(() => {
+    if (watch("category") || "") setValue("content", []);
+  }, [watch, setValue]);
+
   return (
     <div>
       <div className="space-y-6">
+        
         {qb.questions.map((question, idx) => (
           <Card key={question.id} className="border-l-4 border-primary">
             <CardContent className="p-4">
@@ -67,21 +73,29 @@ const GrammarForm = () => {
                 {/* Question Text */}
                 {(question.type === "fill_blank" ||
                   question.type === "mcq") && (
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Question Text</Label>
-                    <Textarea
-                      value={question.question}
-                      onChange={(e) =>
-                        qb.updateQuestion(
-                          question.id,
-                          "question",
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Enter your question based on the audio..."
-                      className="resize-none"
-                      rows={2}
-                    />
+                  <div>
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">
+                        Question Text
+                      </Label>
+                      <Textarea
+                        value={question.question}
+                        onChange={(e) =>
+                          qb.updateQuestion(
+                            question.id,
+                            "question",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Enter your question based on the audio..."
+                        className="resize-none"
+                        rows={2}
+                      />
+                    </div>
+                    <span className="text-xs  text-red-500">
+                      {Array.isArray(formState?.errors?.content) &&
+                        formState?.errors?.content?.[idx]?.question?.message}
+                    </span>
                   </div>
                 )}
 
@@ -105,17 +119,19 @@ const GrammarForm = () => {
                 </div>
 
                 {question.type === "mcq" ? (
-                  <MCQRenderer {...qb} question={question} />
+                  <MCQRenderer {...qb} question={question} idx={idx} />
                 ) : question.type === "matching" ? (
-                  <MatchingRenderer {...qb} question={question} />
+                  <MatchingRenderer {...qb} question={question} idx={idx} />
                 ) : question.type === "fill_blank" ? (
-                  <FillInTheBlankRenderer {...qb} question={question} />
+                  <FillInTheBlankRenderer
+                    {...qb}
+                    question={question}
+                    idx={idx}
+                  />
                 ) : (
                   ""
                 )}
               </div>
-
-              {/* <TabsContent value="questions" className="p-6 space-y-6"> */}
             </CardContent>
           </Card>
         ))}

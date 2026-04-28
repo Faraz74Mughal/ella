@@ -1,4 +1,4 @@
-import { FilterQuery, Model, SortOrder } from 'mongoose';
+import { FilterQuery, Model, SortOrder } from "mongoose";
 
 export type PaginationMeta = {
   total: number;
@@ -19,13 +19,14 @@ export type QueryOptions<T> = {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
   search?: string;
   searchFields?: string[];
   filters?: Record<string, unknown>;
   baseFilter?: FilterQuery<T>;
   select?: string;
   allowedSortFields?: string[];
+  populate?: string | string[] | any;
 };
 
 const DEFAULT_PAGE = 1;
@@ -49,7 +50,7 @@ export const getPaginationValues = (
 };
 
 const escapeRegex = (value: string) =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const buildSearchFilter = <T>(
   search: string | undefined,
@@ -62,7 +63,7 @@ export const buildSearchFilter = <T>(
 
   return {
     $or: searchFields.map((field) => ({
-      [field]: { $regex: safeSearch, $options: 'i' },
+      [field]: { $regex: safeSearch, $options: "i" },
     })),
   } as FilterQuery<T>;
 };
@@ -74,7 +75,7 @@ const buildFilterQuery = <T>(
 
   const cleanedEntries = Object.entries(filters).filter(([, value]) => {
     if (value === undefined || value === null) return false;
-    if (typeof value === 'string' && value.trim() === '') return false;
+    if (typeof value === "string" && value.trim() === "") return false;
     return true;
   });
 
@@ -83,7 +84,7 @@ const buildFilterQuery = <T>(
 
 const buildSortQuery = (
   sortBy: string | undefined,
-  sortOrder: 'asc' | 'desc' | undefined,
+  sortOrder: "asc" | "desc" | undefined,
   allowedSortFields: string[] | undefined,
 ): Record<string, SortOrder> => {
   const fallbackSort = { createdAt: -1 as SortOrder };
@@ -93,7 +94,7 @@ const buildSortQuery = (
     return fallbackSort;
   }
 
-  return { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+  return { [sortBy]: sortOrder === "asc" ? 1 : -1 };
 };
 
 export const applyQueryFeatures = async <T>(
@@ -113,10 +114,11 @@ export const applyQueryFeatures = async <T>(
     allowedSortFields,
   } = options;
 
-  const { page: currentPage, limit: pageLimit, skip } = getPaginationValues(
-    page,
-    limit,
-  );
+  const {
+    page: currentPage,
+    limit: pageLimit,
+    skip,
+  } = getPaginationValues(page, limit);
 
   const queryFilter: FilterQuery<T> = {
     ...(baseFilter || {}),
@@ -126,8 +128,12 @@ export const applyQueryFeatures = async <T>(
 
   const sort = buildSortQuery(sortBy, sortOrder, allowedSortFields);
 
-  const finder = model.find(queryFilter).sort(sort).skip(skip).limit(pageLimit);
+  let finder = model.find(queryFilter).sort(sort).skip(skip).limit(pageLimit);
   if (select) finder.select(select);
+
+  if (options.populate) {
+    finder = finder.populate(options.populate);
+  }
 
   const [items, total] = await Promise.all([
     finder,

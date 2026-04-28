@@ -15,8 +15,15 @@ import { options, optionsOfObject } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import GrammarForm from "./quiz-from/grammer-form/grammer-form";
 import { FormTextarea } from "@/components/ui/form-textarea";
+import SecondHeading from "@/components/shared/second-heading";
+import WritingPracticeForm from "./quiz-from/eassy-form/eassy-form";
+import WritingForm from "./quiz-from/writing-form/writing-form";
+import DialogueForm from "./quiz-from/dialogue-form/dialogue-form";
+import SpeechRecognitionForm from "./quiz-from/speech-recognition-form/speech-recognition-form";
+import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -24,72 +31,34 @@ interface ExerciseFormProps {
   exercise?: IExercise | null | undefined;
 }
 
-const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
+const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
   // Form
-  const form = useForm<ExerciseInput>({
+  const form = useForm<z.input<typeof exerciseSchema>, unknown, ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
     defaultValues: {
       lesson_id: "",
       title: "",
       visibility: VISIBILITY.PRIVATE,
-      // type: "",
-      content: null,
-      points: 0,
-      passing_percentage: 0,
+      content: [],
+      passing_percentage: 70,
     },
   });
 
-  // const [selectedValue, setSelectedValue] = useState<IFilteredLessonOptions>({
-  //   category: "",
-  //   level: "",
-  // });
-  console.log("form",form.formState.errors);
-  
+  console.log("form", form.formState.errors);
+
   const { data: filteredLessons } = useGetFilteredLessons({
     category: form.watch("category"),
     level: form.watch("level"),
   });
-
-  // const handleSelect = (
-  //   value: string,
-  //   name: keyof IFilteredLessonOptions,
-  // ): void => {
-  //   setSelectedValue((prev) => ({ ...prev, [name]: value }));
-  // };
-
-  // useEffect(() => {
-  //   if (exercise) {
-  //     form.reset({
-  //       title: exercise.title || "",
-  //       lesson_id: exercise.level || "",
-  //       category: exercise.category || "",
-  //       study_material: {
-  //         content: exercise.study_material?.content || "",
-  //         material_type: exercise.study_material?.material_type || "",
-  //       },
-  //       is_published: exercise.is_published || false,
-  //     });
-  //   }
-  // }, [exercise, form]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
         {/* TOP SECTION */}
         <div>
-          <h2 className="text-sm font-semibold text-muted-foreground mb-4">
-            Basic Information
-          </h2>
+          <SecondHeading title="Basic Information" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* <FormInput
-              control={form.control}
-              label="Title"
-              name="title"
-              disabled={isLoading}
-              placeholder="Enter exercise title..."
-            /> */}
-
             <FormSelect
               control={form.control}
               label="Category"
@@ -108,24 +77,6 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
               options={optionsOfObject(LEVEL)}
             />
 
-            {/* <AppSelect
-              label="Category"
-              className="w-full h-10!"
-              options={optionsOfObject(CATEGORY)}
-              onChange={(value) => handleSelect(value as string, "category")}
-              placeholder="Select category"
-              value={selectedValue.category}
-              />
-              
-              <AppSelect
-              label="Level"
-              options={optionsOfObject(LEVEL)}
-              className="w-full! h-10!"
-              onChange={(value) => handleSelect(value as string, "level")}
-              placeholder="Select level"
-              value={selectedValue.level}
-            /> */}
-
             <FormSelect
               control={form.control}
               label="Lesson"
@@ -134,53 +85,60 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: any) => {
               placeholder="Select lesson"
               options={options(filteredLessons, "title", "_id")}
             />
+          </div>
+        </div>
 
-            {/* <FormInput
-              control={form.control}
-              label="Points"
-              name="points"
-              type="number"
-              disabled={isLoading}
-              placeholder="Enter exercise points..."
-            /> */}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="order-2 md:order-1">
-            <FormInput
-              control={form.control}
-              label="Title"
-              name="title"
-              disabled={isLoading}
-              placeholder="Enter exercise title..."
-            />
-          </div>
-          <div className="order-1 md:order-2">
-            <FormInput
-              control={form.control}
-              label="Passing Percentage"
-              name="passing_percentage"
-              type="number"
-              disabled={isLoading}
-              placeholder="Enter passing percentage..."
-            />
-          </div>
-        </div>
-        <FormTextarea
-          control={form.control}
-          label="Description"
-          name="description"
-          disabled={isLoading}
-          placeholder="Enter exercise description..."
-        />
-        {/* CONTENT SECTION */}
         {form.watch("category") && (
-          <div>
+          <>
             <h2 className="text-sm font-semibold text-muted-foreground mb-4 capitalize">
-              {form.watch("category")} Quiz
+              <SecondHeading title={`${form.watch("category")} Quiz`} />
+              <span className="text-xs  text-red-500">
+                {" "}
+                {form.formState?.errors?.content?.message && (
+                  <>( {form.formState?.errors?.content?.message} )</>
+                )}
+              </span>
             </h2>
-            <GrammarForm />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="order-2 md:order-1">
+                <FormInput
+                  control={form.control}
+                  label="Title"
+                  name="title"
+                  disabled={isLoading}
+                  placeholder="Enter exercise title..."
+                />
+              </div>
+              <div className="order-1 md:order-2">
+                <FormInput
+                  control={form.control}
+                  label="Passing Percentage"
+                  name="passing_percentage"
+                  type="number"
+                  disabled={isLoading}
+                  placeholder="Enter passing percentage..."
+                />
+              </div>
+              <div className="order-3 col-span-1 md:col-span-2">
+                <FormTextarea
+                  control={form.control}
+                  label={
+                    form.watch("category") == CATEGORY.WRITING
+                      ? "Prompt"
+                      : "Description"
+                  }
+                  name="description"
+                  disabled={isLoading}
+                  placeholder="Enter exercise description..."
+                />
+              </div>
+            </div>
+            {/* CONTENT SECTION */}
+            {form.watch("category") === CATEGORY.GRAMMAR && <GrammarForm />}
+            {form.watch("category") === CATEGORY.WRITING && <WritingForm />}
+            {form.watch("category") === CATEGORY.SPEAKING && <SpeakingForm />}
+            <DialogueForm/>
+          </>
         )}
         {/* PUBLISH SECTION */}
         <div className="flex items-center justify-between pt-4 border-t">

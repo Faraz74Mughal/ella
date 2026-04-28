@@ -17,7 +17,7 @@ export const createExercise = asyncHandler(async (req: Request, res: Response) =
   
   return res
     .status(201)
-    .json(new ApiResponse(201, "Exercise created successfully.", exercise));
+    .json(new ApiResponse(201, "Exercise created successfully.", {exercise}));
 });
 
 export const getExercises = asyncHandler(async (req: Request, res: Response) => {

@@ -1,3 +1,4 @@
+import SecondHeading from "@/components/shared/second-heading";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
@@ -61,10 +62,7 @@ const LessonForm = ({ onSubmit, isLoading, lesson }: LessonFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
         {/* TOP SECTION */}
         <div>
-          <h2 className="text-sm font-semibold text-muted-foreground mb-4">
-            Basic Information
-          </h2>
-
+          <SecondHeading title="Basic Information" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormInput
               control={form.control}
@@ -96,10 +94,7 @@ const LessonForm = ({ onSubmit, isLoading, lesson }: LessonFormProps) => {
 
         {/* CONTENT SECTION */}
         <div>
-          <h2 className="text-sm font-semibold text-muted-foreground mb-4">
-            Content Setup
-          </h2>
-
+          <SecondHeading title="Content Setup" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormSelect
               control={form.control}

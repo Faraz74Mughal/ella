@@ -1,18 +1,20 @@
-import type { CATEGORY, LEVEL, QUIZ_TYPES, VISIBILITY } from "@/constants/lesson.constant";
-import type { USER_ROLES } from "@/constants/user.constant";
-
+import type { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
 
 export interface IExercise extends Document {
-  lesson_id:string;
+  _id?: string;
+  lesson_id: string;
   title: string;
   level: (typeof LEVEL)[keyof typeof LEVEL];
   category: (typeof CATEGORY)[keyof typeof CATEGORY];
-  created_by: string;
-  creator_role: (typeof USER_ROLES)[keyof typeof USER_ROLES];
+  created_by: {
+    _id: string;
+    name: string;
+    role: string;
+  };
   visibility: (typeof VISIBILITY)[keyof typeof VISIBILITY];
   assigned_to_students?: string[];
   // type: (typeof QUIZ_TYPES)[keyof typeof QUIZ_TYPES];
-  content: any; 
+  content: any;
   points: number;
   passing_percentage: number;
   available_from?: Date;
@@ -20,4 +22,3 @@ export interface IExercise extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
