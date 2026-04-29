@@ -22,7 +22,11 @@ export const useSpeakingBuilder = ({
     [value],
   );
 
-  const updateState = (updater: FolloWUpQuestion[] | ((prev: FolloWUpQuestion[]) => FolloWUpQuestion[])) => {
+  const updateState = (
+    updater:
+      | FolloWUpQuestion[]
+      | ((prev: FolloWUpQuestion[]) => FolloWUpQuestion[]),
+  ) => {
     const newState =
       typeof updater === "function" ? updater(questions) : updater;
 

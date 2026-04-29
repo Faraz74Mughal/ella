@@ -43,12 +43,24 @@ const followUpSchema = z.object({
   expectedAnswer: z.string().min(1, "Expected answer is required"),
 });
 
+
+
+const dialogueSchema = z.object({
+  id: z.string(),
+  type: z.literal("dialogue"),
+  question: z.string().min(1, "Question is required"),
+  speaker: z.string().min(1, "Speaker is required"),
+  expectedAnswer: z.string().min(1, "Expected answer is required"),
+  alternative: z.string().optional(),
+});
+
 const questionSchema = z.discriminatedUnion("type", [
   mcqSchema,
   fillBlankSchema,
   matchingSchema,
-  followUpSchema
-]);
+  followUpSchema,
+  dialogueSchema
+]);   
 
 export const exerciseSchema = z.object({
   lesson_id: z.string().min(1, "Lesson ID is required"),

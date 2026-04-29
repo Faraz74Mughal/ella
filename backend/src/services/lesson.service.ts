@@ -138,7 +138,6 @@ export class LessonsService {
   }
 
   static async getFilteredLessons(data: IFilteredLessonOptions) {
-    console.log("IFilteredLessonOptions",data);
     
     const lessons = await Lesson.find({
       level: data.level,

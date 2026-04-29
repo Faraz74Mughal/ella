@@ -19,11 +19,10 @@ import { z } from "zod";
 import GrammarForm from "./quiz-from/grammer-form/grammer-form";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import SecondHeading from "@/components/shared/second-heading";
-import WritingPracticeForm from "./quiz-from/eassy-form/eassy-form";
 import WritingForm from "./quiz-from/writing-form/writing-form";
-import DialogueForm from "./quiz-from/dialogue-form/dialogue-form";
-import SpeechRecognitionForm from "./quiz-from/speech-recognition-form/speech-recognition-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
+import VideoScenariosForm from "./quiz-from/video-scenarios-form/video-scenarios-form";
+import ListeningForm from "./quiz-from/listening-form/listening-form";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -137,7 +136,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             {form.watch("category") === CATEGORY.GRAMMAR && <GrammarForm />}
             {form.watch("category") === CATEGORY.WRITING && <WritingForm />}
             {form.watch("category") === CATEGORY.SPEAKING && <SpeakingForm />}
-            <DialogueForm/>
+            { <ListeningForm/> }
           </>
         )}
         {/* PUBLISH SECTION */}
