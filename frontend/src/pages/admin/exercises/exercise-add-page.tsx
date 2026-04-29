@@ -13,7 +13,7 @@ const AdminExercisesAddPage = () => {
 
     // return;
     values.points = (values.content||[])?.reduce((acc, item) => {
-      acc += item.points||1;
+      acc += item?.points||1;
       return acc;
     }, 0)||10;
     addExercise(values as IExercise);
