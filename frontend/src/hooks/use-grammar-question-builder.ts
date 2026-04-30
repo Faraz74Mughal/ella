@@ -7,6 +7,12 @@ import type {
 } from "../types/grammar-question";
 import { generateId } from "../utils/helpers";
 
+const types = [
+  { value: "mcq", label: "Multiple Choice" },
+  { value: "matching", label: "Match the following" },
+  { value: "fill_blank", label: "Fill in the Blank" },
+];
+
 const createDefaultQuestion = (): SubQuestion => ({
   id: generateId(),
   type: "mcq",
@@ -35,12 +41,6 @@ export const useQuestionBuilder = ({
 
     onChange?.(newState);
   };
-
-  const types = [
-    { value: "mcq", label: "Multiple Choice" },
-    { value: "matching", label: "Match the following" },
-    { value: "fill_blank", label: "Fill in the Blank" },
-  ];
 
   // ------------------------
   // QUESTION LEVEL

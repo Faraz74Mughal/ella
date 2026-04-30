@@ -17,7 +17,6 @@ export interface MCQQuestion {
   options: string[];
   correctAnswer: string;
   points: number;
-  timestamp?: number;
 }
 
 export interface FillBlankQuestion {
@@ -27,7 +26,6 @@ export interface FillBlankQuestion {
   correctAnswer: string;
   alternatives?: string[];
   points: number;
-  timestamp?: number;
 }
 
 export interface MatchingPair {
@@ -42,22 +40,8 @@ export interface MatchingQuestion {
   pairs: MatchingPair[];
   shuffleOptions?: boolean;
   points: number;
-  timestamp?: number;
 }
-// export interface SubQuestion {
-//   id: string;
-//   type: QuestionType;
-//   question?: string;
-//   description?:string;
-//   options?: string[];
-//   correctAnswer: string | string[];
-//   alternatives?: string[];
-//   points: number;
-//   timestamp?: number;
 
-//   pairs?: MatchingPair[];
-//   shuffleOptions?: boolean;
-// }
 
 export type SubQuestion =
   | MCQQuestion

@@ -1,11 +1,12 @@
 import type { ITypes, SubQuestion } from "@/types/grammar-question";
+import type { ComprehensionQuestions } from "@/types/listening-question";
 
 interface TypeOptionsProps {
   types: ITypes[];
-  question: SubQuestion;
+  question: any;
   updateQuestion: (
     questionId: string,
-    field: keyof SubQuestion,
+    field: any,
     value: any,
   ) => void;
 }

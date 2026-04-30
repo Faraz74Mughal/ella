@@ -21,7 +21,6 @@ import { FormTextarea } from "@/components/ui/form-textarea";
 import SecondHeading from "@/components/shared/second-heading";
 import WritingForm from "./quiz-from/writing-form/writing-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
-import VideoScenariosForm from "./quiz-from/video-scenarios-form/video-scenarios-form";
 import ListeningForm from "./quiz-from/listening-form/listening-form";
 
 interface ExerciseFormProps {
@@ -136,7 +135,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             {form.watch("category") === CATEGORY.GRAMMAR && <GrammarForm />}
             {form.watch("category") === CATEGORY.WRITING && <WritingForm />}
             {form.watch("category") === CATEGORY.SPEAKING && <SpeakingForm />}
-            { <ListeningForm/> }
+            {form.watch("category") === CATEGORY.LISTENING && <ListeningForm />}
           </>
         )}
         {/* PUBLISH SECTION */}

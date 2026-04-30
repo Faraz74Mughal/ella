@@ -21,6 +21,14 @@ const fillBlankSchema = z.object({
   points: z.number().min(1, "Points must be at least 1"),
 });
 
+const trueFalseSchema = z.object({
+  id: z.string(),
+  type: z.literal("true_false"),
+  question: z.string().min(1, "Question is required"),
+  correctAnswer: z.boolean(),
+  points: z.number().min(1, "Points must be at least 1"),
+});
+
 const matchingSchema = z.object({
   id: z.string(),
   type: z.literal("matching"),
@@ -43,8 +51,6 @@ const followUpSchema = z.object({
   expectedAnswer: z.string().min(1, "Expected answer is required"),
 });
 
-
-
 const dialogueSchema = z.object({
   id: z.string(),
   type: z.literal("dialogue"),
@@ -54,13 +60,39 @@ const dialogueSchema = z.object({
   alternative: z.string().optional(),
 });
 
+const listeningSchema = z.object({
+  id: z.string(),
+  type: z.literal("listening"),
+  file: z.string().nullable(),
+  transcript: z.string().optional(),
+  points: z.coerce.number().optional(),
+  comprehensionQuestions: z
+    .array(
+      z.discriminatedUnion("type", [
+        mcqSchema,
+        fillBlankSchema,
+        trueFalseSchema,
+      ]),
+    )
+    .min(1, "At least one comprehension question is required"),
+});
+
+//  id: string;
+//   type: string;
+//   file?: File | null;
+//   transcript: string;
+//   points: number;
+//   comprehensionQuestions: ComprehensionQuestions[];
+
 const questionSchema = z.discriminatedUnion("type", [
   mcqSchema,
   fillBlankSchema,
   matchingSchema,
   followUpSchema,
-  dialogueSchema
-]);   
+  dialogueSchema,
+  listeningSchema,
+  trueFalseSchema,
+]);
 
 export const exerciseSchema = z.object({
   lesson_id: z.string().min(1, "Lesson ID is required"),

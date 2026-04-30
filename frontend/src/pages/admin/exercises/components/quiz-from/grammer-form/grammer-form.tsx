@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, Plus, Trash2 } from "lucide-react";
+import {  Plus, Trash2 } from "lucide-react";
 import MCQRenderer from "./mcq-renderer";
 import { useQuestionBuilder } from "@/hooks/use-grammar-question-builder";
 import MatchingRenderer from "./matching-renderer";
@@ -99,24 +99,7 @@ const GrammarForm = () => {
                   </div>
                 )}
 
-                {/* Audio Timestamp (Optional) */}
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-slate-400" />
-                  <Input
-                    type="number"
-                    value={question.timestamp || ""}
-                    onChange={(e) =>
-                      qb.updateQuestion(
-                        question.id,
-                        "timestamp",
-                        parseInt(e.target.value) || undefined,
-                      )
-                    }
-                    placeholder="Timestamp in seconds (e.g., 45)"
-                    className="w-32 h-8 text-sm"
-                    step={1}
-                  />
-                </div>
+               
 
                 {question.type === "mcq" ? (
                   <MCQRenderer {...qb} question={question} idx={idx} />
