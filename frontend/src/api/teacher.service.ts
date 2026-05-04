@@ -12,7 +12,15 @@ export const teacherService = {
         },
       },
     );
-    console.log("REGISTER RESPONSE:", response);
+    const user = response?.data?.data.user;
+    return user;
+  },
+
+  updatePassword: async (data: { oldPassword: string; newPassword: string }): Promise<User> => {
+    const response = await api.patch<ApiResponse<{ user: User }>>(
+      "/teachers/update-password",
+      data,
+    );
     const user = response?.data?.data.user;
     return user;
   },

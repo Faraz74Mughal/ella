@@ -5,7 +5,7 @@ import { Report } from '../models/report.model';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { upload } from '../middlewares/multer.middleware';
-import { applyAsTeacher, reportStudent } from '../controllers/teacher.controller';
+import { applyAsTeacher, reportStudent, updatePassword } from '../controllers/teacher.controller';
 import {
   getAssignedStudentDetails,
   getMyStudents,
@@ -37,5 +37,7 @@ router.get(
   validate(getTeacherStudentDetailsSchema),
   getAssignedStudentDetails,
 );
+
+router.patch('/update-password',updatePassword )
 
 export default router;

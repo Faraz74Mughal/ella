@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyJWT } from '../middlewares/auth.middleware';
 import { authorizeRoles } from '../middlewares/role.middleware';
 import { validate } from '../middlewares/validate.middleware';
-import { getUsers, updateRole } from '../controllers/user.controller';
+import { getUsers, teacherAdd, updateRole } from '../controllers/user.controller';
 import {
 	addTeacherToStudent,
 	getMyTeachers,
@@ -36,6 +36,8 @@ router.delete(
 	validate(removeTeacherSchema),
 	removeTeacherFromStudent,
 );
+
+router.post('/teacher/add', verifyJWT, authorizeRoles('admin'), teacherAdd);	
 
 router.get('/me/teachers', verifyJWT, authorizeRoles('student'), getMyTeachers);
 

@@ -26,6 +26,7 @@ export interface IUser extends Document {
   // Verification & Security
   rejectionReason?: string;
   isEmailVerified: boolean;
+  isPasswordNeedToChange: boolean;
   emailVerificationToken?: string;
   emailVerificationExpire?: Date;
   isDeleted: boolean;
@@ -55,3 +56,9 @@ export interface IUserMethods {
   generateAccessToken(): string;
   generateRefreshToken(): string;
 }
+
+export type TUpdatePassword= {
+  userId: string; 
+  oldPassword: string;
+  newPassword: string;
+};

@@ -33,3 +33,33 @@ export const getResetPasswordTemplate = (url: string): string => {
     </div>
   `;
 };
+
+export const getTeacherWelcomeTemplate = (name: string, email: string, temporaryPassword: string, loginUrl: string): string => {
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
+      <div style="background-color: #4A90E2; padding: 20px; text-align: center;">
+        <h1 style="color: white; margin: 0;">Welcome to the Team!</h1>
+      </div>
+      <div style="padding: 30px; color: #333; line-height: 1.6;">
+        <p>Hello <strong>${name}</strong>,</p>
+        <p>An administrator has created a teacher account for you. You can now access the portal using the credentials below:</p>
+        
+        <div style="background-color: #f4f7f9; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px dashed #4A90E2;">
+          <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+          <p style="margin: 5px 0;"><strong>Temporary Password:</strong> <code style="background: #fff; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px; color: #d63384;">${temporaryPassword}</code></p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${loginUrl}" style="background-color: #4A90E2; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Login to Your Account</a>
+        </div>
+
+        <p style="color: #d93025; font-size: 14px;"><strong>Note:</strong> For security reasons, you will be required to change this password immediately after your first login.</p>
+        
+        <p>If you have any trouble logging in, please contact your administrator.</p>
+      </div>
+      <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #aaa;">
+        © 2026 Your Platform. All rights reserved.
+      </div>
+    </div>
+  `;
+};

@@ -271,8 +271,8 @@ export const assignRole = asyncHandler(async (req: Request, res: Response) => {
     loggedInUser.isEmailVerified &&
     loggedInUser.accountStatus === ACCOUNT_STATUS.ACTIVE
   ) {
-   const { accessToken, refreshToken } =
-    await AuthService.generateAccessAndRefreshTokens(loggedInUser._id);
+    const { accessToken, refreshToken } =
+      await AuthService.generateAccessAndRefreshTokens(loggedInUser._id);
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -295,7 +295,7 @@ export const assignRole = asyncHandler(async (req: Request, res: Response) => {
   return res.status(200).json(
     new ApiResponse(
       200,
-      `Role updated successfully. ${loggedInUser?.role === USER_ROLES.STUDENT && "Email has been sent. Please verify your email to log in."} `,
+      `Role updated successfully. Email has been sent. Please verify your email to log in. `,
       {
         user: loggedInUser,
       },

@@ -9,6 +9,7 @@ export interface User {
   accountStatus: string;
   isEmailVerified: boolean;
   authProvider?: string;
+  isPasswordNeedToChange?: boolean;
 }
 
 export interface LoginInput {

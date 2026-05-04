@@ -98,7 +98,10 @@ const userSchema = new Schema<
       type: Boolean,
       default: false,
     },
-
+    isPasswordNeedToChange: {
+      type: Boolean,
+      default: false,
+    },
     emailVerificationToken: { type: String, select: false },
     emailVerificationExpire: { type: Date, select: false },
 

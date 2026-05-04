@@ -54,3 +54,20 @@ export const updateRole = asyncHandler(async (req: Request, res: Response) => {
     .status(200)
     .json(new ApiResponse(200, `Role updated to ${role} successfully`, {user:updatedUser}));
 });
+
+
+export const teacherAdd = asyncHandler(async (req: Request, res: Response) => {
+ 
+  
+  const user = await UserService.teacherAdd(req.body);
+
+  return res.status(201).json(
+    new ApiResponse(
+      201,
+      "Teacher created successfully.",
+      {
+        user: user,
+      },
+    ),
+  );
+});

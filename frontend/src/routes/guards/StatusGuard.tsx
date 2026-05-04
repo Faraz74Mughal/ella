@@ -16,6 +16,10 @@ export const StatusGuard = ({ allowedStatus }: { allowedStatus: string[] }) => {
     return <Navigate to="/teacher/rejected" replace />;
   }
 
+  if (user?.isPasswordNeedToChange) {
+    return <Navigate to="/teacher/update-password" replace />;
+  }
+
   if (!allowedStatus.includes(user?.accountStatus || "")) {
     return <Navigate to="/unauthorized" replace />;
   }

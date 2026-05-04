@@ -33,6 +33,8 @@ import AdminLessonsEditPage from "@/pages/admin/lessons/lesson-edit-page";
 import AdminExercisesPage from "@/pages/admin/exercises/exercises-page";
 import AdminExercisesEditPage from "@/pages/admin/exercises/exercise-edit-page";
 import AdminExercisesAddPage from "@/pages/admin/exercises/exercise-add-page";
+import AdminTeacherAddPage from "@/pages/admin/users/teacher-add-page";
+import TeacherUpdatePasswordFirstTimePage from "@/pages/teacher/auth/UpdatePasswordFirstTImePage";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
 
@@ -78,12 +80,16 @@ const router = createBrowserRouter([
                         element: <AdminLessonsEditPage />,
                       },
                       { path: "exercises", element: <AdminExercisesPage /> },
-                      { path: "exercises/add", element: <AdminExercisesAddPage /> },
+                      {
+                        path: "exercises/add",
+                        element: <AdminExercisesAddPage />,
+                      },
                       {
                         path: "exercises/edit/:id",
                         element: <AdminExercisesEditPage />,
                       },
                       { path: "users", element: <AdminUsersPage /> },
+                      { path: "users/add", element: <AdminTeacherAddPage /> },
                       { path: "approvals", element: <AdminApprovalsPage /> },
                       { path: "settings", element: <AdminSettingsPage /> },
                     ],
@@ -115,6 +121,7 @@ const router = createBrowserRouter([
                             path: "settings",
                             element: <TeacherSettingsPage />,
                           },
+
                           {
                             path: "",
                             element: <Navigate to="dashboard" replace />,
@@ -127,6 +134,10 @@ const router = createBrowserRouter([
                   {
                     path: "awaiting-approval",
                     element: <AwaitingApprovalPage />,
+                  },
+                  {
+                    path: "update-password",
+                    element: <TeacherUpdatePasswordFirstTimePage />,
                   },
                   { path: "apply", element: <TeacherOnboarding /> },
                 ],

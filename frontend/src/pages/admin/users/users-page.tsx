@@ -20,7 +20,7 @@ const AdminUsersPage = () => {
 
   return (
     <section className="space-y-6">
-      <PageHeading title="Users" createPageUrl="/admin/users/add" />
+      <PageHeading title="Teacher" createPageUrl="/admin/users/add" />
       <Card className="-py-2">
         <UserList users={response?.users || []} />
 

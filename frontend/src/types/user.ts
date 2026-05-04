@@ -27,3 +27,10 @@ export interface IUser {
   isDeleted?: boolean;
   lastLoginAt?: Date;
 }
+
+
+export interface ITeacherForm{
+  email: string;
+  name: string;
+  username: string;
+} 

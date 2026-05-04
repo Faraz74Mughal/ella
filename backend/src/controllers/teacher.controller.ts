@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { TeacherService } from "../services/teacher.service";
 import { ApiResponse } from "../utils/ApiResponse";
 import { ApiError } from "../utils/ApiError";
+import { TUpdatePassword } from "../types/user.type";
 
 export const reportStudent = asyncHandler(
   async (req: Request, res: Response) => {
@@ -36,7 +37,6 @@ export const reportStudent = asyncHandler(
 
 export const applyAsTeacher = asyncHandler(
   async (req: Request, res: Response) => {
-
     // 1. Validation: Ensure files exist on the request object (populated by Multer)
     if (!req.files || Object.keys(req.files).length === 0) {
       throw new ApiError(400, "No documents were uploaded");
@@ -53,5 +53,20 @@ export const applyAsTeacher = asyncHandler(
       .json(
         new ApiResponse(200, "Application submitted for review", updatedUser),
       );
+  },
+);
+
+export const updatePassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    if((req as any).user ){
+      req.body.userId = (req as any).user._id;
+    }
+    const updatedUser = await TeacherService.updatePassword(
+      req.body as TUpdatePassword,
+    );
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Password updated successfully", {user:updatedUser}));
   },
 );

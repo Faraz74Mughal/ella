@@ -2,6 +2,7 @@ import { User } from "../models/user.model";
 import { ApiError } from "../utils/ApiError";
 import { uploadOnCloudinary } from "../config/cloudinary";
 import { Report } from "../models/report.model";
+import { TUpdatePassword } from "../types/user.type";
 
 export class TeacherService {
   static async reportStudent(
@@ -67,6 +68,25 @@ export class TeacherService {
       },
       { new: true },
     );
+    return user;
+  }
+
+  static async updatePassword(body: TUpdatePassword) {
+    const user = await User.findById(body.userId).select("+password");
+    if(!user) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(body.oldPassword);
+
+    if (!isPasswordValid) {
+      throw new ApiError(401, "Invalid password.");
+    }
+
+    user.password = body.newPassword;
+    user.isPasswordNeedToChange = false;
+    await user.save({ validateBeforeSave: false });
+
     return user;
   }
 }

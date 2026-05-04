@@ -95,6 +95,7 @@ export class AuthService {
       throw new ApiError(403, `Your account application was rejected.`);
     }
 
+
     const loggedInUser = user.toObject();
     delete loggedInUser.password;
     delete loggedInUser.refreshToken;
