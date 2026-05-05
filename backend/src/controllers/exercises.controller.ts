@@ -44,7 +44,9 @@ export const getExercises = asyncHandler(async (req: Request, res: Response) => 
 
 export const getExerciseById = asyncHandler(
   async (req: Request, res: Response) => {
-    const exercise = await ExercisesService.getExerciseById(req.params.id as string);
+    console.log("req.params",req.params);
+    
+    const exercise = await ExercisesService.getExerciseById(req.params.exerciseId as string);
 
     return res
       .status(200)

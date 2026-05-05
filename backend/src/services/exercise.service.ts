@@ -75,6 +75,8 @@ export class ExercisesService {
   }
 
   static async getExerciseById(exerciseId: string) {
+    console.log("WHAT IS ID", exerciseId);
+    
     const exercise = await Exercise.findById(exerciseId).populate(
       "lesson_id",
       "title sequence_order",

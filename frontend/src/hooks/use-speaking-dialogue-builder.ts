@@ -2,12 +2,12 @@ import type { DialogueLine } from "@/types/speaking-question";
 import { generateId } from "@/utils/helpers";
 import { useMemo, useState } from "react";
 
-const createDefaultQuestion = (): DialogueLine => ({
+const createDefaultQuestion = (speaker?: string): DialogueLine => ({
   id: generateId(),
   type: "dialogue",
-  speaker: "",
+  speaker: speaker || "",
   question: "",
-  expectedResponse: "",
+  expectedAnswer: "",
   alternative: "",
 });
 
@@ -22,10 +22,10 @@ export const useSpeakingDialogueBuilder = ({
   const [speakers, setSpeakers] = useState<string[]>(["Teacher", "Mentor"]);
   const [newSpeaker, setNewSpeaker] = useState("");
 
-  const questions = useMemo(
-    () => (value?.length ? value : [createDefaultQuestion()]),
-    [value],
-  );
+  const questions = useMemo(() => {
+    const sp = speakers[0] || "";
+    return value?.length ? value : [createDefaultQuestion(sp)];
+  }, [value]);
 
   const updateState = (
     updater: DialogueLine[] | ((prev: DialogueLine[]) => DialogueLine[]),
@@ -64,7 +64,8 @@ export const useSpeakingDialogueBuilder = ({
       setError("Please add at least one speakers.");
       return;
     }
-    updateState((prev) => [...prev, createDefaultQuestion()]);
+    const sp = speakers[0] || "";
+    updateState((prev) => [...prev, createDefaultQuestion(sp)]);
   };
 
   const updateQuestion = (id: string, field: string, value: any) => {

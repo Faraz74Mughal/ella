@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, FileVideo, FileText, HelpCircle, Plus } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import useListeningBuilder from "@/hooks/use-listening-builder";
 import { useFormContext } from "react-hook-form";
@@ -72,7 +71,6 @@ const ListeningForm = () => {
               {/* Video Tab */}
 
               <Label className="text-slate-700 font-semibold flex items-center gap-2">
-                <FileVideo className="w-4 h-4 text-red-600" />
                 Video File / Audio File
               </Label>
               <FileDropzone
@@ -94,7 +92,6 @@ const ListeningForm = () => {
               {/* Transcript */}
               <div className="space-y-2">
                 <Label className="text-slate-700 font-semibold flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-red-600" />
                   Transcript (Optional)
                 </Label>
                 <Textarea
@@ -112,21 +109,20 @@ const ListeningForm = () => {
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <Label className="text-slate-700 font-semibold flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4 text-red-600" />
                   Comprehension Questions
                 </Label>
               </div>
 
               <div className="space-y-6">
-                {question.comprehensionQuestions.map(
+                {(question.comprehensionQuestions || []).map(
                   (comprehensionQuestion, cdx) => (
-                    <Card key={cdx} className="border-l-4 border-l-red-400">
+                    <Card key={cdx} className="border-l-4 border-l-primary">
                       <CardContent className="p-4">
                         <div className="space-y-4">
                           {/* Question Header */}
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3 flex-1">
-                              <Badge variant="outline" className="bg-red-50">
+                              <Badge variant="outline" className="bg-blue-50">
                                 CQ{cdx + 1}
                               </Badge>
                               <TypesSelect
@@ -141,7 +137,8 @@ const ListeningForm = () => {
                                 }
                                 types={lb.types}
                               />
-
+                            </div>
+                            <div className="flex gap-2 items-center">
                               <div className="flex items-center gap-2">
                                 <Label className="text-sm text-slate-500">
                                   Points:
@@ -150,7 +147,8 @@ const ListeningForm = () => {
                                   type="number"
                                   value={comprehensionQuestion.points}
                                   onChange={(e) =>
-                                    lb.updateQuestion(
+                                    lb.updateComprehensionQuestion(
+                                      question.id,
                                       comprehensionQuestion.id,
                                       "points",
                                       parseInt(e.target.value) || 0,
@@ -161,20 +159,20 @@ const ListeningForm = () => {
                                   max={100}
                                 />
                               </div>
-                            </div>
 
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                lb.removeQuestion(comprehensionQuestion.id)
-                              }
-                              disabled={lb.questions.length === 1}
-                              className="text-red-500 ml-2"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                  lb.removeQuestion(comprehensionQuestion.id)
+                                }
+                                disabled={lb.questions.length === 1}
+                                className="text-red-500 ml-2"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
 
                           <Textarea
@@ -206,7 +204,8 @@ const ListeningForm = () => {
                                 updateQuestion={lb.updateComprehensionQuestion}
                                 updateOption={lb.updateOption}
                                 question={comprehensionQuestion as MCQQuestion}
-                                idx={cdx}
+                                idx={idx}
+                                cdx={cdx}
                               />
                             ) : comprehensionQuestion.type === "fill_blank" ? (
                               <FillInTheBlankRenderer
@@ -216,6 +215,7 @@ const ListeningForm = () => {
                                   comprehensionQuestion as FillBlankQuestion
                                 }
                                 idx={cdx}
+                                cdx={cdx}
                               />
                             ) : comprehensionQuestion.type === "true_false" ? (
                               <TrueFalseRenderer

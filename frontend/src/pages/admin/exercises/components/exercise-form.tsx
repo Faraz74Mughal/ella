@@ -14,7 +14,7 @@ import type { IExercise } from "@/types/exercise";
 import { options, optionsOfObject } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import GrammarForm from "./quiz-from/grammer-form/grammer-form";
 import { FormTextarea } from "@/components/ui/form-textarea";
@@ -22,6 +22,7 @@ import SecondHeading from "@/components/shared/second-heading";
 import WritingForm from "./quiz-from/writing-form/writing-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
 import ListeningForm from "./quiz-from/listening-form/listening-form";
+import { useEffect, useRef } from "react";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -41,13 +42,27 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
       passing_percentage: 70,
     },
   });
-
-  console.log("form", form.formState.errors);
+console.log("form",form.formState.errors);
 
   const { data: filteredLessons } = useGetFilteredLessons({
     category: form.watch("category"),
     level: form.watch("level"),
   });
+
+  const prevCategoryRef = useRef<string | undefined>(undefined);
+
+  const category = useWatch({
+    control: form.control,
+    name: "category",
+  });
+console.log("TEST", form.getValues());
+
+  useEffect(() => {
+    if (prevCategoryRef.current && prevCategoryRef.current !== category) {
+      form.setValue("content", []);
+    }
+    prevCategoryRef.current = category;
+  }, [category, form]);
 
   return (
     <Form {...form}>

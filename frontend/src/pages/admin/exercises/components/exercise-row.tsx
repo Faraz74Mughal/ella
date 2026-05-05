@@ -2,15 +2,16 @@ import { Edit, Eye, Trash2 } from "lucide-react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import type { IExercise } from "@/types/exercise";
 import { DeleteDialog } from "@/components/ui/delete-dialog";
+import { Link } from "react-router-dom";
 
 const ExerciseRow = ({
   exercise,
   onEdit,
-  onDelete
+  onDelete,
 }: {
   exercise: IExercise;
   onEdit: () => void;
-  onDelete:()=>void;
+  onDelete: () => void;
 }) => {
   return (
     <TableRow>
@@ -20,12 +21,12 @@ const ExerciseRow = ({
       <TableCell>{exercise?.category}</TableCell>
       <TableCell>{exercise?.points}</TableCell>
       <TableCell>{exercise?.passing_percentage}%</TableCell>
-      <TableCell>
-        
-      </TableCell>
+
       <TableCell>
         <div className="flex gap-2">
-          <Eye size={16} className="text-primary" />
+          <Link to={`/admin/exercises/${exercise._id}`}>
+            <Eye size={16} className="text-primary" />
+          </Link>
           <Edit size={16} className="text-primary" onClick={onEdit} />
           <DeleteDialog onConfirm={onDelete}>
             <Trash2 size={16} className="text-destructive" />

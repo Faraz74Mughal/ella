@@ -9,9 +9,6 @@ import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation"
 const AdminExercisesAddPage = () => {
   const { mutate: addExercise, isPending } = useAddExerciseByAdmin();
   const exerciseAddHandler = async (values: ExerciseInput) => {
-    console.log("EXERCISE_INPUT", values);
-
-    // return;
     values.points = (values.content||[])?.reduce((acc, item) => {
       acc += item?.points||1;
       return acc;

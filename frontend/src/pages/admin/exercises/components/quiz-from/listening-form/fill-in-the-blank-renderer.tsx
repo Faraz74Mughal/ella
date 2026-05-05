@@ -14,12 +14,14 @@ interface FillInTheBlankRendererProps {
     value: any,
   ) => void;
   idx: number;
+  cdx: number;
 }
 
 const FillInTheBlankRenderer = ({
   question,
   listeningId,
   idx,
+  cdx,
   updateQuestion,
 }: FillInTheBlankRendererProps) => {
   const { formState } = useFormContext<ExerciseInput>();
@@ -46,7 +48,7 @@ const FillInTheBlankRenderer = ({
           </div>
           <span className="text-xs  text-red-500">
             {Array.isArray(formState?.errors?.content) &&
-              formState?.errors?.content?.[idx]?.correctAnswer?.message}
+              formState?.errors?.content?.[idx]?.comprehensionQuestions?.[cdx]?.correctAnswer?.message}
           </span>
         </div>
         <div className="space-y-1">

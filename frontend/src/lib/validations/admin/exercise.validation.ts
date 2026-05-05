@@ -58,6 +58,7 @@ const dialogueSchema = z.object({
   speaker: z.string().min(1, "Speaker is required"),
   expectedAnswer: z.string().min(1, "Expected answer is required"),
   alternative: z.string().optional(),
+  points: z.number(),
 });
 
 const listeningSchema = z.object({
@@ -77,12 +78,14 @@ const listeningSchema = z.object({
     .min(1, "At least one comprehension question is required"),
 });
 
-//  id: string;
-//   type: string;
-//   file?: File | null;
-//   transcript: string;
-//   points: number;
-//   comprehensionQuestions: ComprehensionQuestions[];
+const writingSchema = z.object({
+  type: z.literal("writing"),
+  topic: z.string().min(1, "Topic is required"),
+  timeLimit: z.number().min(1, "Time limit must be at least 1"),
+  minimumWords: z.number().min(1, "Minimum word count must be at least 1"),
+  maximumWords: z.number().min(1, "Maximum word count must be at least 1"),
+  points: z.number().min(1, "Points must be at least 1"),
+});
 
 const questionSchema = z.discriminatedUnion("type", [
   mcqSchema,
@@ -92,6 +95,7 @@ const questionSchema = z.discriminatedUnion("type", [
   dialogueSchema,
   listeningSchema,
   trueFalseSchema,
+  writingSchema
 ]);
 
 export const exerciseSchema = z.object({

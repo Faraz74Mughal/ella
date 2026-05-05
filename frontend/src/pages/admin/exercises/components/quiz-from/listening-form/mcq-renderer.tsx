@@ -24,6 +24,7 @@ interface MCQRendererProps {
     value: any,
   ) => void;
   idx: number;
+  cdx: number;
 }
 
 const MCQRenderer = ({
@@ -34,8 +35,8 @@ const MCQRenderer = ({
   addOption,
   updateQuestion,
   idx,
+  cdx,
 }: MCQRendererProps) => {
-  console.log("question", question);
 
   const { formState } = useFormContext<ExerciseInput>();
   return (
@@ -47,7 +48,7 @@ const MCQRenderer = ({
           <span className="text-xs ml-6 text-red-500">
             (
             {Array.isArray(formState?.errors?.content) &&
-              formState?.errors?.content?.[idx]?.correctAnswer?.message}
+              formState?.errors?.content?.[idx]?.comprehensionQuestions?.[cdx]?.correctAnswer?.message}
             )
           </span>
         )}
@@ -87,7 +88,7 @@ const MCQRenderer = ({
 
           <span className="text-xs ml-6 text-red-500">
             {Array.isArray(formState?.errors?.content) &&
-              formState?.errors?.content?.[idx]?.options?.[optIdx]?.message}
+              formState?.errors?.content?.[idx]?.comprehensionQuestions?.[cdx]?.options?.[optIdx]?.message}
           </span>
         </div>
       ))}

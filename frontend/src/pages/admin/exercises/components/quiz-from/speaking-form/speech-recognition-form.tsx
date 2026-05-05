@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FormInput } from "@/components/ui/form-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,19 +28,12 @@ const SpeechRecognitionForm = () => {
               {/* Prompt Section */}
 
               <div className="flex items-center justify-between gap-3 w-full">
-                <Badge variant="outline" className="bg-red-50">
+                <Badge variant="outline" className="bg-blue-50">
                   CQ{idx + 1}
                 </Badge>
                 <div className="flex items-start justify-between">
-                  <FormInput
-                    control={control}
-                    name={`content.${idx}.points`}
-                    label="Points:"
-                    type="number"
-                    min={0}
-                    max={100}
-                  />
-                  {/* <div className="flex items-center gap-2">
+            
+                  <div className="flex items-center gap-2">
                     <Label className="text-sm text-slate-500">Points:</Label>
                     <Input
                       type="number"
@@ -57,7 +49,7 @@ const SpeechRecognitionForm = () => {
                       min={0}
                       max={100}
                     />
-                  </div> */}
+                  </div>
 
                   <Button
                     type="button"

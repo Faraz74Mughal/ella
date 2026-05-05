@@ -2,8 +2,8 @@ import SecondHeading from "@/components/shared/second-heading";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
+import { FormFileDropzone } from "@/components/ui/form-dropzone";
 import { FormInput } from "@/components/ui/form-input";
-import { FormMedia, type MediaType } from "@/components/ui/form-media";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import {
@@ -11,13 +11,27 @@ import {
   LEVEL,
   STUDY_MATERIAL_TYPE,
 } from "@/constants/lesson.constant";
-import { lessonSchema, type LessonInput } from "@/lib/validations/admin/lesson.validation";
+import {
+  lessonSchema,
+  type LessonInput,
+} from "@/lib/validations/admin/lesson.validation";
 import type { ILesson } from "@/types/lesson";
 import { optionsOfObject } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+
+const defaultValues: LessonInput = {
+  title: "",
+  level: "",
+  category: "",
+  study_material: {
+    content: "",
+    material_type: "text",
+  },
+  is_published: false,
+};
 
 interface LessonFormProps {
   onSubmit: (values: LessonInput) => Promise<void>;
@@ -28,16 +42,7 @@ interface LessonFormProps {
 const LessonForm = ({ onSubmit, isLoading, lesson }: LessonFormProps) => {
   const form = useForm<LessonInput>({
     resolver: zodResolver(lessonSchema),
-    defaultValues: {
-      title: "",
-      level: "",
-      category: "",
-      study_material: {
-        content: "",
-        material_type: "",
-      },
-      is_published: false,
-    },
+    defaultValues: defaultValues,
   });
 
   const materialType = form.watch("study_material.material_type");
@@ -108,13 +113,23 @@ const LessonForm = ({ onSubmit, isLoading, lesson }: LessonFormProps) => {
 
           <div className="mt-6">
             {materialType === "audio" || materialType === "video" ? (
-              <FormMedia
-                control={form.control}
-                label="Media Content"
-                name="study_material.content"
-                type={(materialType as MediaType) || "image"}
+              <FormFileDropzone
+              label="Content Media"
+              control={form.control}
+              name="study_material.content"
+              accept={materialType === "audio"
+                ? { "audio/*": [] }
+                : { "video/*": [] }}
+              maxSizeMB={materialType === "audio" ? 5 : 10}
+
               />
             ) : (
+              // <FormMedia
+              //   control={form.control}
+              //   label="Media Content"
+              //   name="study_material.content"
+              //   type={(materialType as MediaType) || "image"}
+              // />
               <FormTextarea
                 control={form.control}
                 label="Content"

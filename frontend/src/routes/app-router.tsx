@@ -34,6 +34,8 @@ import AdminExercisesPage from "@/pages/admin/exercises/exercises-page";
 import AdminExercisesEditPage from "@/pages/admin/exercises/exercise-edit-page";
 import AdminExercisesAddPage from "@/pages/admin/exercises/exercise-add-page";
 import AdminTeacherAddPage from "@/pages/admin/users/teacher-add-page";
+import AdminExerciseDetailPage from "@/pages/admin/exercises/exercise-detail-page";
+
 import TeacherUpdatePasswordFirstTimePage from "@/pages/teacher/auth/UpdatePasswordFirstTImePage";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
@@ -83,6 +85,10 @@ const router = createBrowserRouter([
                       {
                         path: "exercises/add",
                         element: <AdminExercisesAddPage />,
+                      },
+                      {
+                        path: "exercises/:id",
+                        element: <AdminExerciseDetailPage />,
                       },
                       {
                         path: "exercises/edit/:id",

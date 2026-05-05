@@ -60,7 +60,7 @@ interface FileDropzoneProps {
   onFileSelect: (file: File) => void;
   onRemove?: () => void;
   value?: File | string | null;
-  label: string;
+  label?: string;
   accept?: Record<string, string[]>;
   maxSizeMB?: number;
   onError?: (message: string) => void;
@@ -191,7 +191,9 @@ export function FileDropzone({
 
       <FileUp className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
 
-      <p className="text-sm font-semibold">{label}</p>
+      {label && (
+        <p className="text-sm font-semibold">{label}</p>
+      )}
 
       <p className="text-xs text-muted-foreground mt-1">
         Max {maxSizeMB}MB • Supports images, video, audio, PDF
