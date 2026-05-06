@@ -16,7 +16,7 @@ const ExerciseRow = ({
   return (
     <TableRow>
       <TableCell>{exercise.title}</TableCell>
-      <TableCell>{exercise?.created_by.name}</TableCell>
+      <TableCell>{exercise?.created_by?.name}</TableCell>
       <TableCell>{exercise?.visibility}</TableCell>
       <TableCell>{exercise?.category}</TableCell>
       <TableCell>{exercise?.points}</TableCell>
@@ -27,7 +27,9 @@ const ExerciseRow = ({
           <Link to={`/admin/exercises/${exercise._id}`}>
             <Eye size={16} className="text-primary" />
           </Link>
-          <Edit size={16} className="text-primary" onClick={onEdit} />
+          <Link to={`/admin/exercises/edit/${exercise._id}`}>
+            <Edit size={16} className="text-primary" onClick={onEdit} />
+          </Link>
           <DeleteDialog onConfirm={onDelete}>
             <Trash2 size={16} className="text-destructive" />
           </DeleteDialog>

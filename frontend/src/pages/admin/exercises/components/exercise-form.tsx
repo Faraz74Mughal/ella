@@ -1,7 +1,7 @@
 // import AppSelect from "@/components/ui/app-select";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { FormCheckbox } from "@/components/ui/form-checkbox";
+// visibility is a string enum; use a select instead of a checkbox
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
@@ -22,7 +22,8 @@ import SecondHeading from "@/components/shared/second-heading";
 import WritingForm from "./quiz-from/writing-form/writing-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
 import ListeningForm from "./quiz-from/listening-form/listening-form";
-import { useEffect, useRef } from "react";
+import {  useEffect, useRef } from "react";
+import { useQuestionBuilder } from "@/hooks/use-grammar-question-builder";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
@@ -31,31 +32,47 @@ interface ExerciseFormProps {
 }
 
 const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
+  const {normalizeContent,questions} = useQuestionBuilder({value: exercise?.content})
   // Form
   const form = useForm<z.input<typeof exerciseSchema>, unknown, ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
-    defaultValues: {
+    defaultValues:exercise?{...exercise,lesson_id: exercise.lesson_id?._id || "",content:normalizeContent(exercise.content || [])}: {
       lesson_id: "",
       title: "",
       visibility: VISIBILITY.PRIVATE,
       content: [],
       passing_percentage: 70,
+      description: "",
     },
   });
-console.log("form",form.formState.errors);
 
-  const { data: filteredLessons } = useGetFilteredLessons({
-    category: form.watch("category"),
-    level: form.watch("level"),
-  });
+  const category = useWatch({ control: form.control, name: "category" });
+  const level = useWatch({ control: form.control, name: "level" });
+
+  const { data: filteredLessons } = useGetFilteredLessons({ category, level });
+  const optionsCategories = optionsOfObject(CATEGORY);
+console.log("exercise form render", exercise?.content,questions );
+
+  // useEffect(() => {
+  //   if (!exercise) return;
+  //   console.log("exercise2222", exercise);
+  //   const values = {
+  //     lesson_id: exercise.lesson_id?._id || "",
+  //     title: exercise.title || "",
+  //     category: exercise.category || "grammar",
+  //     level: exercise.level || "",
+  //     visibility: exercise.visibility || VISIBILITY.PRIVATE,
+  //     content: exercise.content || [],
+  //     passing_percentage: exercise.passing_percentage || 70,
+  //     description: exercise.description || "",
+  //     points: exercise.points || 0,
+  //   };
+
+  //   form.reset(values);
+  //   console.log("RESET VALUES:", form.getValues());
+  // }, [exercise, form]);
 
   const prevCategoryRef = useRef<string | undefined>(undefined);
-
-  const category = useWatch({
-    control: form.control,
-    name: "category",
-  });
-console.log("TEST", form.getValues());
 
   useEffect(() => {
     if (prevCategoryRef.current && prevCategoryRef.current !== category) {
@@ -78,7 +95,7 @@ console.log("TEST", form.getValues());
               name="category"
               disabled={isLoading}
               placeholder="Select category"
-              options={optionsOfObject(CATEGORY)}
+              options={optionsCategories}
             />
 
             <FormSelect
@@ -101,10 +118,10 @@ console.log("TEST", form.getValues());
           </div>
         </div>
 
-        {form.watch("category") && (
+        {category && (
           <>
             <h2 className="text-sm font-semibold text-muted-foreground mb-4 capitalize">
-              <SecondHeading title={`${form.watch("category")} Quiz`} />
+              <SecondHeading title={`${category} Quiz`} />
               <span className="text-xs  text-red-500">
                 {" "}
                 {form.formState?.errors?.content?.message && (
@@ -147,6 +164,7 @@ console.log("TEST", form.getValues());
               </div>
             </div>
             {/* CONTENT SECTION */}
+            
             {form.watch("category") === CATEGORY.GRAMMAR && <GrammarForm />}
             {form.watch("category") === CATEGORY.WRITING && <WritingForm />}
             {form.watch("category") === CATEGORY.SPEAKING && <SpeakingForm />}
@@ -155,11 +173,13 @@ console.log("TEST", form.getValues());
         )}
         {/* PUBLISH SECTION */}
         <div className="flex items-center justify-between pt-4 border-t">
-          <FormCheckbox
+          <FormSelect
             control={form.control}
             label="Visibility"
             name="visibility"
             disabled={isLoading}
+            placeholder="Select visibility"
+            options={optionsOfObject(VISIBILITY)}
           />
 
           <Button type="submit" disabled={isLoading} className="px-6">

@@ -1,12 +1,13 @@
 import type { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
 
-export interface IExercise extends Document {
+export interface IExercise {
   _id?: string;
   lesson_id: string;
   title: string;
   level: (typeof LEVEL)[keyof typeof LEVEL];
+  description?: string;
   category: (typeof CATEGORY)[keyof typeof CATEGORY];
-  created_by: {
+  created_by?: {
     _id: string;
     name: string;
     role: string;
@@ -19,6 +20,6 @@ export interface IExercise extends Document {
   passing_percentage: number;
   available_from?: Date;
   available_until?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

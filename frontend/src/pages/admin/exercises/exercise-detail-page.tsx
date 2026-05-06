@@ -4,13 +4,16 @@ import React from "react";
 import QuestionCard from "./components/details/QuestionCard";
 import { useGetSingleExerciseByAdmin } from "@/hooks/use-exercise";
 import { useParams } from "react-router-dom";
+import PageHeading from "@/components/ui/page-heading";
 
 const ExerciseDetailPage = () => {
   const { id } = useParams();
-  const {data:exercise} = useGetSingleExerciseByAdmin(id as string);
+  const { data: exercise } = useGetSingleExerciseByAdmin(id as string);
   if (!exercise) return <div>Loading...</div>;
   return (
-    <div className="max-w-4xl mx-auto py-8 space-y-6">
+    <section className="space-y-8">
+      <PageHeading title="Exercise Detail" isBack />
+
       {/* Header */}
       <Card>
         <CardHeader>
@@ -35,7 +38,7 @@ const ExerciseDetailPage = () => {
           <QuestionCard key={q.id} q={q} index={index} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

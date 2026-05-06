@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {  Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import MCQRenderer from "./mcq-renderer";
 import { useQuestionBuilder } from "@/hooks/use-grammar-question-builder";
 import MatchingRenderer from "./matching-renderer";
@@ -13,9 +13,13 @@ import TypesSelect from "./types-select";
 import { useFormContext } from "react-hook-form";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import { useEffect } from "react";
+import { FormInput } from "@/components/ui/form-input";
 
 const GrammarForm = () => {
-  const { setValue, watch, formState } = useFormContext<ExerciseInput>();
+  const { setValue, watch,getValues, formState,control } = useFormContext<ExerciseInput>();
+  const { questions } = getValues("content")||[]
+  console.log("questions",questions);
+  
   const qb = useQuestionBuilder({
     value: watch("content"),
     onChange: (val) => setValue("content", val),
@@ -27,9 +31,8 @@ const GrammarForm = () => {
   return (
     <div>
       <div className="space-y-6">
-        
-        {qb.questions.map((question, idx) => (
-          <Card key={question.id} className="border-l-4 border-primary">
+        {(getValues("content") || []).map((question, idx) => (
+          <Card key={idx} className="border-l-4 border-primary">
             <CardContent className="p-4">
               <div className="space-y-4">
                 {/* Question Header */}
@@ -39,7 +42,15 @@ const GrammarForm = () => {
                       Q{idx + 1}
                     </Badge>
                     <TypesSelect question={question} {...qb} />
-                    <div className="flex items-center gap-2 ml-auto">
+                    <FormInput
+                      control={control}
+                      label="Passing Percentage"
+                      name={`content.[${idx}].points`}
+                      type="number"
+                      // disabled={isLoading}
+                      placeholder="Enter passing percentage..."
+                    />
+                    {/* <div className="flex items-center gap-2 ml-auto">
                       <Label className="text-sm text-slate-500">Points:</Label>
                       <Input
                         type="number"
@@ -55,7 +66,7 @@ const GrammarForm = () => {
                         min={0}
                         max={100}
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <Button
@@ -98,8 +109,6 @@ const GrammarForm = () => {
                     </span>
                   </div>
                 )}
-
-               
 
                 {question.type === "mcq" ? (
                   <MCQRenderer {...qb} question={question} idx={idx} />

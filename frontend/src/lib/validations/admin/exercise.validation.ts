@@ -1,5 +1,6 @@
 import { VISIBILITY } from "@/constants/lesson.constant";
 import { z } from "zod";
+import { describe } from "zod/v4/core";
 
 const mcqSchema = z.object({
   id: z.string(),
@@ -104,7 +105,7 @@ export const exerciseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   category: z.string("Category is required").nonempty("Category is required"),
   level: z.string("Level is required").nonempty("Level is required"),
-
+  description: z.string().optional(),
   visibility: z
     .enum(Object.values(VISIBILITY) as [string, ...string[]])
     .default(VISIBILITY.PRIVATE)

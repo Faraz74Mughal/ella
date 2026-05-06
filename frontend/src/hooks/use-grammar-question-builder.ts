@@ -211,9 +211,68 @@ export const useQuestionBuilder = ({
     updateState([createDefaultQuestion()]);
   };
 
+  const normalizeContent = (content: any[] = []) => {
+    console.log("content", content);
+
+    return content.map((q) => {
+      // ensure question id
+      const base = {
+        ...q,
+        id: q.id || crypto.randomUUID(),
+      };
+
+      // fix mcq options
+      if (q.type === "mcq") {
+        return {
+          ...base,
+          options: (q.options || []).map((o: any) => ({
+            id: o.id || crypto.randomUUID(), // 🔥 FIX
+            text: o.text || "",
+          })),
+        };
+      }
+
+      // fix matching pairs
+      if (q.type === "matching") {
+        return {
+          ...base,
+          pairs: (q.pairs || []).map((p: any) => ({
+            id: p.id || crypto.randomUUID(), // 🔥 FIX
+            left: p.left || "",
+            right: p.right || "",
+          })),
+        };
+      }
+
+      // fix matching pairs
+      if (q.type === "matching") {
+        return {
+          ...base,
+          pairs: (q.pairs || []).map((p: any) => ({
+            id: p.id || crypto.randomUUID(), // 🔥 FIX
+            left: p.left || "",
+            right: p.right || "",
+          })),
+        };
+      }
+
+      // fix fill_blank
+      if (q.type === "fill_blank") {
+        return {
+          ...base,
+          alternatives: q.alternatives || [],
+        };
+      }
+      
+      return base;
+    });
+  };
+
   return {
     questions,
     types,
+    normalizeContent,
+
     addQuestion,
     updateQuestion,
     removeQuestion,

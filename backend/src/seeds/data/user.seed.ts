@@ -5,14 +5,11 @@ const AUTH_PROVIDERS = {
   LOCAL: "local",
 };
 
-
-
-
-
 const hashedPassword = bcrypt.hashSync("1234$Abc", 10);
 
 const usersSeed = [
   {
+    _id: "69f06445684cd65ce9af1e45",
     username: "admin",
     email: "admin@test.com",
     password: hashedPassword,
@@ -58,7 +55,7 @@ const usersSeed = [
     isDeleted: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-  }
+  },
 ];
 
 const names = [
@@ -80,15 +77,14 @@ const names = [
   "Nimra Tariq",
   "Talha Ahmed",
   "Kiran Malik",
-  "Adnan Sheikh"
+  "Adnan Sheikh",
 ];
 
 names.forEach((name, index) => {
   const i = index + 1;
 
   // 👇 alternate roles
-  const role =
-    i % 3 === 0 ? USER_ROLES.TEACHER : USER_ROLES.STUDENT;
+  const role = i % 3 === 0 ? USER_ROLES.TEACHER : USER_ROLES.STUDENT;
 
   const user = {
     username: name.toLowerCase().replace(/ /g, ""),
@@ -119,4 +115,4 @@ names.forEach((name, index) => {
   (usersSeed as any).push(user);
 });
 
-export default usersSeed
+export default usersSeed;
