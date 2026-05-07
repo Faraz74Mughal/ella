@@ -1,24 +1,28 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form"
-import { RadioGroupItem,RadioGroup } from "./radio-group"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./form";
 
-type Option = {
-  label: string
-  value: string
-}
+import { RadioGroup, RadioGroupItem } from "./radio-group";
 
 type FormRadioProps = {
-  control: any
-  name: string
-  label: string
-  options: Option[]
-  disabled?: boolean
-}
+  control: any;
+  name: string;
+  label?: string;
+  value: string;
+  optionLabel?: string;
+  disabled?: boolean;
+};
 
 export function FormRadio({
   control,
   name,
   label,
-  options,
+  value,
+  optionLabel,
   disabled,
 }: FormRadioProps) {
   return (
@@ -26,29 +30,27 @@ export function FormRadio({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className="space-y-3">
+          {label && <FormLabel>{label}</FormLabel>}
 
           <FormControl>
             <RadioGroup
+              value={field.value ?? ""}
               onValueChange={field.onChange}
-              value={field.value}
               disabled={disabled}
-              className="flex flex-col space-y-2"
             >
-              {options.map((option) => (
-                <FormItem
-                  key={option.value}
-                  className="flex items-center space-x-2 space-y-0"
-                >
-                  <FormControl>
-                    <RadioGroupItem value={option.value} />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {option.label}
-                  </FormLabel>
-                </FormItem>
-              ))}
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={value} id={`${name}-${value}`} />
+
+                {optionLabel && (
+                  <label
+                    htmlFor={`${name}-${value}`}
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    {optionLabel}
+                  </label>
+                )}
+              </div>
             </RadioGroup>
           </FormControl>
 
@@ -56,5 +58,5 @@ export function FormRadio({
         </FormItem>
       )}
     />
-  )
+  );
 }

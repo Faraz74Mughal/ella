@@ -22,65 +22,73 @@ import SecondHeading from "@/components/shared/second-heading";
 import WritingForm from "./quiz-from/writing-form/writing-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
 import ListeningForm from "./quiz-from/listening-form/listening-form";
-import {  useEffect, useRef } from "react";
-import { useQuestionBuilder } from "@/hooks/use-grammar-question-builder";
+import { useEffect } from "react";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
   isLoading: boolean;
   exercise?: IExercise | null | undefined;
 }
+const optionsCategories = optionsOfObject(CATEGORY);
 
 const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
-  const {normalizeContent,questions} = useQuestionBuilder({value: exercise?.content})
   // Form
   const form = useForm<z.input<typeof exerciseSchema>, unknown, ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
-    defaultValues:exercise?{...exercise,lesson_id: exercise.lesson_id?._id || "",content:normalizeContent(exercise.content || [])}: {
+    defaultValues: {
       lesson_id: "",
       title: "",
+      category: "",
+      level: "",
       visibility: VISIBILITY.PRIVATE,
       content: [],
       passing_percentage: 70,
       description: "",
     },
   });
+  const ready = !!exercise && optionsCategories.length > 0;
+  useEffect(() => {
+    if (!ready) return;
 
+    const ex: any = (exercise as any)?.exercise ?? exercise;
+
+    const lessonId =
+      typeof ex.lesson_id?._id === "string" ? ex.lesson_id?._id : "";
+
+    let content = Array.isArray(ex.content) ? [...ex.content] : [];
+    if (Array.isArray(ex.content)) {
+      content = content.map((cont) => {
+        if (cont.type === "mcq") {
+          return {
+            ...cont,
+            correctAnswer: cont.options
+              ?.findIndex((opt: string) => opt === cont.correctAnswer)
+              ?.toString(),
+          };
+        }
+        return cont;
+      });
+    }
+    form.reset({
+      lesson_id: lessonId,
+      title: ex.title ?? "",
+      category: ex.category ?? "",
+      level: ex.level ?? "",
+      visibility: ex.visibility ?? VISIBILITY.PRIVATE,
+      content: content,
+      passing_percentage: ex.passing_percentage ?? 70,
+      description: ex.description ?? "",
+    });
+  }, [ready]);
   const category = useWatch({ control: form.control, name: "category" });
   const level = useWatch({ control: form.control, name: "level" });
 
   const { data: filteredLessons } = useGetFilteredLessons({ category, level });
-  const optionsCategories = optionsOfObject(CATEGORY);
-console.log("exercise form render", exercise?.content,questions );
 
   // useEffect(() => {
-  //   if (!exercise) return;
-  //   console.log("exercise2222", exercise);
-  //   const values = {
-  //     lesson_id: exercise.lesson_id?._id || "",
-  //     title: exercise.title || "",
-  //     category: exercise.category || "grammar",
-  //     level: exercise.level || "",
-  //     visibility: exercise.visibility || VISIBILITY.PRIVATE,
-  //     content: exercise.content || [],
-  //     passing_percentage: exercise.passing_percentage || 70,
-  //     description: exercise.description || "",
-  //     points: exercise.points || 0,
-  //   };
-
-  //   form.reset(values);
-  //   console.log("RESET VALUES:", form.getValues());
-  // }, [exercise, form]);
-
-  const prevCategoryRef = useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (prevCategoryRef.current && prevCategoryRef.current !== category) {
-      form.setValue("content", []);
-    }
-    prevCategoryRef.current = category;
-  }, [category, form]);
-
+  //   if (category || "") form.setValue("content", []);
+  // }, [category, form.setValue]);
+console.log("Form Errors", form.formState.errors);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
@@ -90,6 +98,7 @@ console.log("exercise form render", exercise?.content,questions );
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormSelect
+              key={`${category}-${exercise?._id}-`}
               control={form.control}
               label="Category"
               name="category"
@@ -99,6 +108,7 @@ console.log("exercise form render", exercise?.content,questions );
             />
 
             <FormSelect
+              key={`${level}-${exercise?._id}`}
               control={form.control}
               label="Level"
               name="level"
@@ -108,6 +118,7 @@ console.log("exercise form render", exercise?.content,questions );
             />
 
             <FormSelect
+              key={`${exercise?._id}-${filteredLessons?.length}`}
               control={form.control}
               label="Lesson"
               name="lesson_id"
@@ -164,11 +175,11 @@ console.log("exercise form render", exercise?.content,questions );
               </div>
             </div>
             {/* CONTENT SECTION */}
-            
-            {form.watch("category") === CATEGORY.GRAMMAR && <GrammarForm />}
-            {form.watch("category") === CATEGORY.WRITING && <WritingForm />}
-            {form.watch("category") === CATEGORY.SPEAKING && <SpeakingForm />}
-            {form.watch("category") === CATEGORY.LISTENING && <ListeningForm />}
+
+            {category === CATEGORY.GRAMMAR && <GrammarForm />}
+            {category === CATEGORY.WRITING && <WritingForm />}
+            {category === CATEGORY.SPEAKING && <SpeakingForm />}
+            {category === CATEGORY.LISTENING && <ListeningForm />}
           </>
         )}
         {/* PUBLISH SECTION */}

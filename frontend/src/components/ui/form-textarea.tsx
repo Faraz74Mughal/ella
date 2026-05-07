@@ -32,6 +32,7 @@ export function FormTextarea({
               disabled={disabled}
               rows={rows}
               {...field}
+              value={field.value ?? ""}
             />
           </FormControl>
 

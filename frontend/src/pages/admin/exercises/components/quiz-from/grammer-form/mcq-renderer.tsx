@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FormInput } from "@/components/ui/form-input";
+import { FormField } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import type { MCQQuestion } from "@/types/grammar-question";
@@ -8,30 +10,18 @@ import { useFormContext } from "react-hook-form";
 
 interface MCQRendererProps {
   question: MCQQuestion;
-  updateOption: (
-    questionId: string,
-    optionIndex: number,
-    value: string,
-  ) => void;
   removeOption: (questionId: string, optionIndex: number) => void;
   addOption: (questionId: string) => void;
-  updateQuestion: (
-    questionId: string,
-    field: keyof MCQQuestion,
-    value: any,
-  ) => void;
   idx: number;
 }
 
 const MCQRenderer = ({
   question,
-  updateOption,
   removeOption,
   addOption,
-  updateQuestion,
   idx,
 }: MCQRendererProps) => {
-  const { formState } = useFormContext<ExerciseInput>();
+  const { formState, control } = useFormContext<ExerciseInput>();
   return (
     <div className="space-y-3 pl-6 border-l-2 border-blue-200">
       <Label className="text-sm font-medium">
@@ -46,43 +36,47 @@ const MCQRenderer = ({
           </span>
         )}
       </Label>
-      {question.options?.map((opt, optIdx) => (
-        <div key={optIdx}>
-          <div className="flex gap-2 items-center">
-            <input
-              type="radio"
-              name={`correct-${question.id}`}
-              checked={question.correctAnswer === opt}
-              onChange={() => updateQuestion(question.id, "correctAnswer", opt)}
-              className="w-4 h-4"
-            />
-            <Input
-              value={opt}
-              onChange={(e) =>
-                updateOption(question.id, optIdx, e.target.value)
-              }
-              placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
-              className="flex-1"
-            />
-            {question.options && question.options.length > 2 && (
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => removeOption(question.id, optIdx)}
-                className="text-red-500"
-              >
-                <XCircle className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
 
-          <span className="text-xs ml-6 text-red-500">
-            {Array.isArray(formState?.errors?.content) &&
-              formState?.errors?.content?.[idx]?.options?.[optIdx]?.message}
-          </span>
-        </div>
-      ))}
+      <FormField
+        control={control}
+        name={`content.${idx}.correctAnswer`}
+        render={({ field }) => (
+          <RadioGroup
+            value={field.value ? String(field.value) : ""}
+            onValueChange={field.onChange}
+          >
+            {question.options?.map((opt, optIdx) => (
+              <div key={optIdx} className="space-y-2 mb-3">
+                <div className="flex gap-2 items-center">
+                  <RadioGroupItem value={optIdx?.toString()} id={`option-${idx}-${optIdx}`} />
+                  <FormInput
+                    itemClassName="flex-1"
+                    control={control}
+                    name={`content.${idx}.options.${optIdx}`}
+                  />
+                  {question.options && question.options.length > 2 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeOption(question.id, optIdx)}
+                      className="text-red-500"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+
+                <span className="text-xs ml-6 text-red-500">
+                  {Array.isArray(formState?.errors?.content) &&
+                    formState?.errors?.content?.[idx]?.options?.[optIdx]
+                      ?.message}
+                </span>
+              </div>
+            ))}
+          </RadioGroup>
+        )}
+      />
       {question.options && question.options.length < 4 && (
         <Button
           type="button"

@@ -8,7 +8,7 @@ import {
 } from "@/hooks/use-exercise";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
-import { VISIBILITY } from "@/constants/lesson.constant";
+import { CATEGORY, VISIBILITY } from "@/constants/lesson.constant";
 
 const AdminExercisesEditPage = () => {
   const { id } = useParams();
@@ -22,11 +22,27 @@ const AdminExercisesEditPage = () => {
       ...values,
       visibility: values.visibility ?? VISIBILITY.PRIVATE,
     } as unknown as any;
+
+    values.points =
+      (values.content || [])?.reduce((acc, item) => {
+        acc += item?.points || 1;
+        return acc;
+      }, 0) || 10;
+    if (values.category === CATEGORY.GRAMMAR) {
+      values.content?.map((cont: any) => {
+        if (cont.type === "mcq")
+          cont.correctAnswer = cont?.options[cont?.correctAnswer];
+        return { ...cont };
+      });
+    }
+
+    console.log("Edit Value", values);
+
+    return;
     updateExercise({ id: id!, data: payload });
   };
 
-
-  if(!isPendingSingle&&!exercise) return <div>Loading...</div>;
+  if (!isPendingSingle && !exercise) return <div>Loading...</div>;
 
   return (
     <section className="space-y-8">

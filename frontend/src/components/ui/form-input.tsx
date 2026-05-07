@@ -12,7 +12,9 @@ type InputProps = React.ComponentProps<typeof Input>;
 type FormInputProps = {
   control: any;
   name: string;
-  label: string;
+  label?: string;
+  itemClassName?: string;
+  labelClassName?: string;
 } & InputProps;
 
 export function FormInput({
@@ -20,6 +22,8 @@ export function FormInput({
   name,
   label,
   type = "text",
+  itemClassName,
+  labelClassName,
   ...rest
 }: FormInputProps) {
   return (
@@ -36,11 +40,12 @@ export function FormInput({
         };
 
         return (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
+          <FormItem className={itemClassName} >
+            {label && <FormLabel className={labelClassName}>{label}</FormLabel>}
 
             <FormControl>
               <Input
+                
                 {...field}
                 {...rest}
                 type={type}

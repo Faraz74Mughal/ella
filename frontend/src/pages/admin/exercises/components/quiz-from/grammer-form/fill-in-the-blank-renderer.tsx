@@ -1,5 +1,4 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormInput } from "@/components/ui/form-input";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import type { FillBlankQuestion } from "@/types/grammar-question";
 import { useFormContext } from "react-hook-form";
@@ -15,17 +14,21 @@ interface FillInTheBlankRendererProps {
 }
 
 const FillInTheBlankRenderer = ({
-  question,
-  idx,
-  updateQuestion,
+  idx
 }: FillInTheBlankRendererProps) => {
-  const { formState } = useFormContext<ExerciseInput>();
+  const { formState, control } = useFormContext<ExerciseInput>();
   return (
     <div className="space-y-3 pl-6 border-l-2 border-purple-200">
       <div className="grid grid-cols-2 gap-3">
         <div>
           <div className="space-y-1">
-            <Label className="text-sm">Correct Answer</Label>
+            <FormInput
+              control={control}
+              name={`content.[${idx}].correctAnswer`}
+              label="Correct Answer"
+              placeholder="Expected answer"
+            />
+            {/* <Label className="text-sm">Correct Answer</Label>
             <Input
               value={question.correctAnswer as string}
               onChange={(e) => {
@@ -34,7 +37,7 @@ const FillInTheBlankRenderer = ({
                 }
               }}
               placeholder="Expected answer"
-            />
+            /> */}
           </div>
           <span className="text-xs  text-red-500">
             {Array.isArray(formState?.errors?.content) &&
@@ -42,7 +45,13 @@ const FillInTheBlankRenderer = ({
           </span>
         </div>
         <div className="space-y-1">
-          <Label className="text-sm">
+          <FormInput
+            control={control}
+            name={`content.[${idx}].alternatives`}
+            label="Alternative Answers (comma separated)"
+            placeholder="synonym1, synonym2"
+          />
+          {/* <Label className="text-sm">
             Alternative Answers (comma separated)
           </Label>
           <Input
@@ -55,7 +64,7 @@ const FillInTheBlankRenderer = ({
               )
             }
             placeholder="synonym1, synonym2"
-          />
+          /> */}
         </div>{" "}
       </div>
     </div>

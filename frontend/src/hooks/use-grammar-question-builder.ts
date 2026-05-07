@@ -18,7 +18,7 @@ const createDefaultQuestion = (): SubQuestion => ({
   type: "mcq",
   question: "",
   options: ["", "", "", ""],
-  correctAnswer: "",
+  correctAnswer: null as any,
   points: 1,
 });
 
@@ -162,15 +162,19 @@ export const useQuestionBuilder = ({
   // ------------------------
 
   const addPair = (qId: string) => {
+    console.log("IS ID IS COMMING", qId);
+
     updateState((prev) =>
-      prev.map((q) =>
-        q.id === qId && q.type === "matching"
+      prev.map((q) => {
+        console.log("WHAT IS Q",q);
+        
+        return q.id === qId && q.type === "matching"
           ? {
               ...q,
               pairs: [...q.pairs, { id: generateId(), left: "", right: "" }],
             }
-          : q,
-      ),
+          : q;
+      }),
     );
   };
 
@@ -212,8 +216,6 @@ export const useQuestionBuilder = ({
   };
 
   const normalizeContent = (content: any[] = []) => {
-    console.log("content", content);
-
     return content.map((q) => {
       // ensure question id
       const base = {
@@ -263,7 +265,7 @@ export const useQuestionBuilder = ({
           alternatives: q.alternatives || [],
         };
       }
-      
+
       return base;
     });
   };

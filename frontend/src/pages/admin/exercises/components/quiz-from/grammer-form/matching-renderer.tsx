@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormCheckbox } from "@/components/ui/form-checkbox";
+import { FormInput } from "@/components/ui/form-input";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import type { MatchingQuestion } from "@/types/grammar-question";
 import { Plus, Trash2 } from "lucide-react";
@@ -27,16 +27,19 @@ interface MatchingRendererProps {
 const MatchingRenderer = ({
   question,
   addPair,
-  updatePair,
   removePair,
-  updateQuestion,
   idx,
 }: MatchingRendererProps) => {
-  const { formState } = useFormContext<ExerciseInput>();
+  const { formState, control } = useFormContext<ExerciseInput>();
   return (
     <div className="space-y-4 pl-6 border-l-2 border-orange-200">
       {/* Shuffle */}
-      <div className="flex items-center space-x-2">
+      <FormCheckbox
+        control={control}
+        label="Shuffle right column"
+        name={`content.[${idx}].shuffleOptions`}
+      />
+      {/* <div className="flex items-center space-x-2">
         <input
           type="checkbox"
           checked={question.shuffleOptions || false}
@@ -45,29 +48,33 @@ const MatchingRenderer = ({
           }
         />
         <Label className="text-sm">Shuffle right column</Label>
-      </div>
+      </div> */}
 
       {/* Pairs */}
       {question.pairs?.map((pair, index) => (
         <div key={pair.id}>
           <div className="grid grid-cols-2 gap-3">
-            <Input
+            {/* <Input
               value={pair.left}
               onChange={(e) => {
                 if (question.type == "matching" && pair.id)
                   updatePair(question.id, pair.id, "left", e.target.value);
               }}
               placeholder={`Left ${index + 1}`}
+            /> */}
+            <FormInput
+              control={control}
+              name={`content.[${idx}].pairs.[${index}].left`}
+              placeholder={`Left ${index + 1}`}
             />
-            <div className="flex gap-2">
-              <Input
-                value={pair.right}
-                onChange={(e) => {
-                  if (question.type == "matching" && pair.id)
-                    updatePair(question.id, pair.id, "right", e.target.value);
-                }}
+            <div className="flex  gap-2">
+              <FormInput
+                itemClassName="flex-1"
+                control={control}
+                name={`content.[${idx}].pairs.[${index}].right`}
                 placeholder={`Right ${index + 1}`}
               />
+              
               <Button
                 type="button"
                 size="sm"
