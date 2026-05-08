@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
 import { FormInput } from "@/components/ui/form-input";
-import type useExerciseBuilder from "@/hooks/use-exercise-builder";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import type { MatchingQuestion } from "@/types/grammar-question";
 import { Plus, Trash2 } from "lucide-react";
@@ -9,14 +8,27 @@ import { useFormContext } from "react-hook-form";
 
 interface MatchingRendererProps {
   question: MatchingQuestion;
-  eb: ReturnType<typeof useExerciseBuilder>;
+  addPair: (questionId: string) => void;
+  updatePair: (
+    questionId: string,
+    pairId: string,
+    field: "left" | "right",
+    value: string,
+  ) => void;
+  removePair: (questionId: string, pairId: string) => void;
+  updateQuestion: (
+    questionId: string,
+    field: keyof MatchingQuestion,
+    value: any,
+  ) => void;
   idx: number;
 }
 
 const MatchingRenderer = ({
   question,
+  addPair,
+  removePair,
   idx,
-  eb,
 }: MatchingRendererProps) => {
   const { formState, control } = useFormContext<ExerciseInput>();
   return (
@@ -62,14 +74,14 @@ const MatchingRenderer = ({
                 name={`content.[${idx}].pairs.[${index}].right`}
                 placeholder={`Right ${index + 1}`}
               />
-
+              
               <Button
                 type="button"
                 size="sm"
                 variant="ghost"
                 onClick={() => {
                   if (question.type == "matching" && pair.id)
-                    eb.removePair(question.id, pair.id);
+                    removePair(question.id, pair.id);
                 }}
               >
                 <Trash2 className="w-4 h-4 text-red-500" />
@@ -95,7 +107,7 @@ const MatchingRenderer = ({
         type="button"
         size="sm"
         variant="outline"
-        onClick={() => eb.addPair(question.id)}
+        onClick={() => addPair(question.id)}
       >
         <Plus className="w-4 h-4 mr-1" />
         Add Pair

@@ -1,6 +1,5 @@
 import { VISIBILITY } from "@/constants/lesson.constant";
 import { z } from "zod";
-import { describe } from "zod/v4/core";
 
 const mcqSchema = z.object({
   id: z.string(),
@@ -36,6 +35,7 @@ const matchingSchema = z.object({
   pairs: z
     .array(
       z.object({
+        id: z.string(),
         left: z.string().min(1, "Left cannot be empty"),
         right: z.string().min(1, "Right cannot be empty"),
       }),
@@ -80,6 +80,7 @@ const listeningSchema = z.object({
 });
 
 const writingSchema = z.object({
+  id: z.string(),
   type: z.literal("writing"),
   topic: z.string().min(1, "Topic is required"),
   timeLimit: z.number().min(1, "Time limit must be at least 1"),
@@ -96,7 +97,7 @@ const questionSchema = z.discriminatedUnion("type", [
   dialogueSchema,
   listeningSchema,
   trueFalseSchema,
-  writingSchema
+  writingSchema,
 ]);
 
 export const exerciseSchema = z.object({

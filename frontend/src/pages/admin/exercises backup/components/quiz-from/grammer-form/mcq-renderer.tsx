@@ -4,37 +4,41 @@ import { FormField } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
-
+import type { MCQQuestion } from "@/types/grammar-question";
 import { Plus, XCircle } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import useExerciseBuilder from "@/hooks/use-exercise-builder";
-import type { MCQQuestion } from "@/types/exercise-question";
 
 interface MCQRendererProps {
-  idx: number;
   question: MCQQuestion;
-  eb: ReturnType<typeof useExerciseBuilder>;
+  removeOption: (questionId: string, optionIndex: number) => void;
+  addOption: (questionId: string) => void;
+  idx: number;
 }
 
-const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
+const MCQRenderer = ({
+  question,
+  removeOption,
+  addOption,
+  idx,
+}: MCQRendererProps) => {
+  const { formState, control } = useFormContext<ExerciseInput>();
   return (
     <div className="space-y-3 pl-6 border-l-2 border-blue-200">
       <Label className="text-sm font-medium">
         Options
-        {(
-          eb.form.formState?.errors?.content?.[idx] as { correctAnswer: string }
-        )?.correctAnswer && (
+        {(formState?.errors?.content?.[idx] as { correctAnswer: string })
+          ?.correctAnswer && (
           <span className="text-xs ml-6 text-red-500">
             (
-            {Array.isArray(eb.form.formState?.errors?.content) &&
-              eb.form.formState?.errors?.content?.[idx]?.correctAnswer?.message}
+            {Array.isArray(formState?.errors?.content) &&
+              formState?.errors?.content?.[idx]?.correctAnswer?.message}
             )
           </span>
         )}
       </Label>
 
       <FormField
-        control={eb.form.control}
+        control={control}
         name={`content.${idx}.correctAnswer`}
         render={({ field }) => (
           <RadioGroup
@@ -44,13 +48,10 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
             {question.options?.map((opt, optIdx) => (
               <div key={optIdx} className="space-y-2 mb-3">
                 <div className="flex gap-2 items-center">
-                  <RadioGroupItem
-                    value={optIdx?.toString()}
-                    id={`option-${idx}-${optIdx}`}
-                  />
+                  <RadioGroupItem value={optIdx?.toString()} id={`option-${idx}-${optIdx}`} />
                   <FormInput
                     itemClassName="flex-1"
-                    control={eb.form.control}
+                    control={control}
                     name={`content.${idx}.options.${optIdx}`}
                   />
                   {question.options && question.options.length > 2 && (
@@ -58,7 +59,7 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
                       type="button"
                       size="sm"
                       variant="ghost"
-                      onClick={() => eb.removeOption(question.id, optIdx)}
+                      onClick={() => removeOption(question.id, optIdx)}
                       className="text-red-500"
                     >
                       <XCircle className="w-4 h-4" />
@@ -67,8 +68,8 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
                 </div>
 
                 <span className="text-xs ml-6 text-red-500">
-                  {Array.isArray(eb.form.formState?.errors?.content) &&
-                    eb.form.formState?.errors?.content?.[idx]?.options?.[optIdx]
+                  {Array.isArray(formState?.errors?.content) &&
+                    formState?.errors?.content?.[idx]?.options?.[optIdx]
                       ?.message}
                 </span>
               </div>
@@ -81,7 +82,7 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => eb.addOption(question.id)}
+          onClick={() => addOption(question.id)}
           className="mt-2"
         >
           <Plus className="w-3 h-3 mr-1" />

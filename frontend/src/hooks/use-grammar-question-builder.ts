@@ -166,8 +166,8 @@ export const useQuestionBuilder = ({
 
     updateState((prev) =>
       prev.map((q) => {
-        console.log("WHAT IS Q",q);
-        
+        console.log("WHAT IS Q", q);
+
         return q.id === qId && q.type === "matching"
           ? {
               ...q,

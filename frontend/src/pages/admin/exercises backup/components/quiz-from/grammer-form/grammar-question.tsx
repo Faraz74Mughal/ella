@@ -8,15 +8,55 @@ import { Trash2 } from "lucide-react";
 import MCQRenderer from "./mcq-renderer";
 import MatchingRenderer from "./matching-renderer";
 import FillInTheBlankRenderer from "./fill-in-the-blank-renderer";
-import useExerciseBuilder from "@/hooks/use-exercise-builder";
+import { useEffect, useRef } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
+import { type ExerciseInput } from "@/lib/validations/admin/exercise.validation";
+import { generateId } from "@/utils/helpers";
 
 type GrammarQuestionProps = {
   idx: number;
   question: any;
-  eb: ReturnType<typeof useExerciseBuilder>;
+  qb: any;
+  control: any;
+  formState: any;
 };
 
-const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
+const GrammarQuestion = ({
+  idx,
+  qb,
+  control,
+  question,
+  formState,
+}: GrammarQuestionProps) => {
+  const { setValue } = useFormContext<ExerciseInput>();
+  const type = useWatch({
+    control,
+    name: `content.${idx}.type`,
+  });
+  const prevType = useRef(true);
+  useEffect(() => {
+    if (prevType.current) {
+      prevType.current = false;
+      return;
+    }
+    if (!type) return;
+    if (type === "mcq") {
+      setValue(`content.${idx}.id`, generateId());
+      setValue(`content.${idx}.question`, "");
+      setValue(`content.${idx}.options`, ["", "", "", ""]);
+      setValue(`content.${idx}.correctAnswer`, "");
+      setValue(`content.${idx}.points`, 1);
+    }
+    if (type === "matching") {
+      setValue(`content.${idx}.id`, generateId());
+      setValue(`content.${idx}.pairs`, [
+        { id: generateId(), left: "", right: "" },
+      ]);
+      setValue(`content.${idx}.points`, 1);
+    }
+  }, [type, idx]);
+
+  console.log("COMNTETE", question);
 
   return (
     <Card key={idx} className="border-l-4 border-primary">
@@ -30,14 +70,14 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
               </Badge>
               {/* <TypesSelect question={question} {...qb} /> */}
               <FormSelect
-                control={eb.form.control}
+                control={control}
                 label="Points"
                 name={`content.${idx}.type`}
-                options={eb.grammarTypes}
+                options={qb.types}
               />
               <FormInput
                 itemClassName="flex items-center ml-auto gap-2"
-                control={eb.form.control}
+                control={control}
                 label="Points"
                 name={`content.${idx}.points`}
                 type="number"
@@ -50,8 +90,8 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
               type="button"
               size="sm"
               variant="ghost"
-              onClick={() => eb.removeQuestion(question.id)}
-              disabled={eb.questions.length === 1}
+              onClick={() => qb.removeQuestion(question.id)}
+              disabled={qb.questions.length === 1}
               className="text-red-500 ml-2"
             >
               <Trash2 className="w-4 h-4" />
@@ -65,24 +105,24 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
               <div className="space-y-1">
                 <FormTextarea
                   label="Question Text"
-                  control={eb.form.control}
+                  control={control}
                   name={`content.[${idx}].question`}
                   placeholder="Enter your question..."
                 />
               </div>
               <span className="text-xs  text-red-500">
-                {Array.isArray(eb.form.formState?.errors?.content) &&
-                  eb.form.formState?.errors?.content?.[idx]?.question?.message}
+                {Array.isArray(formState?.errors?.content) &&
+                  formState?.errors?.content?.[idx]?.question?.message}
               </span>
             </div>
           )}
 
           {question.type === "mcq" ? (
-            <MCQRenderer idx={idx} question={question} eb={eb} />
+            <MCQRenderer {...qb} question={question} idx={idx} />
           ) : question.type === "matching" ? (
-            <MatchingRenderer eb={eb} question={question} idx={idx} />
+            <MatchingRenderer {...qb} question={question} idx={idx} />
           ) : question.type === "fill_blank" ? (
-            <FillInTheBlankRenderer eb={eb} question={question} idx={idx} />
+            <FillInTheBlankRenderer {...qb} question={question} idx={idx} />
           ) : (
             ""
           )}

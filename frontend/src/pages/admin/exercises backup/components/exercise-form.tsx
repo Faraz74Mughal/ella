@@ -5,50 +5,110 @@ import { Form } from "@/components/ui/form";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { CATEGORY, LEVEL, VISIBILITY } from "@/constants/lesson.constant";
-import { type ExerciseInput } from "@/lib/validations/admin/exercise.validation";
+import { useGetFilteredLessons } from "@/hooks/use-lesson";
+import {
+  exerciseSchema,
+  type ExerciseInput,
+} from "@/lib/validations/admin/exercise.validation";
 import type { IExercise } from "@/types/exercise";
 import { options, optionsOfObject } from "@/utils/options";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 import GrammarForm from "./quiz-from/grammer-form/grammer-form";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import SecondHeading from "@/components/shared/second-heading";
 import WritingForm from "./quiz-from/writing-form/writing-form";
 import SpeakingForm from "./quiz-from/speaking-form/speaking-form";
 import ListeningForm from "./quiz-from/listening-form/listening-form";
-import useExerciseBuilder from "@/hooks/use-exercise-builder";
+import { useEffect } from "react";
 
 interface ExerciseFormProps {
   onSubmit: (values: ExerciseInput) => Promise<void>;
   isLoading: boolean;
   exercise?: IExercise | null | undefined;
 }
+const optionsCategories = optionsOfObject(CATEGORY);
 
 const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
-  const eb = useExerciseBuilder({
-    exercise,
+  // Form
+  const form = useForm<z.input<typeof exerciseSchema>, unknown, ExerciseInput>({
+    resolver: zodResolver(exerciseSchema),
+    defaultValues: {
+      lesson_id: "",
+      title: "",
+      category: "",
+      level: "",
+      visibility: VISIBILITY.PRIVATE,
+      content: [],
+      passing_percentage: 70,
+      description: "",
+    },
   });
+  const ready = !!exercise && optionsCategories.length > 0;
+  useEffect(() => {
+    if (!ready) return;
 
+    const ex: any = (exercise as any)?.exercise ?? exercise;
+
+    const lessonId =
+      typeof ex.lesson_id?._id === "string" ? ex.lesson_id?._id : "";
+
+    let content = Array.isArray(ex.content) ? [...ex.content] : [];
+    if (Array.isArray(ex.content)) {
+      content = content.map((cont) => {
+        if (cont.type === "mcq") {
+          return {
+            ...cont,
+            correctAnswer: cont.options
+              ?.findIndex((opt: string) => opt === cont.correctAnswer)
+              ?.toString(),
+          };
+        }
+        return cont;
+      });
+    }
+    form.reset({
+      lesson_id: lessonId,
+      title: ex.title ?? "",
+      category: ex.category ?? "",
+      level: ex.level ?? "",
+      visibility: ex.visibility ?? VISIBILITY.PRIVATE,
+      content: content,
+      passing_percentage: ex.passing_percentage ?? 70,
+      description: ex.description ?? "",
+    });
+  }, [ready]);
+  const category = useWatch({ control: form.control, name: "category" });
+  const level = useWatch({ control: form.control, name: "level" });
+
+  const { data: filteredLessons } = useGetFilteredLessons({ category, level });
+
+  // useEffect(() => {
+  //   if (category || "") form.setValue("content", []);
+  // }, [category, form.setValue]);
   return (
-    <Form {...eb.form}>
-      <form onSubmit={eb.form.handleSubmit(onSubmit)} className="space-y-10">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
         {/* TOP SECTION */}
         <div>
           <SecondHeading title="Basic Information" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormSelect
-              key={`${eb.category}-${exercise?._id}-`}
-              control={eb.form.control}
+              key={`${category}-${exercise?._id}-`}
+              control={form.control}
               label="Category"
               name="category"
               disabled={isLoading}
               placeholder="Select category"
-              options={eb.optionsCategories}
+              options={optionsCategories}
             />
 
             <FormSelect
-              key={`${eb.level}-${exercise?._id}`}
-              control={eb.form.control}
+              key={`${level}-${exercise?._id}`}
+              control={form.control}
               label="Level"
               name="level"
               disabled={isLoading}
@@ -57,32 +117,32 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             />
 
             <FormSelect
-              key={`${exercise?._id}-${eb.filteredLessons?.length}`}
-              control={eb.form.control}
+              key={`${exercise?._id}-${filteredLessons?.length}`}
+              control={form.control}
               label="Lesson"
               name="lesson_id"
               disabled={isLoading}
               placeholder="Select lesson"
-              options={options(eb.filteredLessons, "title", "_id")}
+              options={options(filteredLessons, "title", "_id")}
             />
           </div>
         </div>
 
-        {eb.category && (
+        {category && (
           <>
             <h2 className="text-sm font-semibold text-muted-foreground mb-4 capitalize">
-              <SecondHeading title={`${eb.category} Quiz`} />
+              <SecondHeading title={`${category} Quiz`} />
               <span className="text-xs  text-red-500">
                 {" "}
-                {eb.form.formState?.errors?.content?.message && (
-                  <>( {eb.form.formState?.errors?.content?.message} )</>
+                {form.formState?.errors?.content?.message && (
+                  <>( {form.formState?.errors?.content?.message} )</>
                 )}
               </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="order-2 md:order-1">
                 <FormInput
-                  control={eb.form.control}
+                  control={form.control}
                   label="Title"
                   name="title"
                   disabled={isLoading}
@@ -91,7 +151,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
               </div>
               <div className="order-1 md:order-2">
                 <FormInput
-                  control={eb.form.control}
+                  control={form.control}
                   label="Passing Percentage"
                   name="passing_percentage"
                   type="number"
@@ -101,9 +161,9 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
               </div>
               <div className="order-3 col-span-1 md:col-span-2">
                 <FormTextarea
-                  control={eb.form.control}
+                  control={form.control}
                   label={
-                    eb.form.watch("category") == CATEGORY.WRITING
+                    form.watch("category") == CATEGORY.WRITING
                       ? "Prompt"
                       : "Description"
                   }
@@ -115,16 +175,16 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
             </div>
             {/* CONTENT SECTION */}
 
-            {eb.category === CATEGORY.GRAMMAR && <GrammarForm eb={eb} />}
-            {eb.category === CATEGORY.WRITING && <WritingForm />}
-            {eb.category === CATEGORY.SPEAKING && <SpeakingForm />}
-            {eb.category === CATEGORY.LISTENING && <ListeningForm />}
+            {category === CATEGORY.GRAMMAR && <GrammarForm />}
+            {category === CATEGORY.WRITING && <WritingForm />}
+            {category === CATEGORY.SPEAKING && <SpeakingForm />}
+            {category === CATEGORY.LISTENING && <ListeningForm />}
           </>
         )}
         {/* PUBLISH SECTION */}
         <div className="flex items-center justify-between pt-4 border-t">
           <FormSelect
-            control={eb.form.control}
+            control={form.control}
             label="Visibility"
             name="visibility"
             disabled={isLoading}
