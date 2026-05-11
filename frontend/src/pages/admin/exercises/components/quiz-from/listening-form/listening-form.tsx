@@ -100,7 +100,8 @@ const ListeningForm = () => {
                     lb.updateQuestion(question.id, "transcript", e.target.value)
                   }
                   placeholder="Paste the full transcript of the video here..."
-                  className="min-h-[150px] font-mono text-sm resize-none"
+                  className="font-mono text-sm resize-none"
+                  style={{ minHeight: 150 }}
                 />
               </div>
             </div>

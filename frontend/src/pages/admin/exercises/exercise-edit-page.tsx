@@ -36,9 +36,7 @@ const AdminExercisesEditPage = () => {
       });
     }
 
-    console.log("Edit Value", values);
 
-    return;
     updateExercise({ id: id!, data: payload });
   };
 

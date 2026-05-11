@@ -5,7 +5,7 @@ import type useExerciseBuilder from "@/hooks/use-exercise-builder";
 import type { ExerciseInput } from "@/lib/validations/admin/exercise.validation";
 import type { MatchingQuestion } from "@/types/grammar-question";
 import { Plus, Trash2 } from "lucide-react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 interface MatchingRendererProps {
   question: MatchingQuestion;
@@ -13,12 +13,15 @@ interface MatchingRendererProps {
   idx: number;
 }
 
-const MatchingRenderer = ({
-  question,
-  idx,
-  eb,
-}: MatchingRendererProps) => {
+const MatchingRenderer = ({ question, idx, eb }: MatchingRendererProps) => {
   const { formState, control } = useFormContext<ExerciseInput>();
+  const liveQuestion = useWatch({
+    control,
+    name: `content.${idx}`,
+  }) as MatchingQuestion | undefined;
+
+  const currentQuestion = liveQuestion ?? question;
+  const pairs = currentQuestion.pairs ?? [];
   return (
     <div className="space-y-4 pl-6 border-l-2 border-orange-200">
       {/* Shuffle */}
@@ -37,10 +40,9 @@ const MatchingRenderer = ({
         />
         <Label className="text-sm">Shuffle right column</Label>
       </div> */}
-
       {/* Pairs */}
-      {question.pairs?.map((pair, index) => (
-        <div key={pair.id}>
+      {pairs.map((pair, index) => (
+        <div key={index}>
           <div className="grid grid-cols-2 gap-3">
             {/* <Input
               value={pair.left}
@@ -63,17 +65,18 @@ const MatchingRenderer = ({
                 placeholder={`Right ${index + 1}`}
               />
 
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  if (question.type == "matching" && pair.id)
-                    eb.removePair(question.id, pair.id);
-                }}
-              >
-                <Trash2 className="w-4 h-4 text-red-500" />
-              </Button>
+              {currentQuestion.type === "matching" && pairs.length > 2 && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    eb.removePair(idx, index);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                </Button>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -95,7 +98,7 @@ const MatchingRenderer = ({
         type="button"
         size="sm"
         variant="outline"
-        onClick={() => eb.addPair(question.id)}
+        onClick={() => eb.addPair(idx)}
       >
         <Plus className="w-4 h-4 mr-1" />
         Add Pair

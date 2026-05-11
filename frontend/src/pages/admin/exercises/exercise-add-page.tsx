@@ -23,8 +23,6 @@ const AdminExercisesAddPage = () => {
       });
     }
 
-    console.log("Add Value",values);
-    return;
     addExercise(values as IExercise);
   };
   return (

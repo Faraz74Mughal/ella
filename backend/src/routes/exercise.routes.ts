@@ -9,13 +9,14 @@ import {
 } from "../controllers/exercises.controller";
 import { authorizeRoles } from "../middlewares/role.middleware";
 import { verifyJWT } from "../middlewares/auth.middleware";
+import { upload } from "../middlewares/multer.middleware";
 
 const router = Router();
 
-router.post("/",verifyJWT,authorizeRoles('admin'), createExercise);
+router.post("/", verifyJWT, authorizeRoles("admin"), upload.array("listeningFiles"), createExercise);
 router.get("/", getExercises);
 router.get("/:exerciseId",  getExerciseById);
-router.patch("/:exerciseId",  updateExercise);
+router.patch("/:exerciseId", upload.array("listeningFiles"), updateExercise);
 router.delete("/:exerciseId",  deleteExercise);
 
 export default router;

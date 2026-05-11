@@ -42,7 +42,7 @@ console.log("ERROR:",eb.form.formState.errors);
               control={eb.form.control}
               label="Category"
               name="category"
-              disabled={isLoading}
+              disabled={isLoading||exercise?._id?true:false}
               placeholder="Select category"
               options={eb.optionsCategories}
             />
@@ -52,7 +52,7 @@ console.log("ERROR:",eb.form.formState.errors);
               control={eb.form.control}
               label="Level"
               name="level"
-              disabled={isLoading}
+              disabled={isLoading||exercise?._id?true:false}
               placeholder="Select level"
               options={optionsOfObject(LEVEL)}
             />
@@ -62,7 +62,7 @@ console.log("ERROR:",eb.form.formState.errors);
               control={eb.form.control}
               label="Lesson"
               name="lesson_id"
-              disabled={isLoading}
+              disabled={isLoading||exercise?._id?true:false}
               placeholder="Select lesson"
               options={options(eb.filteredLessons, "title", "_id")}
             />

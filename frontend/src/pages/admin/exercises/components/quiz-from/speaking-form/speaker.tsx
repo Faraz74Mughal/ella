@@ -2,12 +2,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSpeakingDialogueBuilder } from "@/hooks/use-speaking-dialogue-builder";
+import type { useSpeakingDialogueBuilder } from "@/hooks/use-speaking-dialogue-builder";
 import { Plus, UserCircle, Users, XCircle } from "lucide-react";
 
-const Speaker = () => {
+type SpeakerProps = {
+  sdb: ReturnType<typeof useSpeakingDialogueBuilder>;
+};
+
+const Speaker = ({ sdb }: SpeakerProps) => {
   const { speakers, newSpeaker, setNewSpeaker, addSpeaker, removeSpeaker } =
-    useSpeakingDialogueBuilder();
+    sdb;
 
   return (
     <>

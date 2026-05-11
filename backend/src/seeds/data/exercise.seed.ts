@@ -30,26 +30,7 @@ export const exerciseSeeds = [
     passing_percentage: 70,
   },
 
-  {
-    lesson_id: "66f06445684cd65ce9af1e45",
-    title: "True/False - Basic English",
-    level: "beginner",
-    category: "grammar",
-    created_by: "69f06445684cd65ce9af1e45",
-    visibility: "private",
-    assigned_to_students: [],
-    content: [
-      {
-        id: "q3",
-        type: "true_false",
-        question: "‘He go to school’ is correct grammar.",
-        correctAnswer: false,
-        points: 2,
-      },
-    ],
-    points: 2,
-    passing_percentage: 70,
-  },
+
 
   {
     lesson_id: "62f06445684cd65ce9af1e45",
@@ -64,8 +45,8 @@ export const exerciseSeeds = [
         id: "q4",
         type: "matching",
         pairs: [
-          { left: "Apple", right: "Fruit" },
-          { left: "Dog", right: "Animal" },
+          {id: "p1", left: "Apple", right: "Fruit" },
+          {id: "p2", left: "Dog", right: "Animal" },
         ],
         points: 3,
       },
@@ -267,30 +248,16 @@ export const exerciseSeeds = [
       points: 2,
     },
 
-    // 🔹 True / False
-    {
-      id: "g5",
-      type: "true_false",
-      question: "'She don't like apples' is correct.",
-      correctAnswer: false,
-      points: 2,
-    },
-    {
-      id: "g6",
-      type: "true_false",
-      question: "'They are playing football' is present continuous tense.",
-      correctAnswer: true,
-      points: 2,
-    },
+    
 
     // 🔹 Matching
     {
       id: "g7",
       type: "matching",
       pairs: [
-        { left: "Run", right: "Verb" },
-        { left: "Quickly", right: "Adverb" },
-        { left: "Beautiful", right: "Adjective" },
+        {id:"g1", left: "Run", right: "Verb" },
+        {id:"g2", left: "Quickly", right: "Adverb" },
+        {id:"g3", left: "Beautiful", right: "Adjective" },
       ],
       points: 3,
     },

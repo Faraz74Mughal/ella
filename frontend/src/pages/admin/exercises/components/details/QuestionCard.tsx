@@ -7,6 +7,7 @@ import TrueFalseView from "./TrueFalseView";
 import MatchingView from "./MatchingView";
 import WritingView from "./WritingView";
 import ListeningView from "./ListeningView";
+import AdminDialogueViewer from "./DialogueView";
 
 const QuestionCard = ({ q, index }: any) => {
   return (
@@ -30,6 +31,7 @@ const QuestionCard = ({ q, index }: any) => {
         {q.type === "matching" && <MatchingView q={q} />}
         {q.type === "writing" && <WritingView q={q} />}
         {q.type === "listening" && <ListeningView q={q} />}
+        {q.type === "dialogue" && <AdminDialogueViewer q={q} />}
       </CardContent>
     </Card>
   );

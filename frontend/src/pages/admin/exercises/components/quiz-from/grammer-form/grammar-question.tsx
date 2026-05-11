@@ -5,6 +5,7 @@ import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import { Trash2 } from "lucide-react";
+import { useWatch } from "react-hook-form";
 import MCQRenderer from "./mcq-renderer";
 import MatchingRenderer from "./matching-renderer";
 import FillInTheBlankRenderer from "./fill-in-the-blank-renderer";
@@ -17,26 +18,33 @@ type GrammarQuestionProps = {
 };
 
 const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
+  const currentType = useWatch({
+    control: eb.form.control,
+    name: `content.${idx}.type`,
+  });
+
+  const questionType = currentType ?? question.type;
 
   return (
-    <Card  className="border-l-4 border-primary">
+    <Card className="border-l-4 border-primary">
       <CardContent className="p-4">
         <div className="space-y-4">
           {/* Question Header */}
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
-              <Badge variant="outline" className="bg-blue-50">
-                Q{idx + 1}
-              </Badge>
+              <div>
+                <Badge variant="outline" className="bg-blue-50">
+                  Q{idx + 1}
+                </Badge>
+              </div>
               {/* <TypesSelect question={question} {...qb} /> */}
               <FormSelect
                 control={eb.form.control}
-                label="Points"
                 name={`content.${idx}.type`}
                 options={eb.grammarTypes}
               />
               <FormInput
-                itemClassName="flex items-center ml-auto gap-2"
+                itemClassName="flex items-center ml-auto gap-2 space-y-0!"
                 control={eb.form.control}
                 label="Points"
                 name={`content.${idx}.points`}
@@ -60,7 +68,7 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
 
           {/* Question Text */}
 
-          {(question.type === "fill_blank" || question.type === "mcq") && (
+          {(questionType === "fill_blank" || questionType === "mcq") && (
             <div>
               <div className="space-y-1">
                 <FormTextarea
@@ -77,12 +85,12 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
             </div>
           )}
 
-          {question.type === "mcq" ? (
+          {questionType === "mcq" ? (
             <MCQRenderer idx={idx} question={question} eb={eb} />
-          ) : question.type === "matching" ? (
+          ) : questionType === "matching" ? (
             <MatchingRenderer eb={eb} question={question} idx={idx} />
-          ) : question.type === "fill_blank" ? (
-            <FillInTheBlankRenderer eb={eb} question={question} idx={idx} />
+          ) : questionType === "fill_blank" ? (
+            <FillInTheBlankRenderer idx={idx} />
           ) : (
             ""
           )}

@@ -21,7 +21,7 @@ type Option = {
 type FormSelectProps = {
   control: any;
   name: string;
-  label: string;
+  label?: string;
   options: Option[];
   placeholder?: string;
   disabled?: boolean;
@@ -40,8 +40,8 @@ export function FormSelect({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className={`${label ? 'space-y-2' : 'space-y-0'}`}>
+          {label && <FormLabel>{label}</FormLabel>}
           <Select
             onValueChange={field.onChange}
             value={field.value ?? ""}

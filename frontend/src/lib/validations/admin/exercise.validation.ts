@@ -17,6 +17,7 @@ const fillBlankSchema = z.object({
   type: z.literal("fill_blank"),
   question: z.string().min(1, "Question is required"),
   correctAnswer: z.string().min(1, "Answer is required"),
+  alternativesInput: z.string().optional(),
   alternatives: z.array(z.string()).optional(),
   points: z.number().min(1, "Points must be at least 1"),
 });
@@ -30,7 +31,7 @@ const trueFalseSchema = z.object({
 });
 
 const matchingSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   type: z.literal("matching"),
   pairs: z
     .array(
@@ -65,7 +66,7 @@ const dialogueSchema = z.object({
 const listeningSchema = z.object({
   id: z.string(),
   type: z.literal("listening"),
-  file: z.string().nullable(),
+  file: z.union([z.string(), z.instanceof(File), z.null()]).optional(),
   transcript: z.string().optional(),
   points: z.coerce.number().optional(),
   comprehensionQuestions: z

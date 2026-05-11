@@ -25,4 +25,5 @@ export interface DialogueLine {
   question: string;
   expectedAnswer: string;
   alternative: string;
+  points: number;
 }

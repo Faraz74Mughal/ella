@@ -24,8 +24,6 @@ export function useAddExerciseByAdmin() {
   return useMutation({
     mutationFn: exerciseService.createExercisesByAdmin,
     onSuccess: (data) => {
-      console.log("DATA",data);
-      
       if (data) navigate("/admin/exercises");
     },
   });
@@ -37,6 +35,7 @@ export function useUpdateExerciseByAdmin() {
   return useMutation({
     mutationFn: exerciseService.updateExercisesByAdmin,
     onSuccess: (data) => {
+      
       if (data) navigate("/admin/exercises");
     },
   });

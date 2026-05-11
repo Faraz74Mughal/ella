@@ -15,6 +15,7 @@ type FormInputProps = {
   label?: string;
   itemClassName?: string;
   labelClassName?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 } & InputProps;
 
 export function FormInput({
@@ -24,6 +25,7 @@ export function FormInput({
   type = "text",
   itemClassName,
   labelClassName,
+  onChange,
   ...rest
 }: FormInputProps) {
   return (
@@ -32,20 +34,27 @@ export function FormInput({
       name={name}
       render={({ field }) => {
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          let value: any = e.target.value;
+
           if (type === "number") {
-            field.onChange(e.target.value === "" ? "" : e.target.valueAsNumber);
-          } else {
-            field.onChange(e.target.value);
+            value = e.target.value === "" ? "" : e.target.valueAsNumber;
+          }
+
+          // update RHF field
+          field.onChange(value);
+
+          // call custom onChange if exists
+          if (onChange) {
+            onChange(e);
           }
         };
 
         return (
-          <FormItem className={itemClassName} >
-            {label && <FormLabel className={labelClassName}>{label}</FormLabel>}
+          <FormItem className={itemClassName + `${label ? ' space-y-2' : ' space-y-0'}`}>
+            {label && <FormLabel className={labelClassName }>{label}</FormLabel>}
 
             <FormControl>
               <Input
-                
                 {...field}
                 {...rest}
                 type={type}

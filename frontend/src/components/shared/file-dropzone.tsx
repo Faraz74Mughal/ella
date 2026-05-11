@@ -53,7 +53,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileUp,  FileText, Trash2 } from "lucide-react";
+import { FileUp, FileText, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FileDropzoneProps {
@@ -65,6 +65,8 @@ interface FileDropzoneProps {
   maxSizeMB?: number;
   onError?: (message: string) => void;
 }
+
+type Value = File | { url: string; public_id?: string } | null;
 
 export function FileDropzone({
   onFileSelect,
@@ -101,18 +103,44 @@ export function FileDropzone({
 
   // 🔍 Detect file type
   const fileType = useMemo(() => {
-    if (!value || typeof value === "string") return null;
-    if (value.type.startsWith("image")) return "image";
-    if (value.type.startsWith("video")) return "video";
-    if (value.type.startsWith("audio")) return "audio";
+    if (!value) return null;
+
+    if (value instanceof File) {
+      if (value.type.startsWith("image")) return "image";
+      if (value.type.startsWith("video")) return "video";
+      if (value.type.startsWith("audio")) return "audio";
+    }
+
+    // fallback for uploaded file
     return "file";
   }, [value]);
 
   // 🔗 Preview URL
   const previewUrl = useMemo(() => {
-    if (!value || typeof value === "string") return null;
-    return URL.createObjectURL(value);
+    if (!value) return null;
+
+    // Cloudinary object
+    if (typeof value === "object" && !(value instanceof File)) {
+      return value.url;
+    }
+
+    // File object
+    if (value instanceof File) {
+      return URL.createObjectURL(value);
+    }
+
+    return null;
   }, [value]);
+
+  const fileName = useMemo(() => {
+  if (!value) return "";
+
+  if (value instanceof File) return value.name;
+
+  if (typeof value === "object") return "Uploaded File";
+
+  return "File";
+}, [value]);
 
   // ✅ When file is selected
   if (value) {
@@ -151,7 +179,7 @@ export function FileDropzone({
             <FileText className="h-6 w-6 text-primary" />
             <div className="flex flex-col">
               <span className="text-sm font-medium truncate max-w-[200px]">
-                {typeof value === "string" ? "Uploaded File" : value.name}
+                {fileName}
               </span>
               <span className="text-xs text-muted-foreground">
                 {value instanceof File &&
@@ -191,9 +219,7 @@ export function FileDropzone({
 
       <FileUp className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
 
-      {label && (
-        <p className="text-sm font-semibold">{label}</p>
-      )}
+      {label && <p className="text-sm font-semibold">{label}</p>}
 
       <p className="text-xs text-muted-foreground mt-1">
         Max {maxSizeMB}MB • Supports images, video, audio, PDF

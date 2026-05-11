@@ -35,7 +35,6 @@ export class ExercisesService {
       populate: {
         path: "created_by",
         select: "name role",
-
       },
     });
 
@@ -75,8 +74,6 @@ export class ExercisesService {
   }
 
   static async getExerciseById(exerciseId: string) {
-    console.log("WHAT IS ID", exerciseId);
-    
     const exercise = await Exercise.findById(exerciseId).populate(
       "lesson_id",
       "title sequence_order",
@@ -94,7 +91,7 @@ export class ExercisesService {
     if (!exercise) {
       throw new ApiError(404, "Exercise not found.");
     }
-
+    const oldContent = exercise.content || [];
     if (payload.available_from)
       payload.available_from = new Date(payload.available_from);
     if (payload.available_until)
@@ -103,7 +100,7 @@ export class ExercisesService {
     Object.assign(exercise, payload);
     await exercise.save();
 
-    return exercise;
+    return { exercise, oldContent };
   }
 
   static async deleteExercise(exerciseId: string) {

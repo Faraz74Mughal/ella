@@ -12,33 +12,13 @@ import {
   MoveUp,
   MoveDown,
 } from "lucide-react";
-import { useSpeakingDialogueBuilder } from "@/hooks/use-speaking-dialogue-builder";
-import { useFormContext } from "react-hook-form";
+import type { useSpeakingDialogueBuilder } from "@/hooks/use-speaking-dialogue-builder";
 
+type DialogueFormProps = {
+  sdb: ReturnType<typeof useSpeakingDialogueBuilder>;
+};
 
-
-const DialogueForm = () => {
-  const { setValue, watch } = useFormContext<any>();
-  // const [questions, setQuestions] = useState<DialogueQuestion[]>([]);
-  const sdb = useSpeakingDialogueBuilder({
-    value: watch("content"),
-    onChange: (val) => setValue("content", val),
-  });
-  // Form state
- 
-  
-
-  
-  
-
-  
-
-  //  {error && (
-  //             <Alert variant="destructive">
-  //               <XCircle className="h-4 w-4" />
-  //               <AlertDescription>{error}</AlertDescription>
-  //             </Alert>
-  //           )}
+const DialogueForm = ({ sdb }: DialogueFormProps) => {
   return (
     <div className="w-full mt-5">
       {/* Content Tab */}
@@ -150,6 +130,23 @@ const DialogueForm = () => {
                           placeholder="What should the student say?"
                           className="text-sm"
                         />
+
+                        <div className="space-y-1">
+                          <Label className="text-xs text-slate-500">Points</Label>
+                          <Input
+                            type="number"
+                            min={1}
+                            value={line.points || 1}
+                            onChange={(e) =>
+                              sdb.updateQuestion(
+                                line.id,
+                                "points",
+                                parseInt(e.target.value, 10) || 1,
+                              )
+                            }
+                            className="text-sm"
+                          />
+                        </div>
 
                         {/* Alternative answers */}
                         <div className="space-y-1">

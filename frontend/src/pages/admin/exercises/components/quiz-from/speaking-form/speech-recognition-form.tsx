@@ -6,18 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSpeakingBuilder } from "@/hooks/use-speaking-builder";
 import { Play, Plus, Trash2 } from "lucide-react";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 const SpeechRecognitionForm = () => {
-  const { setValue, watch, control } = useFormContext<any>();
+  const { setValue, watch } = useFormContext<any>();
   const sb = useSpeakingBuilder({
     value: watch("content"),
     onChange: (val) => setValue("content", val),
   });
-  useEffect(() => {
-    if (watch("category") || "") setValue("content", []);
-  }, [watch, setValue]);
   return (
     <>
       {/* Form Card */}
