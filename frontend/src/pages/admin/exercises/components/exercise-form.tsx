@@ -27,6 +27,7 @@ const ExerciseForm = ({ onSubmit, isLoading, exercise }: ExerciseFormProps) => {
   const eb = useExerciseBuilder({
     exercise,
   });
+console.log("ERROR:",eb.form.formState.errors);
 
   return (
     <Form {...eb.form}>

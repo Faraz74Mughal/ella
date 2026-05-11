@@ -7,9 +7,9 @@ const GrammarForm = ({ eb }: { eb: ReturnType<typeof useExerciseBuilder> }) => {
   return (
     <div>
       <div className="space-y-6">
-        {(eb?.questions || []).map((question, idx) => (
+        {eb.questions.map((question, idx) => (
           <GrammarQuestion
-            key={question.id}
+            key={question.fieldId}
             idx={idx}
             question={question}
             eb={eb}

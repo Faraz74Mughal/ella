@@ -19,7 +19,7 @@ type GrammarQuestionProps = {
 const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
 
   return (
-    <Card key={idx} className="border-l-4 border-primary">
+    <Card  className="border-l-4 border-primary">
       <CardContent className="p-4">
         <div className="space-y-4">
           {/* Question Header */}
@@ -50,7 +50,7 @@ const GrammarQuestion = ({ idx, question, eb }: GrammarQuestionProps) => {
               type="button"
               size="sm"
               variant="ghost"
-              onClick={() => eb.removeQuestion(question.id)}
+              onClick={() => eb.removeQuestion(idx)}
               disabled={eb.questions.length === 1}
               className="text-red-500 ml-2"
             >

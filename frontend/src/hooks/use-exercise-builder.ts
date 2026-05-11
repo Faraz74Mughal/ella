@@ -171,8 +171,7 @@ const useExerciseBuilder = ({
       return;
     }
 
-    console.log("type2",type,contentIdx);
-    
+
     if (!type) return;
     if (type === "mcq") {
       form.setValue(`content.${contentIdx}.id`, generateId());
@@ -198,6 +197,7 @@ const useExerciseBuilder = ({
   } = useFieldArray({
     control: form.control,
     name: "content",
+    keyName: "fieldId",
   });
 
   const addQuestion = () => {
@@ -205,8 +205,6 @@ const useExerciseBuilder = ({
   };
 
   const removeQuestion = (idx: number) => {
-    console.log("idx", idx, questions);
-
     if (questions.length <= 1) return;
     remove(idx);
   };
@@ -214,11 +212,29 @@ const useExerciseBuilder = ({
   // MCQ OPTIONS
   // ------------------------
 
-  const addOption = (qId: string) => {};
+  const addOption = (questionIndex: number) => {
+    const question = form.getValues(`content.${questionIndex}`);
+    console.log("QYESTION",question);
+    
+    if (question.type !== "mcq") return;
+    if (question.options.length >= 4) return;
+    const newOptions = [...question.options, ""];
+    update(questionIndex, {
+      ...question,
+      options: newOptions,
+    });
+  };
 
-  const updateOption = (qId: string, index: number, value: string) => {};
-
-  const removeOption = (qId: string, index: number) => {};
+  const removeOption = (questionIndex: number, optionIndex: number) => {
+    const question = form.getValues(`content.${questionIndex}`);
+    if (question.type !== "mcq") return;
+    if (question.options.length <= 2) return;
+    const newOptions = question.options.filter((_, i) => i !== optionIndex);
+    update(questionIndex, {
+      ...question,
+      options: newOptions,
+    });
+  };
 
   // ------------------------
   // MATCHING
@@ -248,7 +264,6 @@ const useExerciseBuilder = ({
     addQuestion,
     removeQuestion,
     addOption,
-    updateOption,
     removeOption,
     addPair,
     updatePair,

@@ -16,7 +16,7 @@ interface MCQRendererProps {
   eb: ReturnType<typeof useExerciseBuilder>;
 }
 
-const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
+const MCQRenderer = ({ idx, question, eb }: MCQRendererProps) => {
   return (
     <div className="space-y-3 pl-6 border-l-2 border-blue-200">
       <Label className="text-sm font-medium">
@@ -58,7 +58,7 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
                       type="button"
                       size="sm"
                       variant="ghost"
-                      onClick={() => eb.removeOption(question.id, optIdx)}
+                      onClick={() => eb.removeOption(idx, optIdx)}
                       className="text-red-500"
                     >
                       <XCircle className="w-4 h-4" />
@@ -81,7 +81,7 @@ const MCQRenderer = ({ idx,question, eb }: MCQRendererProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => eb.addOption(question.id)}
+          onClick={() => eb.addOption(idx )}
           className="mt-2"
         >
           <Plus className="w-3 h-3 mr-1" />
