@@ -50,11 +50,7 @@ const exerciseSchema = new Schema<IExercise>(
         ref: "User",
       },
     ],
-    // type: {
-    //   type: String,
-    //   enum: Object.values(QUIZ_TYPES),
-    //   required: true,
-    // },
+   
     content: {
       type: Schema.Types.Mixed,
       required: true,

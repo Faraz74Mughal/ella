@@ -4,6 +4,7 @@ import { CATEGORY, LEVEL, STUDY_MATERIAL_TYPE } from "../constants/lesson.consta
 export interface ILesson extends Document {
   title: string;
   level: (typeof LEVEL)[keyof typeof LEVEL];
+  description?: string; 
   category: (typeof CATEGORY)[keyof typeof CATEGORY];
   study_material?: {
     material_type?: (typeof STUDY_MATERIAL_TYPE)[keyof typeof STUDY_MATERIAL_TYPE];

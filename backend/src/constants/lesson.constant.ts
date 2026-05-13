@@ -16,7 +16,6 @@ export const STUDY_MATERIAL_TYPE = {
   VIDEO: "video",
   AUDIO: "audio",
   TEXT: "text",
-  INTERACTIVE: "interactive",
 };
 
 export const VISIBILITY = {

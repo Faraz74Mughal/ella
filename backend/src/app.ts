@@ -8,6 +8,7 @@ import userRoutes from './routes/user.routes';
 import teacherRoutes from './routes/teacher.routes';
 import lessonRoutes from './routes/lesson.routes';
 import exerciseRoutes from './routes/exercise.routes';
+import studentProgressRoutes from './routes/student-progress.route';
 
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/teachers", teacherRoutes);
 app.use("/api/v1/lessons", lessonRoutes);
 app.use("/api/v1/exercises", exerciseRoutes);
+app.use("/api/v1/student-progress", studentProgressRoutes);
 
 // --- Global Error Handler (Must be last) ---
 app.use(globalErrorHandler);
