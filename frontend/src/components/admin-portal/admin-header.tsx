@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store/useAuthStore";
 import CircleButtonIcon from "../ui/circle-button-icon";
 import { Bell } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { imageFallback, pageHeadingManagement } from "@/utils/helpers";
+import { pageHeadingManagement } from "@/utils/helpers";
 import {useLocation} from  "react-router-dom"
 import AvatarCircle from "../ui/avatar-circle";
 

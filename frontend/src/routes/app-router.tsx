@@ -20,7 +20,6 @@ import TeacherDashboardPage from "@/pages/teacher/dashboard";
 import TeacherCoursesPage from "@/pages/teacher/courses";
 import TeacherProgressPage from "@/pages/teacher/progress";
 import TeacherSettingsPage from "@/pages/teacher/settings";
-import StudentDashboardPage from "@/pages/student/dashboard";
 import { AdminPortalLayout } from "@/layouts/admin-portal-layout";
 import AdminDashboardPage from "@/pages/admin/dashboard";
 import AdminUsersPage from "@/pages/admin/users/users-page";
@@ -37,12 +36,17 @@ import AdminTeacherAddPage from "@/pages/admin/users/teacher-add-page";
 import AdminExerciseDetailPage from "@/pages/admin/exercises/exercise-detail-page";
 
 import TeacherUpdatePasswordFirstTimePage from "@/pages/teacher/auth/UpdatePasswordFirstTImePage";
+import { StudentPortalLayout } from "@/layouts/student-portal-layout";
+import StudentDashboardPage from "@/pages/student/dashboard/dashboard-page";
+import StudentLessonsPage from "@/pages/student/lessons/lessons-page";
+import ErrorPage from "@/pages/error-page";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
 
 const router = createBrowserRouter([
   {
     element: <AuthWrapper />,
+    errorElement: <ErrorPage />,
     children: [
       /* --- PUBLIC ROUTES --- */
       { path: "/register", element: <RegisterPage /> },
@@ -153,8 +157,17 @@ const router = createBrowserRouter([
                 path: "/student",
                 element: <ProtectedRoute allowedRoles={["student"]} />,
                 children: [
-                  { path: "dashboard", element: <StudentDashboardPage /> },
-                  { path: "", element: <Navigate to="dashboard" replace /> },
+                  {
+                    element: <StudentPortalLayout />,
+                    children: [
+                      { path: "dashboard", element: <StudentDashboardPage /> },
+                      { path: "lessons", element: <StudentLessonsPage /> },
+                      {
+                        path: "",
+                        element: <Navigate to="dashboard" replace />,
+                      },
+                    ],
+                  },
                 ],
               },
             ],
