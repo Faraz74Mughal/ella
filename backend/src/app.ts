@@ -12,6 +12,7 @@ import studentProgressRoutes from './routes/student-progress.route';
 import submissionRoutes from './routes/submission.routes';
 import assignmentRoutes from './routes/assignment.routes';
 import discussionRoutes from './routes/discussion.routes';
+import chatRoutes from './routes/chat.routes';
 
 const app: Application = express();
 
@@ -37,6 +38,7 @@ app.use("/api/v1/student-progress", studentProgressRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/v1/assignments", assignmentRoutes);
 app.use("/api/v1/discussions", discussionRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 // --- Global Error Handler (Must be last) ---
 app.use(globalErrorHandler);

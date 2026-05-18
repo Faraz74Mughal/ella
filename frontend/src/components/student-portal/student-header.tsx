@@ -25,7 +25,8 @@ const navItems = [
   { label: "Home", to: "/student/dashboard" },
   { label: "My Lessons", to: "/student/lessons" },
   { label: "Assignments", to: "/student/assignments" },
-  { label: "Profile", to: "/student/profile" },
+  { label: "Chat", to: "/student/chat" },
+  // { label: "Profile", to: "/student/profile" },
 ];
 
 const StudentHeader = () => {
@@ -78,8 +79,7 @@ const StudentHeader = () => {
 
         {/* Right Side: Stats & Profile */}
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-3">
-            {/* Streak Stat */}
+          {/* <div className="hidden sm:flex items-center gap-3">
             <Badge
               variant="outline"
               className="flex gap-1.5 px-3 py-1 bg-orange-50 text-orange-600 border-orange-100 rounded-full hover:bg-orange-50"
@@ -88,7 +88,6 @@ const StudentHeader = () => {
               <span className="font-bold">12</span>
             </Badge>
 
-            {/* Coins Stat */}
             <Badge
               variant="outline"
               className="flex gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 border-amber-100 rounded-full hover:bg-amber-50"
@@ -98,17 +97,17 @@ const StudentHeader = () => {
             </Badge>
           </div>
 
-          <Separator orientation="vertical" className="h-8 hidden sm:block" />
+          <Separator orientation="vertical" className="h-8 hidden sm:block" /> */}
 
           {/* User Profile */}
           <div className="flex items-center gap-3">
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="text-muted-foreground"
             >
               <Bell size={20} />
-            </Button>
+            </Button> */}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

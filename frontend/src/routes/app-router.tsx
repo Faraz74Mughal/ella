@@ -49,6 +49,7 @@ import StudentLessonPage from "@/pages/student/lessons/lesson-detail-page";
 import StudentAssignmentsPage from "@/pages/student/assignments/assignments-page";
 import StudentAchievementsPage from "@/pages/student/achievements/achievements-page";
 import StudentProfilePage from "@/pages/student/profile/profile-page";
+import StudentChatPage from "@/pages/student/chat/chat-page";
 import DiscussionCategoriesPage from "@/pages/admin/discussion-categories/discussion-categories-page";
 import DiscussionCategoryAddPage from "@/pages/admin/discussion-categories/discussion-category-add-page";
 import AdminDiscussionsPage from "@/pages/admin/discussions/discussions-page";
@@ -226,6 +227,10 @@ const router = createBrowserRouter([
                       {
                         path: "profile",
                         element: <StudentProfilePage />,
+                      },
+                      {
+                        path: "chat",
+                        element: <StudentChatPage />,
                       },
                       {
                         path: "discussions",
