@@ -4,11 +4,13 @@ import { authorizeRoles } from "../middlewares/role.middleware";
 import {
   completeLessonForStudent,
   getLessonsForStudent,
+  getStudentProgress,
 } from "../controllers/student-progress.controller";
 
 const router = Router();
 
 router.get("/", verifyJWT, authorizeRoles("student"), getLessonsForStudent);
+router.get("/progress", verifyJWT, authorizeRoles("student"), getStudentProgress);
 
 router.post(
   "/:lessonId/complete",

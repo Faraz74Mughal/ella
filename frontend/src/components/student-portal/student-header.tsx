@@ -1,6 +1,5 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import { Flame, Coins, Bell } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Flame, Coins, Bell, LogOut, User, PencilLine } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,16 +10,44 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const navItems = [
   { label: "Home", to: "/student/dashboard" },
   { label: "My Lessons", to: "/student/lessons" },
-  { label: "Community", to: "/student/community" },
+  { label: "Assignments", to: "/student/assignments" },
+  { label: "Profile", to: "/student/profile" },
 ];
 
 const StudentHeader = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+
+  const initials = (user?.name || "Student")
+    .split(" ")
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully.");
+    navigate("/login", { replace: true });
+  };
+
   return (
-    <nav className="sticky top-0 z-50 px-5 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 px-5 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className=" flex h-16 items-center justify-between">
         {/* Left Side: Logo & Main Nav */}
         <div className="flex items-center gap-8">
@@ -33,7 +60,7 @@ const StudentHeader = () => {
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList className="gap-1">
               {navItems.map((item) => (
-                <NavigationMenuItem>
+                <NavigationMenuItem key={item.to}>
                   <NavLink to={item.to} className={"rounded-0!"}>
                     {({ isActive }) => (
                       <div
@@ -83,12 +110,38 @@ const StudentHeader = () => {
               <Bell size={20} />
             </Button>
 
-            <Avatar className="h-9 w-9 ring-2 ring-indigo-50 shadow-sm transition-transform hover:scale-105 cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback className="bg-indigo-600 text-white">
-                AS
-              </AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="rounded-full outline-none ring-offset-background transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                  <Avatar className="h-9 w-9 ring-2 ring-indigo-50 shadow-sm transition-transform hover:scale-105 cursor-pointer">
+                    <AvatarImage src={user?.image} />
+                    <AvatarFallback className="bg-indigo-600 text-white">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>
+                  <p className="font-semibold">{user?.name || "Student"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/student/profile")}> 
+                  <User size={16} />
+                  View Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/student/profile")}> 
+                  <PencilLine size={16} />
+                  Edit Details
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} variant="destructive">
+                  <LogOut size={16} />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

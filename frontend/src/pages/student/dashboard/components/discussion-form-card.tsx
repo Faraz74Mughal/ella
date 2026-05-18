@@ -1,43 +1,59 @@
-import React from "react";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { discussionService } from "@/api/discussion.service";
+import { Button } from "@/components/ui/button";
 
 const DiscussionDormCard = () => {
+  const navigate = useNavigate();
+  const { data: threads = [] } = useQuery({
+    queryKey: ["discussion-threads-preview"],
+    queryFn: () => discussionService.fetchThreads(),
+  });
+
+  const recentThreads = useMemo(() => threads.slice(0, 2), [threads]);
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-slate-800">Discussion Form</h2>
-        <button className="text-indigo-600 text-sm font-semibold hover:underline">
+        <button
+          onClick={() => navigate("/student/discussions")}
+          className="text-indigo-600 text-sm font-semibold hover:underline"
+        >
           View All
         </button>
       </div>
-      <div className="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm">
+      <div className="bg-white border border-indigo-100 rounded-[32px] p-6 shadow-sm hover:shadow-md transition-shadow">
         <div className="space-y-4">
-          <div className="group cursor-pointer">
-            <p className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition line-clamp-1">
-              How to use "whom" vs "who"?
-            </p>
-            <div className="flex items-center justify-between mt-1">
-              <p className="text-[10px] text-slate-400">
-                12 Replies • Active 2m ago
-              </p>
-              <div className="flex -space-x-1">
-                <div className="w-4 h-4 rounded-full bg-slate-200 border border-white"></div>
-                <div className="w-4 h-4 rounded-full bg-slate-300 border border-white"></div>
+          {recentThreads.length > 0 ? (
+            recentThreads.map((thread) => (
+              <div key={thread._id} className="group cursor-pointer">
+                <p className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition line-clamp-1">
+                  {thread.title}
+                </p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-[10px] text-slate-400">
+                    {thread.replies?.length || 0} Replies • {thread.category?.name}
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    {new Intl.DateTimeFormat("en", { dateStyle: "short" }).format(
+                      new Date(thread.createdAt || Date.now()),
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
-          <hr className="border-slate-50" />
-          <div className="group cursor-pointer">
-            <p className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition line-clamp-1">
-              Tips for IELTS Speaking Part 2
-            </p>
-            <p className="text-[10px] text-slate-400 mt-1">
-              5 Replies • Active 1h ago
-            </p>
-          </div>
+            ))
+          ) : (
+            <p className="text-sm text-slate-500">No discussions yet. Be the first to start one.</p>
+          )}
         </div>
-        <button className="w-full mt-6 bg-slate-100 text-slate-600 py-3 rounded-xl text-xs font-bold hover:bg-slate-200 transition">
+        <Button
+          className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white"
+          onClick={() => navigate("/student/discussions")}
+        >
           Go to Community
-        </button>
+        </Button>
       </div>
     </section>
   );

@@ -1,11 +1,16 @@
 import { Router } from 'express';
-import { login, register, logout, refreshAccessToken, forgotPassword, resetPassword, resendVerification, googleLogin, getCurrentUser, assignRole, verifyEmail } from '../controllers/auth.controller';
+import { login, register, logout, refreshAccessToken, forgotPassword, resetPassword, resendVerification, googleLogin, getCurrentUser, assignRole, verifyEmail, updateCurrentUser, uploadCurrentUserAvatar } from '../controllers/auth.controller';
 import { verifyJWT } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validate.middleware';
+import { updateCurrentUserSchema } from '../validators/auth.validator';
+import { upload } from '../middlewares/multer.middleware';
 
 const router = Router();
 
 // Public routes
 router.get('/me', verifyJWT, getCurrentUser);
+router.patch('/me', verifyJWT, validate(updateCurrentUserSchema), updateCurrentUser);
+router.patch('/me/avatar', verifyJWT, upload.single('image'), uploadCurrentUserAvatar);
 router.post('/register', register); // (Keep your existing validation middleware here)
 router.post('/login', login);
 router.post('/refresh-token', refreshAccessToken);

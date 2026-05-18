@@ -1,5 +1,5 @@
 import { studentProgressService } from "@/api/student-progress.service";
-import { useMutation ,useQuery} from "@tanstack/react-query";
+import { useQuery} from "@tanstack/react-query";
 
 export function useFetchLessonsForStudent() {
   //   const setAuth = useAuthStore((state) => state.setAuth);
@@ -7,5 +7,12 @@ export function useFetchLessonsForStudent() {
   return useQuery({
     queryKey: ['lessons'],
     queryFn: studentProgressService.fetchLessonsForStudent,
+  });
+}
+
+export const useFetchStudentProgress = () => {
+  return useQuery({
+    queryKey: ['studentProgress'],    
+    queryFn: studentProgressService.fetchStudentProgress,
   });
 }

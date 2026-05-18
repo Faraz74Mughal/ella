@@ -18,6 +18,7 @@ export interface IUser extends Document {
   // Basic Info
   name: string;
   image?: string;
+  imagePublicId?: string;
   bio?: string;
   dob?: Date;
   contactNo?: string;

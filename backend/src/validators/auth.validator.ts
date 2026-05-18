@@ -46,3 +46,20 @@ export const registerSchema = z.object({
       },
     ),
 });
+
+export const updateCurrentUserSchema = z.object({
+  body: z
+    .object({
+      name: z.string().min(2).max(120).trim().optional(),
+      username: z.string().min(3).max(30).trim().optional(),
+      bio: z.string().max(500).trim().optional(),
+      contactNo: z.string().max(30).trim().optional(),
+      language: z.string().max(60).trim().optional(),
+      image: z.string().url("Invalid image URL").optional(),
+      dob: z.union([z.string(), z.date()]).optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+      message: "At least one profile field is required",
+      path: ["body"],
+    }),
+});

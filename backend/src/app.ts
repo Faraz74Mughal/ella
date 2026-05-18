@@ -9,6 +9,9 @@ import teacherRoutes from './routes/teacher.routes';
 import lessonRoutes from './routes/lesson.routes';
 import exerciseRoutes from './routes/exercise.routes';
 import studentProgressRoutes from './routes/student-progress.route';
+import submissionRoutes from './routes/submission.routes';
+import assignmentRoutes from './routes/assignment.routes';
+import discussionRoutes from './routes/discussion.routes';
 
 const app: Application = express();
 
@@ -31,6 +34,9 @@ app.use("/api/v1/teachers", teacherRoutes);
 app.use("/api/v1/lessons", lessonRoutes);
 app.use("/api/v1/exercises", exerciseRoutes);
 app.use("/api/v1/student-progress", studentProgressRoutes);
+app.use("/api/submissions", submissionRoutes);
+app.use("/api/v1/assignments", assignmentRoutes);
+app.use("/api/v1/discussions", discussionRoutes);
 
 // --- Global Error Handler (Must be last) ---
 app.use(globalErrorHandler);

@@ -15,11 +15,12 @@ const SubmissionSchema = new Schema(
     },
     exercise_id: {
       type: Schema.Types.ObjectId, // Connects to your speaking or writing quiz
+      ref: "Exercise",
       required: true,
     },
     category: {
       type: String, 
-      enum: ["speaking", "writing"],
+      enum: ["grammar", "vocabulary", "listening", "speaking", "writing"],
       required: true,
     },
     score_earned: {
@@ -38,14 +39,25 @@ const SubmissionSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    points_earned: {
+      type: Number,
+      default: 0,
+    },
+    xp_earned: {
+      type: Number,
+      default: 0,
+    },
+    rewards_applied: {
+      type: Boolean,
+      default: false,
+    },
     // Saves exactly what the student submitted
     submitted_payload: {
-      text_content: { type: String }, // Saved text or transcribed speech string
-      issues_found: [{ type: String }], // Array of grammar/punctuation error strings
-      critique: { type: String },
+      type: Schema.Types.Mixed,
+      default: {},
     }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Submission", SubmissionSchema);
+export default mongoose.model("Submission", SubmissionSchema);

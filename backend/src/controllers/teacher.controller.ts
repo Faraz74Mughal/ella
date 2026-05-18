@@ -70,3 +70,24 @@ export const updatePassword = asyncHandler(
       .json(new ApiResponse(200, "Password updated successfully", {user:updatedUser}));
   },
 );
+
+export const getTeacherDashboardOverview = asyncHandler(
+  async (req: Request, res: Response) => {
+    const teacherId = (req as any).user._id;
+    const data = await TeacherService.getTeacherDashboardOverview(teacherId);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Teacher dashboard overview fetched successfully", data));
+  },
+);
+
+export const getAllUsersProgressForTeacher = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const data = await TeacherService.getAllUsersWithProgress();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Users progress fetched successfully", data));
+  },
+);

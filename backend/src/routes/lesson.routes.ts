@@ -22,7 +22,7 @@ const router = Router();
 router.get("/filtered", getFilteredLessons);
 router.post("/", validate(createLessonSchema), createLesson);
 // router.get('/', getLessons);
-router.get("/", verifyJWT, authorizeRoles("admin"), getLessons);
+router.get("/", verifyJWT,  getLessons);
 router.get("/:id", getLessonById);
 router.patch("/:lessonId", updateLesson);
 router.delete("/:lessonId", deleteLesson);

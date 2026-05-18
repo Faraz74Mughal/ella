@@ -5,6 +5,64 @@ import { Lesson } from "../models/lesson.model";
 import { StudentProgress } from "../models/studentProgress.model";
 
 export class StudentProgressService {
+	private static getStartOfDay(date: Date) {
+		const d = new Date(date);
+		d.setHours(0, 0, 0, 0);
+		return d;
+	}
+
+	private static getDayDiff(fromDate: Date, toDate: Date) {
+		const from = this.getStartOfDay(fromDate).getTime();
+		const to = this.getStartOfDay(toDate).getTime();
+		const oneDayMs = 24 * 60 * 60 * 1000;
+		return Math.floor((to - from) / oneDayMs);
+	}
+
+	static async normalizeStreakIfMissed(progress: any) {
+		if (!progress?.last_activity_at) {
+			return;
+		}
+
+		const dayDiff = this.getDayDiff(
+			new Date(progress.last_activity_at),
+			new Date(),
+		);
+
+		if (dayDiff > 1 && (progress.current_streak || 0) !== 0) {
+			progress.current_streak = 0;
+			await progress.save();
+		}
+	}
+
+	static applyLessonCompletionStreak(progress: any) {
+		const now = new Date();
+		const currentStreak = progress.current_streak || 0;
+
+		if (!progress.last_activity_at) {
+			progress.current_streak = 1;
+		} else {
+			const dayDiff = this.getDayDiff(
+				new Date(progress.last_activity_at),
+				now,
+			);
+
+			if (dayDiff === 0) {
+				// Already counted today; keep streak unchanged.
+				progress.current_streak = currentStreak;
+			} else if (dayDiff === 1) {
+				progress.current_streak = currentStreak + 1;
+			} else {
+				progress.current_streak = 1;
+			}
+		}
+
+		progress.highest_streak = Math.max(
+			progress.highest_streak || 0,
+			progress.current_streak || 0,
+		);
+		progress.last_activity_at = now;
+	}
+
 	static async getStudentProgress(studentId: string) {
 		let progress = await StudentProgress.findOne({
 			student: studentId,
@@ -14,8 +72,29 @@ export class StudentProgressService {
 			progress = await StudentProgress.create({
 				student: studentId,
 				completed_lessons: [],
+				completed_exercises: [],
+				passed_lessons: [],
+				unlocked_lessons: [],
+				assignment_best_scores: [],
+				assignment_performance: {
+					average_percentage: 0,
+					completed_count: 0,
+				},
+				lesson_best_percentages: [],
+				category_performance: {
+					grammar: 0,
+					vocabulary: 0,
+					listening: 0,
+					speaking: 0,
+					writing: 0,
+				},
+				current_streak: 0,
+				highest_streak: 0,
 				total_points: 0,
+				total_xp: 0,
 			});
+		} else {
+			await this.normalizeStreakIfMissed(progress);
 		}
 
 		return progress;
@@ -26,7 +105,7 @@ export class StudentProgressService {
 			await this.getStudentProgress(studentId);
 
 		if (
-			progress.completed_lessons.length === 0
+			(progress.passed_lessons || []).length === 0
 		) {
 			return 1;
 		}
@@ -34,7 +113,7 @@ export class StudentProgressService {
 		const highestCompleted =
 			await Lesson.find({
 				_id: {
-					$in: progress.completed_lessons,
+					$in: progress.passed_lessons,
 				},
 			})
 				.sort({
@@ -57,9 +136,9 @@ export class StudentProgressService {
 				studentId,
 			);
 
-		// current + next 2 lessons
+		// previous, current, and next 2 lessons
 		const maxVisibleSequence =
-			currentSequence + 10;
+			currentSequence + 2;
 
 		const lessons = await Lesson.find({
 			is_published: true,
@@ -89,10 +168,30 @@ export class StudentProgressService {
 				status = "current";
 			}
 
+			const isPassed = (progress.passed_lessons || []).some(
+				(passedId) => passedId.toString() === lesson._id.toString(),
+			);
+
+			const isUnlocked = (progress.unlocked_lessons || []).some(
+				(unlockedId) => unlockedId.toString() === lesson._id.toString(),
+			) || lesson.sequence_order < currentSequence;
+
+			const lessonBestPercentage = Math.max(
+				0,
+				...(progress.lesson_best_percentages || [])
+					.filter(
+						(entry) => entry.lesson_id?.toString() === lesson._id.toString(),
+					)
+					.map((entry) => Number(entry.best_percentage) || 0),
+			);
+
 			return {
 				...lesson.toObject(),
-
 				status,
+				is_passed: isPassed,
+				is_unlocked: isUnlocked,
+				best_percentage: lessonBestPercentage,
+				score: lessonBestPercentage,
 			};
 		});
 	}
@@ -128,13 +227,44 @@ export class StudentProgressService {
 				),
 			);
 
+			const alreadyPassed = (progress.passed_lessons || []).some(
+				(id) => id.toString() === lessonId,
+			);
+
+			if (!alreadyPassed) {
+				progress.passed_lessons = [
+					...(progress.passed_lessons || []),
+					new mongoose.Types.ObjectId(lessonId),
+				];
+			}
+
 			// FIXED BUG
 			progress.total_points =
 				(progress.total_points || 0) +
 				50;
 
-			progress.last_activity_at =
-				new Date();
+			this.applyLessonCompletionStreak(progress);
+
+			const currentLesson = await Lesson.findById(lessonId).select("sequence_order");
+			if (currentLesson) {
+				const nextLesson = await Lesson.findOne({
+					sequence_order: currentLesson.sequence_order + 1,
+					is_published: true,
+				});
+
+				if (nextLesson) {
+					const nextLessonAlreadyUnlocked = (progress.unlocked_lessons || []).some(
+						(unlockedId) => unlockedId.toString() === nextLesson._id.toString(),
+					);
+
+					if (!nextLessonAlreadyUnlocked) {
+						progress.unlocked_lessons = [
+							...(progress.unlocked_lessons || []),
+							nextLesson._id,
+						];
+					}
+				}
+			}
 
 			await progress.save();
 		}

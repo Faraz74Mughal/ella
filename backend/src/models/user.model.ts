@@ -73,6 +73,10 @@ const userSchema = new Schema<
       type: String,
       default: "https://default-avatar-url.com/avatar.png",
     },
+    imagePublicId: {
+      type: String,
+      default: null,
+    },
     bio: {
       type: String,
       maxlength: [500, "Bio cannot exceed 500 characters"],

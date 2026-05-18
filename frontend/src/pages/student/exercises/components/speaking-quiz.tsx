@@ -1,5 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { Mic, Square, Volume2, AlertCircle, CheckCircle2, X, ShieldAlert, Sparkles, Bot, User, MessageSquare } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Mic, Square, CheckCircle2, X, ShieldAlert, Sparkles, Bot, MessageSquare } from "lucide-react";
+import { saveStudentQuizSubmission } from "@/api/submission.service";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // --- TypeScript Interfaces ---
 interface SpeakingContent {
@@ -11,15 +14,7 @@ interface SpeakingContent {
   speaker?: string;
 }
 
-interface SpeakingExercise {
-  _id: { $oid: string } | string;
-  title: string;
-  level: string;
-  category: string;
-  content: SpeakingContent[];
-  points: number;
-  passing_percentage: number;
-}
+
 
 interface RealEvaluationResult {
   transcript: string;
@@ -30,10 +25,11 @@ interface RealEvaluationResult {
 }
 
 interface SpeakingQuizProps {
-  exercise: SpeakingExercise;
+  exercise: any;
 }
 
 const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
+  const navigate = useNavigate();
   const [currentQ, setCurrentQ] = useState<number>(0);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [liveTranscript, setLiveTranscript] = useState<string>("");
@@ -44,6 +40,7 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
 
   const recognitionRef = useRef<any>(null);
+  const submissionSentRef = useRef(false);
   const contentList = exercise?.content ?? [];
   const q = contentList[currentQ];
 
@@ -51,6 +48,19 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
   // Each question is given exactly 5 points regardless of the original data values
   const POINTS_PER_QUESTION = 5;
   const totalMaxPoints = contentList.length * POINTS_PER_QUESTION;
+
+  const handleContinue = () => {
+    const resultPercentage = totalMaxPoints > 0 ? (totalEarnedScore / totalMaxPoints) * 100 : 0;
+    const finalPassed = resultPercentage >= (exercise.passing_percentage ?? 75);
+
+    if (finalPassed) {
+      toast.success("Excellent! Moving to next lesson...");
+      navigate("/student/lessons");
+    } else {
+      toast.info("Please try this lesson again.");
+      navigate(`/student/lessons/${exercise.lesson_id}`);
+    }
+  };
 
   // Initialize Web Speech API Engine
   useEffect(() => {
@@ -91,6 +101,18 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
     recognitionRef.current = recognition;
   }, []);
 
+  const stopSpeechCapture = useCallback(async () => {
+    if (recognitionRef.current && isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      await analyzeGrammarLive(liveTranscript, q);
+    }
+  }, [isRecording, liveTranscript, q]);
+
+  const totalEarnedScore = Object.values(evaluations).reduce((sum, item) => sum + item.score, 0);
+  const globalPercentage = totalMaxPoints > 0 ? (totalEarnedScore / totalMaxPoints) * 100 : 0;
+  const passed = globalPercentage >= (exercise.passing_percentage ?? 75);
+
   // Countdown timer loop
   useEffect(() => {
     if (showResults || !q) return;
@@ -107,7 +129,38 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentQ, showResults, q, isRecording]);
+  }, [currentQ, showResults, q, isRecording, stopSpeechCapture]);
+
+  useEffect(() => {
+    if (!showResults || submissionSentRef.current || !exercise) return;
+
+    submissionSentRef.current = true;
+
+    const resultScore = Object.values(evaluations).reduce(
+      (sum, item) => sum + item.score,
+      0,
+    );
+    const resultPercentage =
+      totalMaxPoints > 0 ? (resultScore / totalMaxPoints) * 100 : 0;
+    const finalPassed = resultPercentage >= (exercise.passing_percentage ?? 75);
+
+    void saveStudentQuizSubmission({
+      lesson_id: (exercise as any).lesson_id,
+      exercise_id: String(exercise._id),
+      category: "speaking" as const,
+      score_earned: resultScore,
+      max_score: totalMaxPoints,
+      percentage: resultPercentage,
+      is_passed: finalPassed,
+      submitted_payload: {
+        evaluations,
+        transcripts: Object.values(evaluations).map((item) => item.transcript),
+        currentQuestionIndex: currentQ,
+      },
+    }).catch((error) => {
+      console.error("Failed to submit speaking quiz result:", error);
+    });
+  }, [currentQ, evaluations, exercise, showResults, totalMaxPoints]);
 
   if (!exercise || contentList.length === 0 || !q) {
     return <div className="p-6 text-center text-slate-500">Loading modules...</div>;
@@ -123,15 +176,7 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
         console.error(e);
       }
     } else {
-      alert("Speech recognition engine is not ready or supported on this device.");
-    }
-  };
-
-  const stopSpeechCapture = async () => {
-    if (recognitionRef.current && isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-      await analyzeGrammarLive(liveTranscript, q);
+      toast.error("Speech recognition engine is not ready or supported on this device.");
     }
   };
 
@@ -215,10 +260,6 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
   };
 
   // Dynamic final evaluation scoring mechanics
-  const totalEarnedScore = Object.values(evaluations).reduce((sum, item) => sum + item.score, 0);
-  const globalPercentage = totalMaxPoints > 0 ? (totalEarnedScore / totalMaxPoints) * 100 : 0;
-  const passed = globalPercentage >= (exercise.passing_percentage ?? 75);
-
   // --- RESULTS SUMMARY SCREEN ---
   if (showResults) {
     return (
@@ -246,7 +287,7 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
 
           <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2"><Sparkles size={18} className="text-indigo-500"/> Real-time Linguistic Diagnosis Reports</h3>
           <div className="space-y-4">
-            {contentList.map((item) => {
+            {contentList.map((item: SpeakingContent) => {
               const res = evaluations[item.id];
               return (
                 <div key={item.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
@@ -293,6 +334,20 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
                 </div>
               );
             })}
+          </div>
+
+          <div className="pt-6 border-t border-slate-100 flex justify-end">
+            <button
+              type="button"
+              onClick={handleContinue}
+              className={`px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm shadow-md transition-all ${
+                passed
+                  ? "bg-green-600 text-white hover:bg-green-700 shadow-green-100"
+                  : "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-100"
+              }`}
+            >
+              {passed ? "Proceed to Next Lesson" : "Try Again"}
+            </button>
           </div>
         </div>
       </div>
@@ -358,6 +413,7 @@ const SpeakingQuiz = ({ exercise }: SpeakingQuizProps) => {
                 <p className="text-sm font-bold text-slate-700">
                   {isAnalyzing ? "Processing Grammar Check..." : dynamicResultRecorded ? "Response Logged. Tap to Re-record" : "Tap to Open Audio Channel"}
                 </p>
+                <p className="text-xs text-slate-400">Time left: {timeLeft}s</p>
               </div>
             )}
           </div>

@@ -6,7 +6,6 @@ export const LEVEL = {
 
 export const CATEGORY = {
   GRAMMAR: "grammar",
-  VOCABULARY: "vocabulary",
   LISTENING: "listening",
   SPEAKING: "speaking",
   WRITING: "writing",

@@ -5,13 +5,21 @@ import type { ITeacherForm, IUser } from "@/types/user";
 
 export const studentProgressService = {
   fetchLessonsForStudent: async (): Promise<User> => {
-    const response = await api.get<ApiResponse<{ lessons: any }>>(
-      "/student-progress",
-    );
+    const response =
+      await api.get<ApiResponse<{ lessons: any }>>("/student-progress");
     console.log("response", response);
 
     const lessons = response?.data?.data?.lessons;
     return lessons;
+  },
+
+  fetchStudentProgress: async (): Promise<any> => {
+    const response =
+      await api.get<ApiResponse<{ progress: any }>>(`/student-progress/progress`);
+    console.log("response", response);
+
+    const progress = response?.data?.data?.progress;
+    return progress;
   },
 
   fetchUsersByAdmin: async (

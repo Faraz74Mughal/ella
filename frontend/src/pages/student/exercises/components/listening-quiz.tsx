@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import ExerciseHeader from "./exercise-header"; // Adjust path if needed
 import {
   Check,
@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import ListeningMediaPlayer from "./listening-media-player";
 import Result from "./result";
+import { saveStudentQuizSubmission } from "@/api/submission.service";
 
 
 
@@ -30,8 +31,9 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
   const [score, setScore] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [showTranscript, setShowTranscript] = useState<boolean>(false);
+  const submissionSentRef = useRef(false);
 
-  const tracks = exercise?.content ?? [];
+  const tracks = useMemo(() => exercise?.content ?? [], [exercise?.content]);
   const exerciseId = exercise?._id ?? "";
 
   // Inline data synchronization pass avoiding post-render useEffect updates
@@ -73,6 +75,68 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
     );
   }, [trackingData.mapping, currentTrackIndex, currentQuestionIndex]);
 
+  // --- Dynamic Evaluation Parameters ---
+  const totalMaxPoints =
+    tracks.reduce(
+      (acc: any, track: any) =>
+        acc +
+        (track.comprehensionQuestions?.reduce((sum: any) => sum + 2, 0) ?? 0),
+      0,
+    ) || exercise.points;
+  const accuracyPercentage =
+    totalMaxPoints > 0 ? (score / totalMaxPoints) * 100 : 0;
+  const passed = accuracyPercentage >= (exercise.passing_percentage ?? 70);
+  const isAbsoluteLast =
+    activeFlattenedIndex === trackingData.totalQuestions - 1;
+
+  const calculateFinalResults = useCallback(() => {
+    let earnedPoints = 0;
+
+    tracks.forEach((track: any) => {
+      (track.comprehensionQuestions ?? []).forEach((q: any) => {
+        const userSelection = answers[q.id];
+        if (userSelection === q.correctAnswer) {
+          earnedPoints += 2;
+        }
+      });
+    });
+
+    setScore(earnedPoints);
+    setShowResults(true);
+  }, [answers, tracks]);
+
+  // Handle forcing blank data insertions if the timer lapses completely
+  const advanceNavigation = useCallback(() => {
+    if (isAbsoluteLast) {
+      calculateFinalResults();
+    } else {
+      // Check if we move to next question in same track or hop to next track element
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        setCurrentTrackIndex((prev) => prev + 1);
+        setCurrentQuestionIndex(0);
+        setShowTranscript(false); // Auto close transcripts for fresh segments
+      }
+      setTimeLeft(60);
+    }
+  }, [
+    currentQuestionIndex,
+    calculateFinalResults,
+    isAbsoluteLast,
+    questions.length,
+  ]);
+
+  const handleTimeoutTransition = useCallback(() => {
+    if (!currentQuestion) return;
+
+    setAnswers((prev) => ({
+      ...prev,
+      [currentQuestion.id]: prev[currentQuestion.id] || "",
+    }));
+    advanceNavigation();
+  }, [advanceNavigation, currentQuestion]);
+
   // --- Quiz Individual Item Countdown timer ---
   useEffect(() => {
     if (showResults || !currentQuestion) return;
@@ -89,18 +153,44 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentTrackIndex, currentQuestionIndex, showResults, currentQuestion]);
+  }, [currentQuestion, handleTimeoutTransition, showResults]);
 
-  // Handle forcing blank data insertions if the timer lapses completely
-  const handleTimeoutTransition = () => {
-    if (!currentQuestion) return;
+  useEffect(() => {
+    if (!showResults || submissionSentRef.current || !exercise) return;
 
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQuestion.id]: prev[currentQuestion.id] || "",
-    }));
-    advanceNavigation();
-  };
+    submissionSentRef.current = true;
+
+    const calculatedPercentage =
+      totalMaxPoints > 0 ? (score / totalMaxPoints) * 100 : 0;
+    const finalPassed = calculatedPercentage >= (exercise.passing_percentage ?? 70);
+
+    void saveStudentQuizSubmission({
+      lesson_id: exercise.lesson_id,
+      exercise_id: exercise._id,
+      category: "listening" as const,
+      score_earned: score,
+      max_score: totalMaxPoints,
+      percentage: calculatedPercentage,
+      is_passed: finalPassed,
+      submitted_payload: {
+        answers,
+        currentTrackIndex,
+        currentQuestionIndex,
+        showTranscript,
+      },
+    }).catch((error) => {
+      console.error("Failed to submit listening quiz result:", error);
+    });
+  }, [
+    answers,
+    currentQuestionIndex,
+    currentTrackIndex,
+    exercise,
+    score,
+    showResults,
+    showTranscript,
+    totalMaxPoints,
+  ]);
 
   if (!exercise || tracks.length === 0 || !currentQuestion) {
     return (
@@ -113,61 +203,14 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
   const hasAnswered =
     answers[currentQuestion.id] !== undefined &&
     answers[currentQuestion.id] !== "";
-  const isAbsoluteLast =
-    activeFlattenedIndex === trackingData.totalQuestions - 1;
 
   const handleAnswer = (answerValue: any) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answerValue }));
   };
 
-  const advanceNavigation = () => {
-    if (isAbsoluteLast) {
-      calculateFinalResults();
-    } else {
-      // Check if we move to next question in same track or hop to next track element
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex((prev) => prev + 1);
-      } else {
-        setCurrentTrackIndex((prev) => prev + 1);
-        setCurrentQuestionIndex(0);
-        setShowTranscript(false); // Auto close transcripts for fresh segments
-      }
-      setTimeLeft(60);
-    }
-  };
-
-  const calculateFinalResults = () => {
-    let earnedPoints = 0;
-
-    tracks.forEach((track:any) => {
-      (track.comprehensionQuestions ?? []).forEach((q:any) => {
-        const userSelection = answers[q.id];
-        if (userSelection === q.correctAnswer) {
-          earnedPoints +=2;
-        }
-      });
-    });
-
-    setScore(earnedPoints);
-    setShowResults(true);
-  };
-
   const onBack = () => {
     window.history.back();
   };
-
-  // --- Dynamic Evaluation Parameters ---
-  const totalMaxPoints =
-    tracks.reduce(
-      (acc:any, track:any) =>
-        acc +
-        (track.comprehensionQuestions?.reduce((sum:any) => sum + 2, 0) ??
-          0),
-      0,
-    ) || exercise.points;
-  const accuracyPercentage =
-    totalMaxPoints > 0 ? (score / totalMaxPoints) * 100 : 0;
-  const passed = accuracyPercentage >= (exercise.passing_percentage ?? 70);
 
   // --- Render Results Summary Screen ---
   if (showResults) {
@@ -178,6 +221,7 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
         percentage={Math.round(accuracyPercentage)}
         score={score}      
         totalPoints={totalMaxPoints}
+        exercise={exercise}
       />
       // <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
       //   <div className="max-w-2xl w-full mx-auto space-y-6">
@@ -399,7 +443,7 @@ const ListeningQuiz = ({ exercise }: ListeningQuizProps) => {
         </div>
 
         {/* Multi-step Footer Action Buttons */}
-        <div className="flex justify-end min-h-[40px]">
+        <div className="flex justify-end min-h-10">
           {hasAnswered && (
             <button
               type="button"

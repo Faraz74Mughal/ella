@@ -259,6 +259,31 @@ export const getCurrentUser = asyncHandler(
   },
 );
 
+export const updateCurrentUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = (req as any).user._id;
+    const user = await AuthService.updateCurrentUser(userId, req.body);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Profile updated successfully", user));
+  },
+);
+
+export const uploadCurrentUserAvatar = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = (req as any).user._id;
+    const user = await AuthService.uploadCurrentUserAvatar(
+      userId,
+      req.file as Express.Multer.File,
+    );
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Profile image uploaded successfully", user));
+  },
+);
+
 export const assignRole = asyncHandler(async (req: Request, res: Response) => {
   const { role, _id } = req.body;
   const userId = _id;

@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ExerciseHeader from "./exercise-header";
 import { Check, ChevronRight, Mic, Timer } from "lucide-react";
 import MatchingQuestion from "./matching-question";
 import Result from "./result";
 import MCQ from "./mcq";
 import FillBlank from "./fill-blank";
+import { saveStudentQuizSubmission } from "@/api/submission.service";
 
 // --- TypeScript Interfaces ---
 interface MatchingPair {
@@ -48,7 +49,8 @@ const GrammarQuiz = ({ exercise }: GrammarQuizProps) => {
   const [showResults, setShowResults] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(60); // 60 seconds per question
-  const calculateScore = () => {
+  const submissionSentRef = useRef(false);
+  const calculateScore = useCallback(() => {
     let totalPoints = 0;
 
     exercise.content.forEach((question: Question, index: number) => {
@@ -74,7 +76,7 @@ const GrammarQuiz = ({ exercise }: GrammarQuizProps) => {
 
     setScore(totalPoints);
     setShowResults(true);
-  };
+  }, [answers, exercise.content]);
   // --- Per-Question Timer Logic ---
   useEffect(() => {
     if (!exercise || !Array.isArray(exercise.content) || showResults) return;
@@ -102,7 +104,34 @@ const GrammarQuiz = ({ exercise }: GrammarQuizProps) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentQ, showResults, exercise]);
+  }, [calculateScore, currentQ, showResults, exercise]);
+
+  useEffect(() => {
+    if (!showResults || submissionSentRef.current || !exercise) return;
+
+    submissionSentRef.current = true;
+
+    const finalPercentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
+    const finalPassed = finalPercentage >= 50;
+
+    void saveStudentQuizSubmission({
+      lesson_id: (exercise as any).lesson_id,
+      exercise_id: exercise._id,
+      category: "grammar" as const,
+      score_earned: score,
+      max_score: totalPoints,
+      percentage: finalPercentage,
+      is_passed: finalPassed,
+      submitted_payload: {
+        answers,
+        score,
+        totalPoints,
+        percentage: finalPercentage,
+      },
+    }).catch((error) => {
+      console.error("Failed to submit grammar quiz result:", error);
+    });
+  }, [answers, exercise, score, showResults, totalPoints]);
 
   // --- Guard Clause ---
   if (!exercise || !Array.isArray(exercise.content)) {
@@ -143,6 +172,7 @@ const GrammarQuiz = ({ exercise }: GrammarQuizProps) => {
         passed={passed}
         percentage={percentage}
         onBack={onBack}
+        exercise={exercise}
       />
     );
   }
@@ -271,7 +301,7 @@ const GrammarQuiz = ({ exercise }: GrammarQuizProps) => {
         </div>
 
         {/* Action Button Navigation */}
-        <div className="flex justify-end mt-4 min-h-[40px]">
+        <div className="flex justify-end mt-4 min-h-10">
           {hasAnswered && (
             <>
               {isLast ? (

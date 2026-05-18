@@ -18,6 +18,21 @@ export const getLessonsForStudent = asyncHandler(
       .json(new ApiResponse(200, "Lessons fetched successfully", { lessons }));
   },
 );
+export const getStudentProgress = asyncHandler(
+  async (req: Request, res: Response) => {
+    const studentId = (req as any).user._id;
+
+    const progress = await StudentProgressService.getStudentProgress(studentId);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Student progress fetched successfully", {
+          progress,
+        }),
+      );
+  },
+);
 
 export const getLessonById = asyncHandler(
   async (req: Request, res: Response) => {

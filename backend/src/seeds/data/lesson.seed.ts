@@ -32,7 +32,7 @@ const lessonSeeds = [
     level: "beginner",
     description: "Listen to a daily routine audio and answer comprehension questions to improve your listening skills.",
     
-    category: "vocabulary",
+    category: "grammar",
     study_material: {
       material_type: "text",
       content: "apple, banana, rice, chicken, water, milk, bread, egg, cheese, orange juice",
@@ -90,7 +90,7 @@ const lessonSeeds = [
     title: "Vocabulary: Business & Work",
      description: "Learn and practice essential business and workplace vocabulary.",
     level: "intermediate",
-    category: "vocabulary",
+    category: "grammar",
     study_material: {
       material_type: "text",
       content: "meeting, deadline, colleague, promotion, salary, client, negotiate, presentation",
@@ -158,7 +158,7 @@ const lessonSeeds = [
     _id: "d7eda632a4b84c628f52c138",
     title: "Vocabulary: Environment & Climate Change",
     level: "advanced",
-    category: "vocabulary",
+    category: "grammar",
     study_material: {
       material_type: "text",
       content: "sustainable, carbon footprint, renewable energy, deforestation, biodiversity, greenhouse gases",

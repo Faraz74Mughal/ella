@@ -20,6 +20,11 @@ import TeacherDashboardPage from "@/pages/teacher/dashboard";
 import TeacherCoursesPage from "@/pages/teacher/courses";
 import TeacherProgressPage from "@/pages/teacher/progress";
 import TeacherSettingsPage from "@/pages/teacher/settings";
+import TeacherAssignmentsPage from "@/pages/teacher/assignments/assignments-page";
+import TeacherAssignmentAddPage from "@/pages/teacher/assignments/assignment-add-page";
+import TeacherDiscussionsPage from "@/pages/teacher/discussions/discussions-page";
+import TeacherDiscussionAddPage from "@/pages/teacher/discussions/discussion-add-page";
+import DiscussionPage from "@/pages/discussions/discussion-page";
 import { AdminPortalLayout } from "@/layouts/admin-portal-layout";
 import AdminDashboardPage from "@/pages/admin/dashboard";
 import AdminUsersPage from "@/pages/admin/users/users-page";
@@ -34,14 +39,22 @@ import AdminExercisesEditPage from "@/pages/admin/exercises/exercise-edit-page";
 import AdminExercisesAddPage from "@/pages/admin/exercises/exercise-add-page";
 import AdminTeacherAddPage from "@/pages/admin/users/teacher-add-page";
 import AdminExerciseDetailPage from "@/pages/admin/exercises/exercise-detail-page";
+import AdminAssignmentsPage from "@/pages/admin/assignments/assignments-page";
 
 import TeacherUpdatePasswordFirstTimePage from "@/pages/teacher/auth/UpdatePasswordFirstTImePage";
 import { StudentPortalLayout } from "@/layouts/student-portal-layout";
 import StudentDashboardPage from "@/pages/student/dashboard/dashboard-page";
 import StudentLessonsPage from "@/pages/student/lessons/lessons-page";
 import StudentLessonPage from "@/pages/student/lessons/lesson-detail-page";
+import StudentAssignmentsPage from "@/pages/student/assignments/assignments-page";
+import StudentAchievementsPage from "@/pages/student/achievements/achievements-page";
+import StudentProfilePage from "@/pages/student/profile/profile-page";
+import DiscussionCategoriesPage from "@/pages/admin/discussion-categories/discussion-categories-page";
+import DiscussionCategoryAddPage from "@/pages/admin/discussion-categories/discussion-category-add-page";
+import AdminDiscussionsPage from "@/pages/admin/discussions/discussions-page";
+import AdminDiscussionAddPage from "@/pages/admin/discussions/discussion-add-page";
 
-import StudentExercisePage from "@/pages/student/exercises/exercise-page"
+import StudentExercisePage from "@/pages/student/exercises/exercise-page";
 import ErrorPage from "@/pages/error-page";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
@@ -101,6 +114,26 @@ const router = createBrowserRouter([
                         path: "exercises/edit/:id",
                         element: <AdminExercisesEditPage />,
                       },
+                      {
+                        path: "assignments",
+                        element: <AdminAssignmentsPage />,
+                      },
+                      {
+                        path: "discussions",
+                        element: <AdminDiscussionsPage />,
+                      },
+                      {
+                        path: "discussions/add",
+                        element: <AdminDiscussionAddPage />,
+                      },
+                      {
+                        path: "discussion-categories",
+                        element: <DiscussionCategoriesPage />,
+                      },
+                      {
+                        path: "discussion-categories/add",
+                        element: <DiscussionCategoryAddPage />,
+                      },
                       { path: "users", element: <AdminUsersPage /> },
                       { path: "users/add", element: <AdminTeacherAddPage /> },
                       { path: "approvals", element: <AdminApprovalsPage /> },
@@ -109,6 +142,7 @@ const router = createBrowserRouter([
                   },
                 ],
               },
+
               // Teacher Branch
               {
                 path: "/teacher",
@@ -134,7 +168,22 @@ const router = createBrowserRouter([
                             path: "settings",
                             element: <TeacherSettingsPage />,
                           },
-
+                          {
+                            path: "assignments",
+                            element: <TeacherAssignmentsPage />,
+                          },
+                          {
+                            path: "assignments/add",
+                            element: <TeacherAssignmentAddPage />,
+                          },
+                          {
+                            path: "discussions",
+                            element: <TeacherDiscussionsPage />,
+                          },
+                          {
+                            path: "discussions/add",
+                            element: <TeacherDiscussionAddPage />,
+                          },
                           {
                             path: "",
                             element: <Navigate to="dashboard" replace />,
@@ -166,7 +215,26 @@ const router = createBrowserRouter([
                       { path: "dashboard", element: <StudentDashboardPage /> },
                       { path: "lessons", element: <StudentLessonsPage /> },
                       { path: "lessons/:id", element: <StudentLessonPage /> },
-                      { path: "exercises/:id", element: <StudentExercisePage /> },
+                      {
+                        path: "assignments",
+                        element: <StudentAssignmentsPage />,
+                      },
+                      {
+                        path: "achievements",
+                        element: <StudentAchievementsPage />,
+                      },
+                      {
+                        path: "profile",
+                        element: <StudentProfilePage />,
+                      },
+                      {
+                        path: "discussions",
+                        element: <DiscussionPage />,
+                      },
+                      {
+                        path: "exercises/:id",
+                        element: <StudentExercisePage />,
+                      },
                       {
                         path: "",
                         element: <Navigate to="dashboard" replace />,

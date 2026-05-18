@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const LessonDetailPage = () => {
   const navigate = useNavigate();
   const {id: lessonId} = useParams();
-  const {data: lesson} = useGetSingleLessonByAdmin("8fde6263d7b64fbf8d264d47"!);
+  const {data: lesson} = useGetSingleLessonByAdmin(lessonId!);
   if(!lesson) return <div>Loading...</div>
   const { title,description, level, category, study_material } = lesson;
 
@@ -56,7 +56,7 @@ const LessonDetailPage = () => {
       {/* Action Button */}
       <div className="flex justify-center">
         <button
-        onClick={()=>navigate(`/student/exercises/${"8fde6263d7b64fbf8d264d47"}`)}
+        onClick={()=>navigate(`/student/exercises/${lessonId}`)}
           className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-bold text-xl transition-all transform hover:scale-105 shadow-lg"
         >
           Start Quiz & Exercise <ArrowRight />

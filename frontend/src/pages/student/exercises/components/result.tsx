@@ -1,6 +1,33 @@
 import { CheckCircle2, ChevronLeft, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-const Result = ({ score, totalPoints, passed, percentage, onBack }: { score: number; totalPoints: number; passed: boolean; percentage: number; onBack: () => void }) => {
+interface ResultProps {
+  score: number;
+  totalPoints: number;
+  passed: boolean;
+  percentage: number;
+  onBack: () => void;
+  exercise?: any;
+}
+
+const Result = ({ score, totalPoints, passed, percentage, onBack, exercise }: ResultProps) => {
+  const navigate = useNavigate();
+
+  const handleContinue = () => {
+    if (passed) {
+      toast.success("Excellent! Moving to next lesson...");
+      navigate("/student/lessons");
+    } else {
+      toast.info("Please try this lesson again.");
+      if (exercise?.lesson_id) {
+        navigate(`/student/lessons/${exercise.lesson_id?._id || exercise.lesson_id}`);
+      } else {
+        navigate(-1);
+      }
+    }
+  };
+
   return (
       <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
         <div className="max-w-2xl w-full mx-auto space-y-6">
@@ -37,10 +64,14 @@ const Result = ({ score, totalPoints, passed, percentage, onBack }: { score: num
 
             <button 
               type="button"
-              onClick={onBack} 
-              className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 transition-all w-full sm:w-auto"
+              onClick={handleContinue} 
+              className={`px-8 py-3 rounded-xl font-semibold shadow-lg transition-all w-full sm:w-auto ${
+                passed
+                  ? "bg-green-600 text-white hover:bg-green-700 shadow-green-100 hover:shadow-green-200"
+                  : "bg-amber-600 text-white hover:bg-amber-700 shadow-amber-100 hover:shadow-amber-200"
+              }`}
             >
-              Continue
+              {passed ? "Proceed to Next Lesson" : "Try Again"}
             </button>
           </div>
         </div>

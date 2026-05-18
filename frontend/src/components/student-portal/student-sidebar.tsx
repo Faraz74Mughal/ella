@@ -4,8 +4,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -13,15 +11,21 @@ import {
 } from "@/components/ui/sidebar";
 import {
   BookOpen,
+  ClipboardList,
+  MessageCircle,
   LayoutDashboard,
   Trophy,
   TrendingUp,
   User,
+  Award,
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/student/dashboard" },
   { label: "My Lessons", icon: BookOpen, to: "/student/lessons" },
+  { label: "Assignments", icon: ClipboardList, to: "/student/assignments" },
+  { label: "Discussions", icon: MessageCircle, to: "/student/discussions" },
+  { label: "Achievements", icon: Award, to: "/student/achievements" },
   { label: "Leaderboard", icon: Trophy, to: "/student/leaderboard" },
   { label: "Progress", icon: TrendingUp, to: "/student/progress" },
 ];
@@ -73,7 +77,7 @@ const StudentSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <NavLink to="/profile" className="flex items-center gap-3">
+              <NavLink to="/student/profile" className="flex items-center gap-3">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
                   <User size={16} />
                 </div>

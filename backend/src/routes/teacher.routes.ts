@@ -5,7 +5,13 @@ import { Report } from '../models/report.model';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { upload } from '../middlewares/multer.middleware';
-import { applyAsTeacher, reportStudent, updatePassword } from '../controllers/teacher.controller';
+import {
+  applyAsTeacher,
+  getAllUsersProgressForTeacher,
+  getTeacherDashboardOverview,
+  reportStudent,
+  updatePassword,
+} from '../controllers/teacher.controller';
 import {
   getAssignedStudentDetails,
   getMyStudents,
@@ -31,6 +37,8 @@ router.use(verifyJWT);
 router.use(authorizeRoles('teacher'));
 
 router.post('/report-student', reportStudent);
+router.get('/dashboard-overview', getTeacherDashboardOverview);
+router.get('/users-progress', getAllUsersProgressForTeacher);
 router.get('/me/students', getMyStudents);
 router.get(
   '/me/students/:studentId',

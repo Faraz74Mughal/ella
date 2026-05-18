@@ -1,4 +1,4 @@
-import {  BookText, LayoutDashboard, Newspaper, Users } from "lucide-react";
+import { BookText, ClipboardList, LayoutDashboard, MessageCircle, Newspaper, Settings, Users } from "lucide-react";
 
 const adminSidebarData = [
   {
@@ -21,6 +21,21 @@ const adminSidebarData = [
     label: "Exercises Management",
     to: "/admin/exercises",
   },
+    {
+      icon: ClipboardList,
+      label: "Assignments",
+      to: "/admin/assignments",
+    },
+    {
+      icon: MessageCircle,
+      label: "Discussions",
+      to: "/admin/discussions",
+    },
+    {
+      icon: Settings,
+      label: "Discussion Categories",
+      to: "/admin/discussion-categories",
+    },
 ];
 
 export default adminSidebarData;

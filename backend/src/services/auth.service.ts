@@ -15,6 +15,7 @@ import {
   AUTH_PROVIDERS,
   USER_ROLES,
 } from "../constants/user.constant";
+import { deleteFromCloudinary, saveOnCloudinary } from "../config/cloudinary";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 interface SocialUserPayload {
@@ -369,6 +370,102 @@ export class AuthService {
     if (!user) {
       throw new ApiError(404, "User not found");
     }
+    return user;
+  }
+
+  static async updateCurrentUser(
+    userId: string,
+    payload: Partial<
+      Pick<IUser, "name" | "username" | "bio" | "contactNo" | "language" | "image" | "dob">
+    >,
+  ) {
+    const allowedFields: (keyof typeof payload)[] = [
+      "name",
+      "username",
+      "bio",
+      "contactNo",
+      "language",
+      "image",
+      "dob",
+    ];
+
+    const updateData: Record<string, any> = {};
+    for (const field of allowedFields) {
+      const value = payload[field];
+      if (value !== undefined) {
+        if (field === "dob") {
+          const dobValue = value instanceof Date ? value : new Date(String(value));
+          if (Number.isNaN(dobValue.getTime())) {
+            throw new ApiError(400, "Invalid date of birth.");
+          }
+          updateData.dob = dobValue;
+        } else {
+          updateData[field] = value;
+        }
+      }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new ApiError(400, "No valid profile fields provided.");
+    }
+
+    if (updateData.username) {
+      const existingUser = await User.findOne({
+        username: updateData.username,
+        _id: { $ne: userId },
+      });
+      if (existingUser) {
+        throw new ApiError(409, "Username is already taken.");
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select("-password -refreshToken");
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return user;
+  }
+
+  static async uploadCurrentUserAvatar(userId: string, file: Express.Multer.File) {
+    if (!file?.path) {
+      throw new ApiError(400, "Profile image file is required.");
+    }
+
+    const existingUser = await User.findById(userId).select("imagePublicId");
+    if (!existingUser) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const uploaded = await saveOnCloudinary(file.path, "users/profiles");
+
+    if (existingUser.imagePublicId) {
+      await deleteFromCloudinary(existingUser.imagePublicId, "image");
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          image: uploaded.url,
+          imagePublicId: uploaded.public_id,
+        },
+      },
+      { new: true },
+    ).select("-password -refreshToken");
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
     return user;
   }
 

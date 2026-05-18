@@ -18,6 +18,7 @@ export function useGetSingleLessonByAdmin(id: string) {
   return useQuery({
     queryKey: ["admin-lesson-fetch-single", id],
     queryFn: () => lessonService.fetchSingleLessonByAdmin(id),
+    enabled: !!id,
   });
 }
 

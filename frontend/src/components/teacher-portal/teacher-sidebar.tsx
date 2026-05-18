@@ -1,14 +1,22 @@
-import { BookOpenText, Gauge, LineChart, Settings } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import {  ClipboardList, Gauge, LogOut, MessageCircle } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../shared/theme-toggle";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "../ui/sidebar";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const teacherNavItems = [
   { label: "Dashboard", to: "/teacher/dashboard", icon: Gauge },
-  { label: "Courses", to: "/teacher/courses", icon: BookOpenText },
-  { label: "Progress", to: "/teacher/progress", icon: LineChart },
-  { label: "Settings", to: "/teacher/settings", icon: Settings },
+  { label: "Assignments", to: "/teacher/assignments", icon: ClipboardList },
+  { label: "Discussions", to: "/teacher/discussions", icon: MessageCircle },
 ];
 
 interface TeacherSidebarProps {
@@ -16,51 +24,55 @@ interface TeacherSidebarProps {
 }
 
 export const TeacherSidebar = ({ onNavigate }: TeacherSidebarProps) => {
-  return (
-    <motion.aside
-      initial={{ opacity: 0, x: -24 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.35 }}
-      className="flex h-full flex-col border-r border-border/70 bg-linear-to-b from-background to-muted/40 px-3 py-5"
-    >
-      <div className="mb-8 px-3">
-        <h2 className="text-lg font-semibold text-foreground">Teacher Portal</h2>
-        <p className="text-xs text-muted-foreground">Manage your classes and outcomes</p>
-      </div>
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
 
-      <nav className="space-y-2">
-        {teacherNavItems.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <motion.div
-              key={item.to}
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.25, delay: 0.06 * index }}
-            >
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
+
+  return (
+    <Sidebar className="**:data-[sidebar=sidebar-inner]:bg-indigo-700">
+      <SidebarHeader>
+        <div className="flex items-center justify-center h-16 px-4">
+          <span className="text-white font-bold text-xl">LangLearn Teacher</span>
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          {teacherNavItems.map((item) => (
+            <SidebarMenuItem key={item.to}>
               <NavLink
                 to={item.to}
                 onClick={onNavigate}
                 className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  `flex items-center text-white gap-2 w-full rounded-md p-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )
+                      ? "bg-indigo-500"
+                      : "hover:bg-indigo-600"
+                  }`
                 }
               >
-                <Icon className="size-4" />
+                <item.icon size={18} />
                 <span>{item.label}</span>
               </NavLink>
-            </motion.div>
-          );
-        })}
-      </nav>
+            </SidebarMenuItem>
+          ))}
+        </SidebarGroup>
+      </SidebarContent>
 
-        <div className="mt-auto px-3 pt-6">
-          <ThemeToggle />
-        </div>
-    </motion.aside>
+      <SidebarFooter>
+        <ThemeToggle />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} className="text-white! hover:bg-indigo-600!">
+              <LogOut /> Logout
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   );
 };
