@@ -20,6 +20,7 @@ const exerciseSchema = new Schema<IExercise>(
       required: [true, "Exercise title is required"],
       trim: true,
     },
+   
     level: {
       type: String,
       enum: Object.values(LEVEL),

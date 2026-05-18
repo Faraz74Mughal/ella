@@ -1,6 +1,16 @@
 import React from "react";
 
-const FillBlank = ({ q, answers, currentQ, handleAnswer }: { q: any; answers: any; currentQ: any; handleAnswer: any }) => {
+const FillBlank = ({
+  q,
+  answers,
+  currentQ,
+  handleAnswer,
+}: {
+  q: any;
+  answers: any;
+  currentQ: any;
+  handleAnswer: any;
+}) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-slate-800">{q.question}</h3>

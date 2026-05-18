@@ -2,23 +2,28 @@ import mongoose, { Model, Schema } from "mongoose";
 import { IStudentProgress } from "../types/student-progress.type";
 
 const studentProgressSchema = new Schema<IStudentProgress>(
+  
   {
     student: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
+      unique: true, // Keep ONLY if this is a 1-to-1 Profile Extension table
     },
-
     completed_lessons: [
       {
         type: Schema.Types.ObjectId,
         ref: "Lesson",
       },
     ],
-
+    // ADD THIS: Track individual exercises completed to prevent double-claiming points
+    completed_exercises: [
+      {
+        type: Schema.Types.ObjectId,
+      }
+    ],
     current_level: {
-      type: String,
+      type: String, // e.g., "beginner"
     },
     total_points: {
       type: Number,
@@ -37,7 +42,7 @@ const studentProgressSchema = new Schema<IStudentProgress>(
       default: 0,
     },
     last_activity_at: {
-      type: Date,
+      type: Date, // CRITICAL for calculating if streak has broken today
     },
   },
   {

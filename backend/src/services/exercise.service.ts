@@ -86,6 +86,19 @@ export class ExercisesService {
     return exercise;
   }
 
+    static async getExerciseByLessonId(exerciseId: string) {
+    const exercise = await Exercise.findOne({ lesson_id: exerciseId }).populate(
+      "lesson_id",
+      "title sequence_order",
+    );
+
+    if (!exercise) {
+      throw new ApiError(404, "Exercise not found.");
+    }
+
+    return exercise;
+  }
+
   static async updateExercise(exerciseId: string, payload: any) {
     const exercise = await Exercise.findById(exerciseId);
     if (!exercise) {

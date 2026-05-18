@@ -59,7 +59,7 @@ export class StudentProgressService {
 
 		// current + next 2 lessons
 		const maxVisibleSequence =
-			currentSequence + 2;
+			currentSequence + 10;
 
 		const lessons = await Lesson.find({
 			is_published: true,

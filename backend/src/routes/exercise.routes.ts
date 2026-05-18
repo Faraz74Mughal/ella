@@ -6,6 +6,7 @@ import {
   getExerciseById,
   updateExercise,
   deleteExercise,
+  getExerciseByLessonId,
 } from "../controllers/exercises.controller";
 import { authorizeRoles } from "../middlewares/role.middleware";
 import { verifyJWT } from "../middlewares/auth.middleware";
@@ -18,5 +19,6 @@ router.get("/", getExercises);
 router.get("/:exerciseId",  getExerciseById);
 router.patch("/:exerciseId", upload.array("listeningFiles"), updateExercise);
 router.delete("/:exerciseId",  deleteExercise);
+router.get("/lesson/:exerciseId",  getExerciseByLessonId);
 
 export default router;

@@ -18,6 +18,13 @@ export function useGetSingleExerciseByAdmin(id: string) {
   });
 }
 
+export function useGetSingleExerciseByLessonByAdmin(id: string) {
+  return useQuery({
+    queryKey: ["admin-exercise-fetch-single-by-lesson", id],
+    queryFn: () => exerciseService.fetchSingleExerciseByLessonByAdmin(id),
+  });
+}
+
 export function useAddExerciseByAdmin() {
   const navigate = useNavigate();
 

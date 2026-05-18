@@ -130,6 +130,20 @@ export const getExerciseById = asyncHandler(
   },
 );
 
+export const getExerciseByLessonId = asyncHandler(
+  async (req: Request, res: Response) => {
+    const exercise = await ExercisesService.getExerciseByLessonId(
+      req.params.exerciseId as string,
+    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Exercise fetched successfully.", { exercise }),
+      );
+  },
+);
+
 export const updateExercise = asyncHandler(
   async (req: Request, res: Response) => {
     const payload = await resolveExercisePayload(req);

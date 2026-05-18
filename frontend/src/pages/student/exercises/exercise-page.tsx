@@ -5,6 +5,13 @@ import {
   Pause, Play, FileText, Send, RotateCcw, Flame, Star, Trophy,
   MessageCircle
 } from 'lucide-react';
+import { useGetSingleExerciseByAdmin, useGetSingleExerciseByLessonByAdmin } from '@/hooks/use-exercise';
+import { useParams } from 'react-router-dom';
+import GrammarQuiz from './components/grammar-quiz';
+import { loginSchema } from '@/lib/validations/auth';
+import ListeningQuiz from './components/listening-quiz';
+import SpeakingQuiz from './components/speaking-quiz';
+import WritingQuiz from './components/writing-quiz';
 
 // ===================== DATA =====================
 const LEVEL = { BEGINNER: 'Beginner', INTERMEDIATE: 'Intermediate', ADVANCED: 'Advanced' };
@@ -791,7 +798,8 @@ const SpeakingExercise = ({ exercise, onBack }) => {
 export default function App() {
   const [view, setView] = useState('lessons'); // 'lessons' | 'exercise' | 'listening' | 'writing' | 'speaking'
   const [currentExercise, setCurrentExercise] = useState(null);
-
+  const {id} = useParams()
+const {data:exerciseQuiz} = useGetSingleExerciseByLessonByAdmin(id)
   const startExercise = (exercise) => {
     setCurrentExercise(exercise);
     if (exercise?.category === CATEGORY.LISTENING) setView('listening');
@@ -804,10 +812,16 @@ export default function App() {
     setView('lessons');
     setCurrentExercise(null);
   };
-
+console.log(exerciseQuiz)
   return (
     <div>
-      {view === 'lessons' && <LessonsPage onStartExercise={startExercise} />}
+      {console.log(exerciseQuiz?.category,CATEGORY.SPEAKING)}
+      
+      {exerciseQuiz&&exerciseQuiz.category?.toLowerCase()===CATEGORY.GRAMMAR?.toLowerCase()&&<GrammarQuiz exercise={exerciseQuiz} />}
+      {exerciseQuiz&&exerciseQuiz.category?.toLowerCase()===CATEGORY.LISTENING?.toLowerCase()&&<ListeningQuiz exercise={exerciseQuiz} />}
+      {exerciseQuiz&&exerciseQuiz.category?.toLowerCase()===CATEGORY.SPEAKING?.toLowerCase()&&<SpeakingQuiz exercise={exerciseQuiz} />}
+      {exerciseQuiz&&exerciseQuiz.category?.toLowerCase()===CATEGORY.WRITING?.toLowerCase()&&<WritingQuiz exercise={exerciseQuiz} />}
+      {/* {view === 'lessons' && <LessonsPage onStartExercise={startExercise} />} */}
       {view === 'exercise' && currentExercise && <ExercisePlayer exercise={currentExercise} onBack={goBack} />}
       {view === 'listening' && currentExercise && <ListeningExercise exercise={currentExercise} onBack={goBack} />}
       {view === 'writing' && currentExercise && <WritingExercise exercise={currentExercise} onBack={goBack} />}

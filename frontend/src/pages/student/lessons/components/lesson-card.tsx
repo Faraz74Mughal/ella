@@ -1,11 +1,13 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Check, Lock, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type LessonStatus = "completed" | "current" | "next" | "locked";
 
 interface Props {
   lesson: {
+    _id?:string
     sequence_order: number;
     title: string;
     description: string;
@@ -34,6 +36,7 @@ const Circle = ({
 };
 
 export default function LessonCard({ lesson, idx }: Props) {
+  const navigate = useNavigate()
   const isCompleted = lesson.status === "completed";
   const isCurrent = lesson.status === "current";
   const isNext = lesson.status === "next";
@@ -46,7 +49,7 @@ export default function LessonCard({ lesson, idx }: Props) {
   );
   const even = idx % 2 === 0;
   return (
-    <div className={`${isNext&&"locked-card"} relative flex w-full flex-col items-center justify-between md:flex-row`}>
+    <div className={`${isNext&&"locked-card"}  relative flex w-full flex-col items-center justify-between md:flex-row`}>
       {!even && (
         <>
           <div className="order-1 hidden md:block md:w-5/12"></div>
@@ -66,6 +69,7 @@ export default function LessonCard({ lesson, idx }: Props) {
         }
       >
         <div
+        onClick={()=>navigate(`/student/lessons/${lesson?._id}`)}
           className={`relative rounded-3xl border-2   p-6 shadow-xl  ${isCompleted ? "border-emerald-500 shadow-emerald-100" : isCurrent ? (isNext ? "border-slate-200 bg-white" : "border-indigo-500 shadow-indigo-100 ") : ""}`}
         >
           {isNext && (
@@ -88,9 +92,9 @@ export default function LessonCard({ lesson, idx }: Props) {
                   In Progress
                 </Badge>
 
-                <span className="cursor-pointer text-sm font-bold text-indigo-600 underline">
+                {/* <span className="cursor-pointer text-sm font-bold text-indigo-600 underline">
                   Resume
-                </span>
+                </span> */}
               </>
             )}
           </div>
@@ -109,7 +113,7 @@ export default function LessonCard({ lesson, idx }: Props) {
               <span className="text-xs text-slate-400">{lesson.duration}</span>
             </div>
           )}
-          {isCurrent && (
+          {/* {isCurrent && (
             <div className="mt-6">
               <div className="mb-1 flex justify-between text-xs font-bold">
                 <span>Lesson Progress</span>
@@ -122,7 +126,7 @@ export default function LessonCard({ lesson, idx }: Props) {
                 ></div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       {even && (

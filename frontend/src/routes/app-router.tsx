@@ -39,6 +39,9 @@ import TeacherUpdatePasswordFirstTimePage from "@/pages/teacher/auth/UpdatePassw
 import { StudentPortalLayout } from "@/layouts/student-portal-layout";
 import StudentDashboardPage from "@/pages/student/dashboard/dashboard-page";
 import StudentLessonsPage from "@/pages/student/lessons/lessons-page";
+import StudentLessonPage from "@/pages/student/lessons/lesson-detail-page";
+
+import StudentExercisePage from "@/pages/student/exercises/exercise-page"
 import ErrorPage from "@/pages/error-page";
 
 const Unauthorized = () => <div>Unauthorized Access</div>;
@@ -162,6 +165,8 @@ const router = createBrowserRouter([
                     children: [
                       { path: "dashboard", element: <StudentDashboardPage /> },
                       { path: "lessons", element: <StudentLessonsPage /> },
+                      { path: "lessons/:id", element: <StudentLessonPage /> },
+                      { path: "exercises/:id", element: <StudentExercisePage /> },
                       {
                         path: "",
                         element: <Navigate to="dashboard" replace />,

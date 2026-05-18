@@ -54,6 +54,14 @@ export const exerciseService = {
     return response?.data.data.exercise;
   },
 
+    fetchSingleExerciseByLessonByAdmin: async (id: string): Promise<IExercise> => {
+    const response = await api.get<ApiResponse<{ exercise: IExercise }>>(
+      `/exercises/lesson/${id}`,
+    );
+
+    return response?.data.data.exercise;
+  },
+
   createExercisesByAdmin: async (data: IExercise): Promise<IExercise> => {
     const formData = buildExerciseFormData(data);
     const response = await api.post<ApiResponse<{ exercise: IExercise }>>(

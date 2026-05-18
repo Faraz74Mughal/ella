@@ -7,6 +7,7 @@ import type {
 export interface ILesson {
   _id: string;
   title: string;
+  description?: string;
   category: (typeof CATEGORY)[keyof typeof CATEGORY];
   level: (typeof LEVEL)[keyof typeof LEVEL];
   study_material?: {

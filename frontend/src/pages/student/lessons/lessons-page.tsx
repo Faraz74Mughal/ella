@@ -1,123 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { useFetchLessonsForStudent } from "@/hooks/use-student-progress";
-import { CheckCircle2, Clock, Lock, PlayCircle } from "lucide-react";
-import { useState } from "react";
+// import { CheckCircle2, Clock, Lock, PlayCircle } from "lucide-react";
+// import { useState } from "react";
 import LessonCard from "./components/lesson-card";
 
-const LEVEL = {
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-const CATEGORY = {
-  GRAMMAR: "Grammar",
-  VOCABULARY: "Vocabulary",
-  LISTENING: "Listening",
-  SPEAKING: "Speaking",
-  WRITING: "Writing",
-};
 
-const ProgressBar = ({ progress }: { progress: number }) => (
-  <div className="w-full bg-slate-100 rounded-full h-2">
-    <div
-      className="bg-indigo-500 h-2 rounded-full transition-all duration-700"
-      style={{ width: `${progress}%` }}
-    />
-  </div>
-);
-
-const lessonsData = [
-  {
-    _id: "l1",
-    title: "Grammar Foundations",
-    category: CATEGORY.GRAMMAR,
-    level: LEVEL.BEGINNER,
-    description: "Master the basics of English grammar",
-    exercises: ["ex1"],
-    progress: 100,
-    totalExercises: 5,
-    completedExercises: 5,
-    thumbnail: "from-emerald-400 to-teal-600",
-    duration: "2h 30m",
-    status: "completed",
-  },
-  {
-    _id: "l2",
-    title: "Listening Comprehension",
-    category: CATEGORY.LISTENING,
-    level: LEVEL.INTERMEDIATE,
-    description: "Improve listening with real-world audio",
-    exercises: ["ex2"],
-    progress: 65,
-    totalExercises: 3,
-    completedExercises: 2,
-    thumbnail: "from-blue-400 to-indigo-600",
-    duration: "1h 45m",
-    status: "in-progress",
-  },
-  {
-    _id: "l3",
-    title: "Conversational English",
-    category: CATEGORY.SPEAKING,
-    level: LEVEL.BEGINNER,
-    description: "Practice everyday conversations",
-    exercises: ["ex3"],
-    progress: 33,
-    totalExercises: 3,
-    completedExercises: 1,
-    thumbnail: "from-pink-400 to-rose-600",
-    duration: "1h 15m",
-    status: "in-progress",
-  },
-  {
-    _id: "l4",
-    title: "Academic Writing",
-    category: CATEGORY.WRITING,
-    level: LEVEL.INTERMEDIATE,
-    description: "Learn to write essays and reports",
-    exercises: ["ex4"],
-    progress: 0,
-    totalExercises: 1,
-    completedExercises: 0,
-    thumbnail: "from-amber-400 to-orange-600",
-    duration: "3h 00m",
-    status: "locked",
-  },
-  {
-    _id: "l5",
-    title: "Advanced Vocabulary",
-    category: CATEGORY.VOCABULARY,
-    level: LEVEL.ADVANCED,
-    description: "Expand vocabulary with advanced words",
-    exercises: ["ex5"],
-    progress: 0,
-    totalExercises: 3,
-    completedExercises: 0,
-    thumbnail: "from-violet-400 to-purple-600",
-    duration: "2h 00m",
-    status: "locked",
-  },
-  {
-    _id: "l6",
-    title: "Business English",
-    category: CATEGORY.SPEAKING,
-    level: LEVEL.ADVANCED,
-    description: "Professional communication skills",
-    exercises: [],
-    progress: 0,
-    totalExercises: 4,
-    completedExercises: 0,
-    thumbnail: "from-slate-400 to-slate-600",
-    duration: "4h 30m",
-    status: "locked",
-  },
-];
 
 const LessonsPage = () => {
   const { data: lessons } = useFetchLessonsForStudent();
-  console.log("lessons", lessons);
 
   return (
+    <>
+   
     <div className="mx-auto max-w-5xl p-6 md:p-12">
       <div className="mb-12 text-center">
         <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-black tracking-widest text-indigo-700 uppercase">
@@ -133,7 +27,7 @@ const LessonsPage = () => {
 
       <div className="relative space-y-12">
         <div className="absolute top-0 bottom-0 left-1/2 hidden w-1 -translate-x-1/2 bg-slate-200 md:block"></div>
-        {(lessons||[]).map((lesson, idx) => (
+        {(lessons||[]).map((lesson:any, idx:number) => (
           <LessonCard key={lesson._id} lesson={lesson} idx={idx} />
         ))}
         <div className="relative flex w-full flex-col items-center justify-between md:flex-row">
@@ -279,7 +173,10 @@ const LessonsPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
 export default LessonsPage;
+
+
